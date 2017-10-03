@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
@@ -24,6 +25,12 @@ public class RobotTeleOp extends LinearOpMode {
     //EX: protected DcMotor motor;
     protected DcMotor mainLift;
     protected Servo smallLift;
+
+    //Motors for each wheel
+    protected DcMotor leftFront;
+    protected DcMotor rightFront;
+    protected DcMotor leftBack;
+    protected DcMotor rightBack;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -93,6 +100,7 @@ public class RobotTeleOp extends LinearOpMode {
                 mainLift.setPower(nextPosition-currentPosition);
             }*/
 
+            drive();
 
             telemetry.update();
             idle();
@@ -104,6 +112,14 @@ public class RobotTeleOp extends LinearOpMode {
         /*EX:
         motor = hardwareMap.dcMotor.get("motor");
         motor.setDirection(DcMotor.Direction.FORWARD);*/
+
+        leftFront = hardwareMap.dcMotor.get("leftFront");
+        rightFront = hardwareMap.dcMotor.get("rightFront");
+        leftBack = hardwareMap.dcMotor.get("leftBack");
+        rightBack = hardwareMap.dcMotor.get("rightBack");
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
 
 
     }
@@ -131,6 +147,26 @@ public class RobotTeleOp extends LinearOpMode {
 
     protected void drive() {
 
+        //left stick controls movement
+        //right stick controls turning
+
+        double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
+        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //total sum of all inputs
+        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
+        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+
+
+        double leftFrontPower = (y + x + turn_x) / scale;
+        double rightFrontPower = (y - x - turn_x) / scale;
+        double leftBackPower =(y - x + turn_x) / scale;
+        double rightBackPower = (y + x - turn_x) / scale;
+
+        //setting power for each of the 4 wheels
+        leftFront.setPower(leftFrontPower);
+        rightFront.setPower(rightFrontPower);
+        leftBack.setPower(leftBackPower);
+        rightBack.setPower(rightBackPower);
     }
 
     //Add new methods for functionality down here
