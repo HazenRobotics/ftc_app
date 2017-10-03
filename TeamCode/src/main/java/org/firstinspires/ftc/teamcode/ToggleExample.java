@@ -33,6 +33,7 @@ public class ToggleExample extends LinearOpMode {
             //Shows debug telemetry of if the motor is on
             protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
         });
+
     }
 
     @Override
