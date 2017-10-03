@@ -74,6 +74,10 @@ public class RobotTeleOp extends LinearOpMode {
         }
     }
 
+    protected void drive() {
+
+    }
+
     //Add new methods for functionality down here
     
 }
