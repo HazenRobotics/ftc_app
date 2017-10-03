@@ -117,7 +117,7 @@ public class RobotTeleOp extends LinearOpMode {
             protected void turnOff() {motor.setPower(0);}
             protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
         })*/
-
+//
 
 
     }
