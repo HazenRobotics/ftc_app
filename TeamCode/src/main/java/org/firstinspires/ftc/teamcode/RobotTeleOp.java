@@ -28,7 +28,7 @@ public class RobotTeleOp extends LinearOpMode {
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
     protected final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
-    protected final double GLYPH_HEIGHT = 0.0;
+    protected final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
@@ -43,7 +43,6 @@ public class RobotTeleOp extends LinearOpMode {
         //Add any further initialization (methods) here
 
         double currentPosition = 0.0, nextPosition = 0.0;
-        int glyphOne  , glyphTwo  , glyphThree  , glyphFour  ,glyphZero; //glyphZero is the ground
 
         waitForStart();
 
@@ -113,23 +112,24 @@ public class RobotTeleOp extends LinearOpMode {
 
 
         //set next target position
+/**        For the following .setTargetPositions, insert position of each stacked glyph**/
             if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 0) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 1)) {
-                mainLift.setTargetPosition();
+//                mainLift.setTargetPosition();
             }
             else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 1) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 2)) {
-                mainLift.setTargetPosition();
+//                mainLift.setTargetPosition();
             }
             else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 2) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 3)) {
-                mainLift.setTargetPosition();
+//                mainLift.setTargetPosition();
             }
             else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 3) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 4)) {
-                mainLift.setTargetPosition();
+//                mainLift.setTargetPosition();
             }
 
             //D Pad used to control Main Lift
 
             if(!(mainLift.isBusy())){
-                mainLift.setPower(0);
+                mainLift.setPower(0); //Redundant???
             }
 
 
