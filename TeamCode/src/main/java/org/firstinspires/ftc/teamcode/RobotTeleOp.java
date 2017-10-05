@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class RobotTeleOp extends LinearOpMode {
 
     //Add all global objects and lists
-    protected ArrayList<Toggle> ToggleList = new ArrayList<Toggle>();
+    protected ArrayList<Button> ControlList = new ArrayList<Button>();
 
 
     //Add Motors, Servos, Sensors, etc here
@@ -78,20 +78,51 @@ public class RobotTeleOp extends LinearOpMode {
             protected void turnOff() {motor.setPower(0);}
             protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
         })*/
-
+        ControlList.add(new Button() {
+            protected boolean input() {return gamepad1.a;}
+            protected void turnOn() {}
+            protected void debug() {}
+        });
 
 
     }
 
     protected void toggleLogic() {
-        for(Toggle t: ToggleList) {
-            t.logic();
-            t.debug();
+        for(Button b: ControlList) {
+            b.logic();
+            b.debug();
         }
     }
 
     //Add new methods for functionality down here
-
+    protected void calculateTargetPositionUP(){
+        if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 0) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 1)) {
+//                mainLift.setTargetPosition(1);
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 1) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 2)) {
+//                mainLift.setTargetPosition(2);
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 2) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 3)) {
+//                mainLift.setTargetPosition();
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 3) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 4)) {
+//                mainLift.setTargetPosition();
+        }
+    }
+    protected void calculateTargetPositionDOWN(){
+        if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 0) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 1)) {
+//                mainLift.setTargetPosition(0);
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 1) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 2)) {
+//                mainLift.setTargetPosition(1);
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 2) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 3)) {
+//                mainLift.setTargetPosition();
+        }
+        else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 3) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 4)) {
+//                mainLift.setTargetPosition();
+        }
+    }
 
     protected void lift() {
         //Encoder for Main Lift
@@ -111,34 +142,31 @@ public class RobotTeleOp extends LinearOpMode {
         }
 
 
-        //set next target position
-/**        For the following .setTargetPositions, insert position of each stacked glyph**/
-            if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 0) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 1)) {
-//                mainLift.setTargetPosition();
-            }
-            else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 1) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 2)) {
-//                mainLift.setTargetPosition();
-            }
-            else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 2) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 3)) {
-//                mainLift.setTargetPosition();
-            }
-            else if ((mainLift.getCurrentPosition() > GLYPH_HEIGHT * 3) && (mainLift.getCurrentPosition() < GLYPH_HEIGHT * 4)) {
-//                mainLift.setTargetPosition();
-            }
-
             //D Pad used to control Main Lift
 
             if(!(mainLift.isBusy())){
                 mainLift.setPower(0); //Redundant???
             }
 
+            /*
+            On dpad_up press {
+                calculate target position
+                set target position
+                set motor to run to position
+                set power
+             */
+
+
+
 
             if(gamepad2.dpad_up == true) {
+                calculateTargetPositionUP();
                 mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(0.5);
             }
 
             if(gamepad2.dpad_down == true) {
+                calculateTargetPositionDOWN();
                 mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(-0.5);
             }
