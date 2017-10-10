@@ -44,6 +44,7 @@ public class DriverControl extends LinearOpMode
 		 */
             telemetry.addData("left power", "Left Power: " + String.format("%.2f", left));
             telemetry.addData("right power", "Right Power: " + String.format("%.2f", right));
+
             telemetry.update();
         }
 
