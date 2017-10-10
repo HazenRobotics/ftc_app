@@ -23,16 +23,17 @@ public class RobotTeleOp extends LinearOpMode {
 
     //Add Motors, Servos, Sensors, etc here
     //EX: protected DcMotor motor;
-    private Servo claw;
-    private DcMotor arm;
-    //private DcMotor claw;
+    //private Servo claw;
+    protected DcMotor arm;
+    protected DcMotor claw;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
-    private final double CLAW_POSITION_ONE = 0.0;
-    private final double CLAW_POSITION_TWO = 0.5;
-    private final double ARM_POWER = 0.4;
-    //private final double CLAW_POWER = 0.2;
+    //private final double CLAW_POSITION_ONE = 0.0;
+    //private final double CLAW_POSITION_TWO = 0.5;
+    protected final double ARM_POWER = 0.4;
+    protected final double CLAW_POWER = 0.2;
+    protected final double JOYSTICK_ERROR_RANGE = 0.1;
 
     @Override
     public void runOpMode() {
@@ -44,13 +45,15 @@ public class RobotTeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            toggleLogic();
+            //toggleLogic();
             //clawFunction();
 
             //Add any non-toggles here
             
             //Arm extension part
-            armExtension();
+            //armExtension();
+
+            armPlusClaw();
 
             telemetry.update();
             idle();
@@ -62,9 +65,9 @@ public class RobotTeleOp extends LinearOpMode {
         /*EX:
         motor = hardwareMap.dcMotor.get("motor");
         motor.setDirection(DcMotor.Direction.FORWARD);*/
-        claw = hardwareMap.servo.get("claw");
-        //claw = hardwareMap.dcMotor.get("claw");
-        //claw.setDirection(DcMotor.Direction.FORWARD);
+        //claw = hardwareMap.servo.get("claw");
+        claw = hardwareMap.dcMotor.get("claw");
+        claw.setDirection(DcMotor.Direction.FORWARD);
         arm = hardwareMap.dcMotor.get("arm");
         arm.setDirection(DcMotor.Direction.FORWARD);
 
@@ -73,20 +76,22 @@ public class RobotTeleOp extends LinearOpMode {
     //claw function, run by servo
     protected void setupToggleList() {
         //Add any mechanics that can be controlled by a toggle here
-        /*EX:
-        ToggleList.add(new Toggle() {
+        //EX:
+        /*ToggleList.add(new Toggle() {
             protected boolean input() {return gamepad1.a;}
             protected void turnOn() {motor.setPower(MOTOR_POWER);}
             protected void turnOff() {motor.setPower(0);}
             protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
         })*/
-        ToggleList.add(new Toggle() {
+
+
+        /*ToggleList.add(new Toggle() {
             //The y button on gamepad1 will trigger our toggle
             protected boolean input() {return gamepad1.y;}
             protected void turnOn() {claw.setPosition(CLAW_POSITION_ONE);}
             protected void turnOff() {claw.setPosition(CLAW_POSITION_TWO);}
             protected void debug() {telemetry.addData("Claw", "On: %b, Position: %.2f", isOn(), (isOn() ? CLAW_POSITION_ONE : CLAW_POSITION_TWO));}
-        });
+        });*/
     }
 
     protected void toggleLogic() {
@@ -99,7 +104,7 @@ public class RobotTeleOp extends LinearOpMode {
     //Add new methods for functionality down here
 
     //scissor lift arm moved by pressing up or down arrows on d-pad.
-    protected void armExtension() {
+/*    protected void armExtension() {
         //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
             if(gamepad2.dpad_up == true)
                 arm.setPower(ARM_POWER);
@@ -110,23 +115,59 @@ public class RobotTeleOp extends LinearOpMode {
                 arm.setPower(-ARM_POWER);
             else if(gamepad2.dpad_down == false)
                 arm.setPower(0.0);
-    }
+    }*/
 
     //Back up: Claw with motor
-//    protected void clawFunction() {
-//        //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
-//        if(gamepad2.y == true)
-//            claw.setPower(CLAW_POWER);
-//
-//        else if(gamepad2.y == false)
-//            claw.setPower(0.0);
-//        //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
-//        if(gamepad2.b == true)
-//            claw.setPower(-CLAW_POWER);
-//        else if(gamepad2.b == false)
-//            claw.setPower(0.0);
-//    }
+/*    protected void clawFunction() {
+        //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
+        if(gamepad2.y == true)
+            claw.setPower(CLAW_POWER);
+
+        else if(gamepad2.y == false)
+            claw.setPower(0.0);
+        //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
+        if(gamepad2.b == true)
+            claw.setPower(-CLAW_POWER);
+        else if(gamepad2.b == false)
+            claw.setPower(0.0);
+    }*/
+
+    //If right stick pointed forward, arm moves forward.  If right stick pointed towards back, arm moves back into robot.
+    //If right stick pointed left, claw closes.  If right stick pointed right, claw opens.  Right stick in center, no movement.
     protected void armPlusClaw()
     {
+
+        if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
+            claw.setPower(-CLAW_POWER);
+        }
+        else if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
+            claw.setPower(CLAW_POWER);
+        }
+        else {
+            claw.setPower(0);
+        }
+
+        //Backup Code, in event of servo claw.
+        //if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
+        //  if (claw.getCurrentPosition() < 1) {
+        //      claw.setPosition(claw.getCurrentPosition()-0.1);
+        //  }
+        //}
+        //if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
+        //  if (claw.getCurrentPosition() > -1) {
+        //      claw.setPosition(claw.getCurrentPosition()+0.1);
+        //  }
+        //}
+
+
+        if (gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE) {
+            arm.setPower(-ARM_POWER);
+        }
+        else if (gamepad2.right_stick_y < -JOYSTICK_ERROR_RANGE) {
+            arm.setPower(ARM_POWER);
+        }
+        else {
+            arm.setPower(0);
+        }
     }
 }
