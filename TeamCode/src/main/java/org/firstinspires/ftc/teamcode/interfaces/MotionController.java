@@ -27,7 +27,7 @@ public abstract class MotionController {
     }
 
     /**
-     * Moves directly by a given displacement without any turning.
+     * Moves directly by a given displacement without any turning. {@link #move(double, double)}, which turns and then moves forward.
      * @param x The amount to move forward/backward.
      * @param y The amount to move side-to-side.
      */

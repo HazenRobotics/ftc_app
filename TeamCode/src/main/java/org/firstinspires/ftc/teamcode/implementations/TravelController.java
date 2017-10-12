@@ -1,4 +1,8 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.implementations;
+
+import org.firstinspires.ftc.teamcode.interfaces.MotionController;
+import org.firstinspires.ftc.teamcode.interfaces.Position;
+import org.firstinspires.ftc.teamcode.interfaces.Vector;
 
 /**
  * Decorates a motion controller with a concept of absolute position, to allow motion relative to the game board rather than just the robot.
