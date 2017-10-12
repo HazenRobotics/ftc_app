@@ -235,12 +235,11 @@ public class RobotTeleOp extends LinearOpMode {
         int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
         int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
 
-        if (errorUnder<MAIN_LIFT_ERROR_RANGE) {
-            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT*(glyphRow+2));
-        }
-	    else {
-            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT * (glyphRow + 1));
-        }
+        int nextPosition = COUNT_PER_GLYPH_HEIGHT * (glyphRow + (errorUnder < MAIN_LIFT_ERROR_RANGE ? 2 : 1));
+        if (nextPosition > COUNT_PER_GLYPH_HEIGHT * 4)
+            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT * 4);
+        else
+            mainLift.setTargetPosition(nextPosition);
     }
 
 
@@ -251,21 +250,21 @@ public class RobotTeleOp extends LinearOpMode {
         int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
         //int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
 
-        if (errorOver < MAIN_LIFT_ERROR_RANGE) {
-            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT * (glyphRow - 1));
-        } else{
-            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT * glyphRow);
-        }
+        int nextPosition = COUNT_PER_GLYPH_HEIGHT * (glyphRow - (errorOver < MAIN_LIFT_ERROR_RANGE ? 1 : 0));
+        if (nextPosition < 0 )
+            mainLift.setTargetPosition(0);
+        else
+            mainLift.setTargetPosition(nextPosition);
     }
 
     protected void lift() {
         //Main Lift Power using Triggers
-        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0)) {
+        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0) && (mainLift.getCurrentPosition() < COUNT_PER_GLYPH_HEIGHT * 4)) {
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(gamepad2.right_trigger);
             autoMainLiftRunning = false;
         }
-        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0)){
+        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0) && (mainLift.getCurrentPosition() > 0)){
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(-gamepad2.left_trigger);
             autoMainLiftRunning = false;
