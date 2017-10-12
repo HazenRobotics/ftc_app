@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.interfaces;
 
 /**
- * Created by Robotics on 10/10/2017.
+ * The interface for accessing the robot's color sensor.
  */
-
 public interface ColorSensor {
+    /**
+     * @return The color currently detected in front of the sensor.
+     */
+    public Color sense();
 }
