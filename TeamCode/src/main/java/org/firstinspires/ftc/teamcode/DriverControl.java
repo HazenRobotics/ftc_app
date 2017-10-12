@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
+@Disabled
 public class DriverControl extends LinearOpMode
 {
     private DcMotor fRightMotor;
@@ -44,6 +46,7 @@ public class DriverControl extends LinearOpMode
 		 */
             telemetry.addData("left power", "Left Power: " + String.format("%.2f", left));
             telemetry.addData("right power", "Right Power: " + String.format("%.2f", right));
+
             telemetry.update();
         }
 
