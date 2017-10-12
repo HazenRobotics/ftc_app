@@ -19,29 +19,29 @@ public class RobotTeleOp extends LinearOpMode {
     //Add all global objects and lists
     protected ArrayList<Button> ControlList = new ArrayList<Button>();
 
-    protected boolean dpadRunning = false;
+    //Lift Vars
+    protected boolean autoMainLiftRunning = false;
+    protected int lift_position;
 
 
     //Add Motors, Servos, Sensors, etc here
     //EX: protected DcMotor motor;
+
+    //Lift Objects
     protected DcMotor mainLift;
     protected Servo smallLift;
-    protected double lift_position;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
+
+    //Lift Constants
     protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
-
-
-
-
-
-    protected static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    protected static final double     LIFT_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
-    protected static final double     INCHES_PER_REV = 0.0;
-    protected static final int COUNTS_PER_INCH = (int) (COUNTS_PER_MOTOR_REV / INCHES_PER_REV);
-    protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * COUNTS_PER_INCH);
+    protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
+    protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
+    protected static final double LIFT_INCHES_PER_REV = 0.0;// Dont know yet
+    protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
+    protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
 
@@ -58,6 +58,8 @@ public class RobotTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             toggleLogic();
+
+            lift();
 
             //Add any non-toggles here
             lift_position = mainLift.getCurrentPosition();
@@ -89,14 +91,25 @@ public class RobotTeleOp extends LinearOpMode {
             protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
         })*/
 
-       /*
+
         ControlList.add(new Button() {
-            protected boolean input() {return gamepad1.a;}
-            protected void turnOn() {}
+            protected boolean input() {return gamepad2.dpad_up;}
+            protected void turnOn() {
+                calculateTargetPositionUP();
+                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                mainLift.setPower(MAIN_LIFT_SPEED);
+                autoMainLiftRunning = true;}
             protected void debug() {}
-        });*/
+        });
 
-
+        ControlList.add(new Button() {
+            protected boolean input() {return gamepad2.dpad_down;}
+            protected void turnOn() {
+                calculateTargetPositionDOWN();
+                mainLift.setPower(-MAIN_LIFT_SPEED);
+                autoMainLiftRunning = true;}
+            protected void debug() {}
+        });
     }
     //
 
@@ -111,44 +124,11 @@ public class RobotTeleOp extends LinearOpMode {
 
     //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is inbetween.
 
-
-
-    /*
-        SUDO CODE FOR D PAD MAIN LIFT
-
-        current pos
-
-    //only works if current pos is positive
-    set = curent pos / counts per height
-
-    error over = curent pos % counts per height
-    error under	 = counts per height - error over
-
-
-
-    if going up
-        if (error under less than error range)
-            set position to counts per height * (set + 2)
-        else
-            set position to counts per height * (set + 1)
-
-    if going down
-        if (error over less than errpr range)
-            set position to counts per height * (set - 1)
-        else
-            set position to counts per height * (set)
-
-    set power
-    run to pos
-    isDpadRuning = true;
-
-     */
-
-    protected void calculateTargetPositionUP(){
+    protected void calculateTargetPositionUP() {
         lift_position = mainLift.getCurrentPosition();
-        int glyphRow = (int)(lift_position / COUNT_PER_GLYPH_HEIGHT);
+        int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
 
-        int errorOver = (int)(lift_position % COUNT_PER_GLYPH_HEIGHT);
+        int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
         int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
 
         if (errorUnder<MAIN_LIFT_ERROR_RANGE) {
@@ -162,9 +142,9 @@ public class RobotTeleOp extends LinearOpMode {
 
     protected void calculateTargetPositionDOWN() {
         lift_position = mainLift.getCurrentPosition();
-        int glyphRow = (int) (lift_position / COUNT_PER_GLYPH_HEIGHT);
+        int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
 
-        int errorOver = (int) (lift_position % COUNT_PER_GLYPH_HEIGHT);
+        int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
         //int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
 
         if (errorOver < MAIN_LIFT_ERROR_RANGE) {
@@ -175,51 +155,27 @@ public class RobotTeleOp extends LinearOpMode {
     }
 
     protected void lift() {
-        //Encoder for Main Lift
-        double currentNumberOfRotations = mainLift.getCurrentPosition()/COUNTS_PER_MOTOR_REV;
-
         //Main Lift Power using Triggers
-        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0) && (dpadRunning == false)){
+        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0)) {
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(gamepad2.right_trigger);
-            dpadRunning = false;
+            autoMainLiftRunning = false;
         }
-        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0) && (dpadRunning == false)){
+        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0)){
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(-(gamepad2.left_trigger));
-            dpadRunning = false;
+            mainLift.setPower(-gamepad2.left_trigger);
+            autoMainLiftRunning = false;
         }
-        else if (!dpadRunning){
+        else if (!autoMainLiftRunning){
             mainLift.setPower(0.0);
         }
 
-
-        if(gamepad2.dpad_up) {
-
-
-
-
-
-            calculateTargetPositionUP();
-            mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            mainLift.setPower(MAIN_LIFT_SPEED);
-            dpadRunning = true;
+        //D Pad used to control Main Lift (Added as buttons), stops here
+        if(!(mainLift.isBusy() && autoMainLiftRunning)){
+            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            mainLift.setPower(0);
+            autoMainLiftRunning = false;
         }
-
-        if(gamepad2.dpad_down) {
-            calculateTargetPositionDOWN();
-            mainLift.setPower(-MAIN_LIFT_SPEED);
-            dpadRunning = true;
-        }
-
-        //D Pad used to control Main Lift
-
-        if(!(mainLift.isBusy())){
-            mainLift.setPower(0); //Redundant???
-        }
-
-
-
 
         //Small Lift Power
         if (gamepad2.right_bumper){
@@ -228,9 +184,5 @@ public class RobotTeleOp extends LinearOpMode {
         else if (gamepad2.left_bumper){
             smallLift.setPosition(SMALL_LIFT_UPPER_POS);
         }
-
-
-
     }
-
 }
