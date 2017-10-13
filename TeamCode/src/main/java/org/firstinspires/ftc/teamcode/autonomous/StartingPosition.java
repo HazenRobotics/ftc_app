@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import org.firstinspires.ftc.teamcode.interfaces.Color;
-import org.firstinspires.ftc.teamcode.interfaces.Position;
+import org.firstinspires.ftc.teamcode.models.Color;
+import org.firstinspires.ftc.teamcode.models.Position;
 
 /**
  * One of the four starting positions for the robot.
  *
- * TODO: figure out coordinate grid
+ * See {@link Position} for an explanation of the coordinate grid.
  */
 public enum StartingPosition {
     RED_1(Color.RED, null, null),

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="FtcRobotController/src/main/java"/>
+	<classpathentry kind="src" path="TeamCode/src/main/java"/>
+	<classpathentry kind="lib" path="gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="lib" path="libs/Blocks-release-sources.jar"/>
+	<classpathentry kind="lib" path="libs/FtcCommon-release-sources.jar"/>
+	<classpathentry kind="lib" path="libs/Hardware-release-sources.jar"/>
+	<classpathentry kind="lib" path="libs/Inspection-release-sources.jar"/>
+	<classpathentry kind="lib" path="libs/RobotCore-release-sources.jar"/>
+	<classpathentry kind="lib" path="libs/Vuforia.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

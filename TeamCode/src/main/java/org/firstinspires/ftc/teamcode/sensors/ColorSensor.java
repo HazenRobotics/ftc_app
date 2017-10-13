@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.sensors;
+
+import org.firstinspires.ftc.teamcode.models.Color;
 
 /**
  * The interface for accessing the robot's color sensor.
