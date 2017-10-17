@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.models;
 
 /**
  * An RGB 0-255 color.

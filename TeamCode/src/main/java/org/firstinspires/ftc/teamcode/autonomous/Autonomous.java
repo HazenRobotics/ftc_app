@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import org.firstinspires.ftc.teamcode.implementations.TravelController;
-import org.firstinspires.ftc.teamcode.interfaces.ArmController;
-import org.firstinspires.ftc.teamcode.interfaces.ColorSensor;
-import org.firstinspires.ftc.teamcode.interfaces.MotionController;
-import org.firstinspires.ftc.teamcode.interfaces.Vector;
+import org.firstinspires.ftc.teamcode.autonomous.controllers.GlyphController;
+import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
+import org.firstinspires.ftc.teamcode.models.Vector;
+import org.firstinspires.ftc.teamcode.sensors.ColorSensor;
 
 public class Autonomous implements Runnable {
 	/**
@@ -26,16 +25,27 @@ public class Autonomous implements Runnable {
 	/** The opposite of {@link #SIDE_OF_COLOR_SENSOR}. */
 	public static final float SIDE_OPPOSITE_TO_COLOR_SENSOR = -SIDE_OF_COLOR_SENSOR;
 	
-	public final StartingPosition startingPosition;
-	public final TravelController motion;
-	public final ArmController arm;
-	public final ColorSensor colorSensor;
+	private final StartingPosition startingPosition;
+	private final MotionController motion;
+	private final GlyphController arm;
+	private final ColorSensor colorSensor;
 	
-	public Autonomous(StartingPosition startingPosition, MotionController motion, ColorSensor colorSensor, ArmController arm) {
+	public Autonomous(StartingPosition startingPosition, MotionController motion, ColorSensor colorSensor, GlyphController arm) {
 		this.startingPosition = startingPosition;
-		this.motion = new TravelController(motion, startingPosition.getStartingPosition());
+		this.motion = new MotionController(motion, startingPosition.getStartingPosition());
 		this.colorSensor = colorSensor;
 		this.arm = arm;
+	}
+	
+	@Override
+	public void run() {
+		knockOverJewel();
+		Object pattern = readPictograph();
+		while(stillTimeToFetchGlyph()) {
+			fetchGlyph();
+			dropOffGlyph(pattern);
+		}
+		visitSafeZone();
 	}
 	
 	private void knockOverJewel() {
@@ -54,36 +64,25 @@ public class Autonomous implements Runnable {
 		return null;
 	}
 	
-	private void visitSafeZone() {
-		motion.goTo(startingPosition.getCryptoboxPosition().getLocation());
-	}
-
 	private boolean stillTimeToFetchGlyph() { return true; }
-
-	private Vector locateGlyph() {
-		motion.makePosition(startingPosition.getGlyphPosition());
-		return null;
-	}
-
+	
 	private void fetchGlyph() {
 		Vector glyph = locateGlyph();
 		motion.goTo(glyph);
 		arm.pickUp();
 	}
-
+	
 	private void dropOffGlyph(Object pattern) {
 		motion.makePosition(startingPosition.getCryptoboxPosition());
 		arm.setDown();
 	}
 
-	@Override
-	public void run() {
-		knockOverJewel();
-		Object pattern = readPictograph();
-		while(stillTimeToFetchGlyph()) {
-			fetchGlyph();
-			dropOffGlyph(pattern);
-		}
-		visitSafeZone();
+	private Vector locateGlyph() {
+		motion.makePosition(startingPosition.getGlyphPosition());
+		return null;
+	}
+	
+	private void visitSafeZone() {
+		motion.goTo(startingPosition.getCryptoboxPosition().getLocation());
 	}
 }
