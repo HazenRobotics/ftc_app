@@ -6,12 +6,8 @@ package org.firstinspires.ftc.teamcode.interfaces;
 public interface ILift {
 
 	/**
-	 * Raise the lift by however much it needs to be raised for a glyph.
+	 * Set the height of the lift to however many glyphs tall.
+	 * @param glyphHeight The height to raise the lift to
 	 */
-	public void raise();
-
-	/**
-	 * Bring the glyph to the ground.
-	 */
-	public void lower();
+	public void setLiftHeight(int glyphHeight);
 }

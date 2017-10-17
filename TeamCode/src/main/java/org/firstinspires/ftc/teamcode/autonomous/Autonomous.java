@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import org.firstinspires.ftc.teamcode.autonomous.controllers.GlyphController;
-import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
+import org.firstinspires.ftc.teamcode.interfaces.motors.LiftMotors.controllers.GlyphController;
+import org.firstinspires.ftc.teamcode.interfaces.motors.LiftMotors.controllers.MotionController;
 import org.firstinspires.ftc.teamcode.models.Vector;
 import org.firstinspires.ftc.teamcode.sensors.ColorSensor;
 

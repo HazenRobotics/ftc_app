@@ -1,20 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-/**
- * Created by Robotics on 10/17/2017.
- */
+import org.firstinspires.ftc.teamcode.interfaces.ILift;
 
-
-
-
-
-@Disabled
-public class autonomous extends LinearOpMode {
+public class LiftMotors implements ILift {
 
     protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
@@ -28,67 +21,14 @@ public class autonomous extends LinearOpMode {
 
     protected static double lift_position;
 
-
     protected DcMotor mainLift;
     protected Servo smallLift;
 
-    @Override
-    public void runOpMode() {
-
-        setupHardware();
-        //Add any further initialization (methods) here
-
-        waitForStart();
-
-        while (opModeIsActive()) {
-
-        }
-    }
-
-
-    protected void setupHardware(){
+    protected void setupHardware() {
         mainLift = hardwareMap.dcMotor.get("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-
     }
-
-    public void setMainLiftTo(double glyphHeightMultiplier) {
-        if (glyphHeightMultiplier > 4) {
-            glyphHeightMultiplier = 4;
-        }
-        else {
-            int nextPosition = GLYPH_HEIGHT * glyphHeightMultiplier
-            mainLift.setTargetPosition(nextPosition);
-        }
-        if (glyphHeightMultiplier < 0) {
-            glyphHeightMultiplier = 0;
-        }
-        else {
-            int nextPosition = GLYPH_HEIGHT * glyphHeightMultiplier
-            mainLift.setTargetPosition(nextPosition);
-        }
-
-
-
-
-
-    }
-    /* no needed
-    public void changeMainLiftBy(double glyphHeightChange){
-        lift_position = mainLift.getCurrentPosition();
-        if (glyphHeightChange <0) {
-            if (lift_position + glyphHeightChange >= 0) {
-        }
-        else if (glyphHeightChange > 0){
-
-        }
-        else
-            //don't change anything, it was set to 0
-    }
-    */
 
     public void setSmallLiftTop(){
         smallLift.setPosition(SMALL_LIFT_UPPER_POS);
@@ -98,6 +38,21 @@ public class autonomous extends LinearOpMode {
         smallLift.setPosition(SMALL_LIFT_LOWER_POS);
     }
 
-
-
+    @Override
+    public void setLiftHeight(int glyphHeight) {
+        if (glyphHeight > 4) {
+            glyphHeight = 4;
+        }
+        else {
+            int nextPosition = (int)(GLYPH_HEIGHT * glyphHeight);
+            mainLift.setTargetPosition(nextPosition);
+        }
+        if (glyphHeight < 0) {
+            glyphHeight = 0;
+        }
+        else {
+            int nextPosition = (int)(GLYPH_HEIGHT * glyphHeight);
+            mainLift.setTargetPosition(nextPosition);
+        }
+    }
 }
