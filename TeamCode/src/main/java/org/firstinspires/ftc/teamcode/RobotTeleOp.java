@@ -76,6 +76,7 @@ public class RobotTeleOp extends LinearOpMode {
             lift();
 
             //Add any non-toggles here
+            // Debugs to show the motor position
             lift_position = mainLift.getCurrentPosition();
             telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
 
@@ -227,7 +228,7 @@ public class RobotTeleOp extends LinearOpMode {
     //Add new methods for functionality down here
 
     //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is inbetween.
-
+    //Finds the next Lift's Target Position when going up
     protected void calculateTargetPositionUP() {
         lift_position = mainLift.getCurrentPosition();
         int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
@@ -242,7 +243,7 @@ public class RobotTeleOp extends LinearOpMode {
             mainLift.setTargetPosition(nextPosition);
     }
 
-
+    //Finds the next Lift's Target Position when going down
     protected void calculateTargetPositionDOWN() {
         lift_position = mainLift.getCurrentPosition();
         int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
