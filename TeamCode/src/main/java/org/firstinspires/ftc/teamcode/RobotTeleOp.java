@@ -207,10 +207,10 @@ public class RobotTeleOp extends LinearOpMode {
         //right stick controls turning
 
         double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
+        double magnitude = Math.abs(y) + Math.abs(x) + Math.abs(turn_x); //total sum of all inputs
+        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
 
 
         double leftFrontPower = (y + x + turn_x) / scale;
@@ -224,6 +224,18 @@ public class RobotTeleOp extends LinearOpMode {
         leftBack.setPower(leftBackPower);
         rightBack.setPower(rightBackPower);
     }
+
+    /*
+    calculate power stuff
+        y = sin(angle)
+        x = cos(angle)
+    calculate count distance
+    find target postion by:
+        target position = current pos + counts * wheel power
+    set target position
+    run using encoders
+    set power
+    */
 
     //Add new methods for functionality down here
 
