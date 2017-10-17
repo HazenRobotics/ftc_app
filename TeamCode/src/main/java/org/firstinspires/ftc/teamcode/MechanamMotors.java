@@ -2,11 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-/**
- * Created by Robotics on 10/10/2017.
- */
+import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
+import org.firstinspires.ftc.teamcode.interfaces.IWheels;
+import org.firstinspires.ftc.teamcode.models.Vector;
 
-public class MotionControl {
+/**
+ * Implements IWheels for autonomous using mechanam wheels.
+ */
+public class MechanamMotors implements IWheels {
     //Declare motor Variables
     protected DcMotor leftFront;
     protected DcMotor rightFront;
@@ -22,14 +25,25 @@ public class MotionControl {
     protected static final double ROBOT_TURNING_CIRCUMFERENCE = Math.PI * (2 * ROBOT_RADIUS);
     protected static final double DRIVE_SPEED = 1.0;
 
-    //Global Variables
+    protected IHardwareMap hardwareMap;
 
-    public void move(double moveDistance, double strafeAngle)
-    {
-        double counts = moveDistance * COUNTS_PER_INCH;
-        double strafeAngleRadians = Math.toRadians(strafeAngle);
-        double x = Math.cos(strafeAngleRadians);
-        double y = Math.sin(strafeAngleRadians);
+    public MechanamMotors(IHardwareMap hardwareMap/*, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack*/) {
+        this.hardwareMap = hardwareMap;
+        // I can't decide what way I prefer. I just implemented HardwareMap to provide idle(). We'll see if we change it.
+       /* this.leftFront = leftFront;
+        this.rightFront = rightFront;
+        this.leftBack = leftBack;
+        this.rightBack = rightBack; */
+        this.leftFront = hardwareMap.getMotor("leftFront");
+        this.rightFront = hardwareMap.getMotor("rightFront");
+        this.leftBack = hardwareMap.getMotor("leftBack");
+        this.rightBack = hardwareMap.getMotor("rightBack");
+    }
+
+    @Override
+    public void strafe(Vector displacement) {
+        double x = displacement.getX() * COUNTS_PER_INCH;
+        double y = displacement.getY() * COUNTS_PER_INCH;
         //declare targets?
 
         double magnitude = Math.abs(y) + Math.abs(x); //total sum of all inputs
@@ -41,10 +55,10 @@ public class MotionControl {
         double rightBackPower = (y + x) / scale;
 
         //TODO: Might need to scale these values
-        int leftFrontTarget = (int) (leftFrontPower * counts);
-        int rightFrontTarget = (int) (rightFrontPower * counts);
-        int leftBackTarget = (int) (leftBackPower * counts);
-        int rightBackTarget = (int) (rightBackPower * counts);
+        int leftFrontTarget = (int) leftFrontPower;
+        int rightFrontTarget = (int) rightFrontPower;
+        int leftBackTarget = (int) leftBackPower;
+        int rightBackTarget = (int) rightBackPower;
 
         leftFront.setTargetPosition(leftFrontTarget);
         leftBack.setTargetPosition(leftBackTarget);
@@ -63,7 +77,7 @@ public class MotionControl {
 
         while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //can be used to display messages on the phone through telemetry
-            //idle();
+            hardwareMap.idle();
         }
 
         leftFront.setPower(0);
@@ -77,6 +91,7 @@ public class MotionControl {
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    @Override
     public void turn(double turnAngle)
     {
         double turnDistance = (turnAngle / 360) * ROBOT_TURNING_CIRCUMFERENCE;
@@ -123,7 +138,7 @@ public class MotionControl {
 
         while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //can be used to display messages on the phone through telemetry
-            //idle();
+            hardwareMap.idle();
         }
 
         leftFront.setPower(0);

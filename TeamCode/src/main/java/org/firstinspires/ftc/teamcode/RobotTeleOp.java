@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
+
 import java.util.ArrayList;
 
 /**
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 
 @TeleOp(name="TeleOp", group="TeleOp")
 @Disabled
-public class RobotTeleOp extends LinearOpMode {
+public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
     //Add all global objects and lists
     protected ArrayList<Button> ControlList = new ArrayList<Button>();
@@ -368,5 +370,10 @@ public class RobotTeleOp extends LinearOpMode {
         else {
             arm.setPower(0);
         }
+    }
+
+    @Override
+    public DcMotor getMotor(String name) {
+        return hardwareMap.dcMotor.get(name);
     }
 }
