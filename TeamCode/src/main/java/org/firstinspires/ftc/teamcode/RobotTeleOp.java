@@ -28,6 +28,7 @@ public class RobotTeleOp extends LinearOpMode {
     //protected DcMotor arm;
     protected DcMotor armMotor;
     protected CRServo armControlServo;
+    boolean armManual = false;
     //protected DcMotor claw;
 
     //Motors for each wheel
@@ -136,9 +137,9 @@ public class RobotTeleOp extends LinearOpMode {
         ToggleList.add(new Toggle() {
             //The y button on gamepad2 will trigger our toggle
             protected boolean input() {return gamepad2.y;}
-            protected void turnOn() {version1();}
-            protected void turnOff() {version2();}
-            protected void debug() {telemetry.addData("Arm Version", "On: %b, Position: %.2f", isOn(), (isOn() ? "version1" : "version2"));}
+            protected void turnOn() {armManual = true;}
+            protected void turnOff() {armManual = false;}
+            protected void debug() {telemetry.addData("Arm Version", (isOn() ? "manual" : "automatic"));}
         });
     }
 
@@ -245,8 +246,15 @@ public class RobotTeleOp extends LinearOpMode {
         }
     }
 
+    protected void arm() {
+        if(armManual)
+            manualArmControl();
+        else
+            automaticArmControl();
+    }
+
     //When x is pressed, arm estends.  When b is pressed, arm retracts.
-    protected void version1()
+    protected void automaticArmControl()
     {
         if(gamepad2.x)
         {
@@ -269,7 +277,7 @@ public class RobotTeleOp extends LinearOpMode {
     //left stick = continuous servo.
     //right stick = motor
     //Forward = extend, backwards = retract
-    protected void version2()
+    protected void manualArmControl()
     {
         if(gamepad2.left_stick_y>JOYSTICK_ERROR_RANGE || gamepad2.left_stick_y<-JOYSTICK_ERROR_RANGE)
         {
