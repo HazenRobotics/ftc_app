@@ -138,6 +138,7 @@ public class RobotTeleOp extends LinearOpMode {
         mainLift = hardwareMap.dcMotor.get("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        smallLift = hardwareMap.servo.get("smallLift");
 
         //claw = hardwareMap.servo.get("claw");
         claw = hardwareMap.dcMotor.get("claw");
