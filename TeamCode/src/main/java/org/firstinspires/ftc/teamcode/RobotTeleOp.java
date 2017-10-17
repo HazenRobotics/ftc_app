@@ -76,6 +76,7 @@ public class RobotTeleOp extends LinearOpMode {
             lift();
 
             //Add any non-toggles here
+            // Debugs to show the motor position
             lift_position = mainLift.getCurrentPosition();
             telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
 
@@ -137,6 +138,7 @@ public class RobotTeleOp extends LinearOpMode {
         mainLift = hardwareMap.dcMotor.get("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        smallLift = hardwareMap.servo.get("smallLift");
 
 
         //claw = hardwareMap.servo.get("claw");
@@ -207,10 +209,10 @@ public class RobotTeleOp extends LinearOpMode {
         //right stick controls turning
 
         double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
+        double magnitude = Math.abs(y) + Math.abs(x) + Math.abs(turn_x); //total sum of all inputs
+        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
 
 
         double leftFrontPower = (y + x + turn_x) / scale;
@@ -225,10 +227,22 @@ public class RobotTeleOp extends LinearOpMode {
         rightBack.setPower(rightBackPower);
     }
 
+    /*
+    calculate power stuff
+        y = sin(angle)
+        x = cos(angle)
+    calculate count distance
+    find target postion by:
+        target position = current pos + counts * wheel power
+    set target position
+    run using encoders
+    set power
+    */
+
     //Add new methods for functionality down here
 
     //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is inbetween.
-
+    //Finds the next Lift's Target Position when going up
     protected void calculateTargetPositionUP() {
         lift_position = mainLift.getCurrentPosition();
         int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
@@ -243,7 +257,7 @@ public class RobotTeleOp extends LinearOpMode {
             mainLift.setTargetPosition(nextPosition);
     }
 
-
+    //Finds the next Lift's Target Position when going down
     protected void calculateTargetPositionDOWN() {
         lift_position = mainLift.getCurrentPosition();
         int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
