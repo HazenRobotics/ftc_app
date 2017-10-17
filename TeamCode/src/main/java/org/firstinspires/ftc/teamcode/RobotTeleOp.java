@@ -85,19 +85,7 @@ public class RobotTeleOp extends LinearOpMode {
 
             armPlusClaw();
 
-                mainLift.setPower(-(gamepad2.left_trigger));
-            }
-            else {
-                mainLift.setPower(0.0);
-            }
 
-            //Small Lift Power
-            if (gamepad2.right_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_LOWER_POS);
-            }
-            else if (gamepad2.left_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-            }
 
             //nextPosition
             /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {

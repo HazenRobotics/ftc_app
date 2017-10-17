@@ -93,6 +93,7 @@ public class MotionControl {
             rightFrontPower = DRIVE_SPEED;
             rightBackPower = DRIVE_SPEED;
         }
+        //s
         else{
             leftFrontPower = DRIVE_SPEED;
             leftBackPower = DRIVE_SPEED;
