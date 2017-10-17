@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.models;
 
 /**
  * A location or displacement in two dimensions.
- *
- * TODO: normalize the vector automatically
  */
 public class Vector {
     /**
@@ -61,10 +59,24 @@ public class Vector {
     }
 
 
-    public Vector getDelta(Vector other) {
+    /**
+     * Gets the difference between this vector and another vector.
+     * @param other The vector to be subtracted.
+     * @return The difference between the vectors.
+     */
+    public Vector delta(Vector other) {
         return new Vector(x - other.x, y - other.y);
     }
 
+    /**
+     * An alternative constructor, making a vector from polar coordinates rather than Cartesian ones.
+     * See {@link #Vector(double, double)} for the normal constructor.
+     * 
+     * This is a static function rather than a constructor because the types would conflict.
+     * @param magnitude The vector's magnitude.
+     * @param angle The vector's angle.
+     * @return A new vector constructed from polar coordinates.
+     */
     public static Vector fromPolar(double magnitude, double angle) {
         return new Vector(
                 magnitude * Math.cos(Math.toRadians(angle)),
