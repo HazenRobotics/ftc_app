@@ -6,12 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import java.util.ArrayList;
 
+import org.firstinspires.ftc.teamcode.output.Telemetry;
+
 @TeleOp(name="Toggle", group="Example")
 @Disabled
 public class ToggleExample extends LinearOpMode {
     protected ButtonManager buttons = new ButtonManager();
     protected DcMotor motor;
     protected final double MOTOR_POWER = 0.5;
+    protected final Telemetry telemetry = new Telemetry(super.telemetry);
 
     //Initializes the motor variable from the hardwareMap and sets its direction
     protected void setupHardware() {
@@ -32,10 +35,13 @@ public class ToggleExample extends LinearOpMode {
         setupHardware();
         setupButtons();
         waitForStart();
+        
+        telemetry.add("Motor Power", () -> {
+        	return String.format("%.2d", motor.getPower());
+        });
 
         while (opModeIsActive()) {
             buttons.update();
-            telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));
             telemetry.update();
         }
     }
