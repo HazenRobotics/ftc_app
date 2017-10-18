@@ -11,15 +11,15 @@ import org.firstinspires.ftc.teamcode.models.Vector;
  */
 public class MotionController implements IWheels {
     private Position currentPosition;
-    private final IWheels wheels;
+    private final IWheels internal;
 
     /**
      * This class is a decorator wrapping IWheels with more useful controls.
-     * @param wheels The actual implementation of the wheels.
+     * @param internal The actual implementation of the wheels.
      * @param startingPosition The position that the robot is currently at, to track from.
      */
-    public MotionController(IWheels wheels, Position startingPosition) {
-        this.wheels = wheels;
+    public MotionController(IWheels internal, Position startingPosition) {
+        this.internal = internal;
         this.currentPosition = startingPosition;
     }
     
@@ -36,7 +36,7 @@ public class MotionController implements IWheels {
     @Override
 	public void strafe(Vector displacement) {
     	this.currentPosition = currentPosition.add(displacement);
-		wheels.strafe(displacement);
+		internal.strafe(displacement);
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class MotionController implements IWheels {
     @Override
 	public void turn(double angle) {
     	this.currentPosition = currentPosition.rotate(angle);
-		wheels.turn(angle);
+		internal.turn(angle);
 	}
     
     ///
