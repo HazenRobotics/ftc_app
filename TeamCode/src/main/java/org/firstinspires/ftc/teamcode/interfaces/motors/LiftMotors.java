@@ -25,14 +25,24 @@ public class LiftMotors implements ILift {
     }
 
     @Override
-    public void setLiftHeight(int glyphHeightMultiplier) {
-    	if(glyphHeightMultiplier < 0 || glyphHeightMultiplier > 4)
-    		throw new IllegalArgumentException("The lift cannot go through the ground or into the sky! glyphHeight was " + glyphHeightMultiplier);
-	    // TODO: Implement this function.
-    	// Use hardwareMap.idle() for the idle function in RobotTeleOp.
-        int nextPosition = COUNT_PER_GLYPH_HEIGHT * glyphHeightMultiplier;
+    //Moves main lift to a glyph height
+    public void setLiftHeight(int targetHeight) {
+        //throws an error if glyph height is out of range {1,2,3,4}
+    	if(targetHeight < 0 || targetHeight > 4)
+    		throw new IllegalArgumentException("The lift cannot go through the ground or into the sky! glyphHeight was " + targetHeight);
+        //calculates the next position by converting target height to number of motor counts
+        int nextPosition = COUNT_PER_GLYPH_HEIGHT * targetHeight;
         liftMotor.setTargetPosition(nextPosition);
+        //sets motor speed
         liftMotor.setPower(MAIN_LIFT_SPEED);
+        //runs to position
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //idle when running to position
+        while(liftMotor.isBusy()) {
+            hardware.idle();
+        }
+        //once reached position, set power to 0 and start using encoders again
+        liftMotor.setPower(0);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
