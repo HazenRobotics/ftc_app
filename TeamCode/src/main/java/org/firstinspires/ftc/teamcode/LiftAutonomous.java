@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 @Disabled
-public class autonomous extends LinearOpMode {
+public class LiftAutonomous extends LinearOpMode {
 
     protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
@@ -60,21 +60,16 @@ public class autonomous extends LinearOpMode {
             glyphHeightMultiplier = 4;
         }
         else {
-            int nextPosition = GLYPH_HEIGHT * glyphHeightMultiplier
+            int nextPosition = (int)(GLYPH_HEIGHT * glyphHeightMultiplier);
             mainLift.setTargetPosition(nextPosition);
         }
         if (glyphHeightMultiplier < 0) {
             glyphHeightMultiplier = 0;
         }
         else {
-            int nextPosition = GLYPH_HEIGHT * glyphHeightMultiplier
+            int nextPosition = (int)(GLYPH_HEIGHT * glyphHeightMultiplier);
             mainLift.setTargetPosition(nextPosition);
         }
-
-
-
-
-
     }
     /* no needed
     public void changeMainLiftBy(double glyphHeightChange){

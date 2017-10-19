@@ -5,7 +5,6 @@ package org.firstinspires.ftc.teamcode.output;
  */
 public class Message {
 	/** The content of a {@link Message}. */
-	@FunctionalInterface
 	public static interface IMessageData {
 		/** @return The message to display. */
 		public String getMessage();
