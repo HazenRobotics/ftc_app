@@ -1,24 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
-
-/**
- * Created by Alex on 9/23/2017.
- */
+import org.firstinspires.ftc.teamcode.interfaces.IWheels;
+import org.firstinspires.ftc.teamcode.models.Position;
+import org.firstinspires.ftc.teamcode.models.Vector;
+import org.firstinspires.ftc.teamcode.output.Message;
+import org.firstinspires.ftc.teamcode.output.Telemetry;
 
 @TeleOp(name="TeleOp", group="TeleOp")
-@Disabled
 public class RobotTeleOp extends LinearOpMode {
+    protected Telemetry telemetry = new Telemetry(super.telemetry);
 
     //Add all global objects and lists
     protected ButtonManager buttons = new ButtonManager();
@@ -66,20 +65,29 @@ public class RobotTeleOp extends LinearOpMode {
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
 
+    protected MotionController wheels;
+
     @Override
     public void runOpMode() {
-
         setupHardware();
         setupButtons();
         //Add any further initialization (methods) here
 
         waitForStart();
 
+        telemetry.add("Lift Position", new Message.IMessageData() {
+            @Override
+            public String getMessage() {
+                return mainLift.toString();
+            }
+        });
+
         while (opModeIsActive()) {
+            buttons.update();
+
             lift();
 
             lift_position = mainLift.getCurrentPosition();
-            telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
 
             //Arm extension part
             //armExtension();
@@ -93,20 +101,13 @@ public class RobotTeleOp extends LinearOpMode {
     }
 
     protected void setupHardware() {
-        //Initializes the motor/servo variables here
-        /*EX:
-        motor = hardwareMap.dcMotor.get("motor");
-        motor.setDirection(DcMotor.Direction.FORWARD);*/
         mainLift = hardwareMap.dcMotor.get("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         smallLift = hardwareMap.servo.get("smallLift");
 
         claw = hardwareMap.servo.get("claw");
-        //claw = hardwareMap.dcMotor.get("claw");
         //claw.setDirection(DcMotor.Direction.FORWARD);
-        //arm = hardwareMap.dcMotor.get("arm");
-        //arm.setDirection(DcMotor.Direction.FORWARD);
         armControlServo = hardwareMap.crservo.get("armControlServo");
         armMotor = hardwareMap.dcMotor.get("armMotor");
         armMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -118,9 +119,11 @@ public class RobotTeleOp extends LinearOpMode {
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
+
+        // TODO: add IWheels implementation
+        wheels = new MotionController(null, new Position(new Vector(0, 0), 0));
     }
 
-    //claw function, run by servo
     protected void setupButtons() {
         buttons.add(new Button() {
             @Override
@@ -151,42 +154,103 @@ public class RobotTeleOp extends LinearOpMode {
                 autoMainLiftRunning = true;
             }
         });
+
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad2.right_trigger > 0 || gamepad2.left_trigger > 0;
+            }
+
+            @Override
+            public void onPress() {
+                float motor_power = gamepad2.right_trigger - gamepad2.left_trigger;
+                if((motor_power > 0 && mainLift.getCurrentPosition() >= COUNT_PER_GLYPH_HEIGHT * 4)
+                        || motor_power < 0 && mainLift.getCurrentPosition() <= 0)
+                    return;
+                mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                mainLift.setPower(motor_power);
+                autoMainLiftRunning = false;
+            }
+
+            @Override
+            public void onRelease() {
+                mainLift.setPower(0);
+            }
+        });
+
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return Math.abs(gamepad2.right_stick_x) - JOYSTICK_ERROR_RANGE > 0;
+            }
+
+            @Override
+            public void onPress() {
+                if (gamepad2.right_stick_x > 0 && claw.getPosition() < 1)
+                    claw.setPosition(claw.getPosition() + 0.1);
+                if (gamepad2.right_stick_x < 0 && claw.getPosition() <= 0)
+                    claw.setPosition(claw.getPosition() - 0.1);
+            }
+        });
+
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return armManual;
+            }
+
+            @Override
+            public void onPress() {
+                manualArmControl();
+            }
+
+            @Override
+            public void onRelease() {
+                automaticArmControl();
+            }
+        });
+
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.x;
+            }
+
+            @Override
+            public void onPress() {
+                armMotor.setPower(ARM_MOTOR_POWER);
+                armControlServo.setPower(ARM_SERVO_POWER);
+            }
+
+            @Override
+            public void onRelease() {
+                armMotor.setPower(0);
+                armControlServo.setPower(0);
+            }
+        });
+
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.y;
+            }
+
+            @Override
+            public void onPress() {
+                armMotor.setPower(-ARM_MOTOR_POWER);
+                armControlServo.setPower(-ARM_SERVO_POWER);
+            }
+
+            @Override
+            public void onRelease() {
+                armMotor.setPower(0);
+                armControlServo.setPower(0);
+            }
+        });
     }
 
-    /*
-    calculate power stuff
-        y = sin(angle)
-        x = cos(angle)
-    calculate count distance
-    find target postion by:
-        target position = current pos + counts * wheel power
-    set target position
-    run using encoders
-    set power
-    */
-
     protected void drive() {
-
-        //left stick controls movement
-        //right stick controls turning
-
-        double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
-        double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
-
-
-        double leftFrontPower = (y + x + turn_x) / scale;
-        double rightFrontPower = (y - x - turn_x) / scale;
-        double leftBackPower =(y - x + turn_x) / scale;
-        double rightBackPower = (y + x - turn_x) / scale;
-
-        //setting power for each of the 4 wheels
-        leftFront.setPower(leftFrontPower);
-        rightFront.setPower(rightFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightBack.setPower(rightBackPower);
+        wheels.move(Vector.fromPolar(gamepad1.right_stick_y, gamepad1.right_stick_x));
     }
 
     //Add new methods for functionality down here
@@ -223,131 +287,12 @@ public class RobotTeleOp extends LinearOpMode {
     }
 
     protected void lift() {
-        //Main Lift Power using Triggers
-        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0) && (mainLift.getCurrentPosition() < COUNT_PER_GLYPH_HEIGHT * 4)) {
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(gamepad2.right_trigger);
-            autoMainLiftRunning = false;
-        }
-        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0) && (mainLift.getCurrentPosition() > 0)){
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(-gamepad2.left_trigger);
-            autoMainLiftRunning = false;
-        }
-        else if (!autoMainLiftRunning){
-            mainLift.setPower(0.0);
-        }
-
+        // TODO: I don't know what this does, it may need refactoring.
         //D Pad used to control Main Lift (Added as buttons), stops here
         if(!(mainLift.isBusy() && autoMainLiftRunning)){
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(0);
             autoMainLiftRunning = false;
-        }
-
-        //Small Lift Power
-        if (gamepad2.right_bumper){
-            smallLift.setPosition(SMALL_LIFT_LOWER_POS);
-        }
-        else if (gamepad2.left_bumper){
-            smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-        }
-    }
-
-    //scissor lift arm moved by pressing up or down arrows on d-pad.
-/*    protected void armExtension() {
-        //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
-            if(gamepad2.dpad_up == true)
-                arm.setPower(ARM_POWER);
-            else if(gamepad2.dpad_up == false)
-                arm.setPower(0.0);
-            //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
-            if(gamepad2.dpad_down == true)
-                arm.setPower(-ARM_POWER);
-            else if(gamepad2.dpad_down == false)
-                arm.setPower(0.0);
-    }*/
-
-    //Back up: Claw with motor
-/*    protected void clawFunction() {
-        //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
-        if(gamepad2.y == true)
-            claw.setPower(CLAW_POWER);
-
-        else if(gamepad2.y == false)
-            claw.setPower(0.0);
-        //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
-        if(gamepad2.b == true)
-            claw.setPower(-CLAW_POWER);
-        else if(gamepad2.b == false)
-            claw.setPower(0.0);
-    }*/
-
-    //If right stick pointed forward, arm moves forward.  If right stick pointed towards back, arm moves back into robot.
-    //If right stick pointed left, claw closes.  If right stick pointed right, claw opens.  Right stick in center, no movement.
-/*    protected void armPlusClaw()
-    {
-
-        if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
-            claw.setPower(-CLAW_POWER);
-        }
-        else if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
-            claw.setPower(CLAW_POWER);
-        }
-        else {
-            claw.setPower(0);
-        }
-
-        if (gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE) {
-            arm.setPower(-ARM_POWER);
-        }
-        else if (gamepad2.right_stick_y < -JOYSTICK_ERROR_RANGE) {
-            arm.setPower(ARM_POWER);
-        }
-        else {
-            arm.setPower(0);
-        }
-    }*/
-
-    //When right joystick on the second controller is pushed to the left, claw closes.  When pushed to right, claw opens.
-    protected void claw()
-    {
-        if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
-          if (claw.getPosition() < 1) {
-              claw.setPosition(claw.getPosition()+0.1);
-          }
-        }
-        if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
-          if (claw.getPosition() > 0) {
-              claw.setPosition(claw.getPosition()-0.1);
-          }
-        }
-    }
-
-    protected void arm() {
-        if(armManual)
-            manualArmControl();
-        else
-            automaticArmControl();
-    }
-
-    //When x is pressed, arm estends.  When b is pressed, arm retracts.
-    protected void automaticArmControl()
-    {
-        if(gamepad2.x)
-        {
-            armMotor.setPower(ARM_MOTOR_POWER);
-            armControlServo.setPower(ARM_SERVO_POWER);
-        }
-        else if(gamepad2.b)
-        {
-            armMotor.setPower(-ARM_MOTOR_POWER);
-            armControlServo.setPower(-ARM_SERVO_POWER);
-        }
-        else
-        {
-            armMotor.setPower(0);
-            armControlServo.setPower(0);
         }
     }
 
