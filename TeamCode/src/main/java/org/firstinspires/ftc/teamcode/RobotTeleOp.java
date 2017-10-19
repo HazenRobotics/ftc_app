@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.input.Toggle;
 import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
 
 import java.util.ArrayList;
@@ -30,12 +32,14 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
     //Add Motors, Servos, Sensors, etc here
     //EX: protected DcMotor motor;
-    protected Servo claw;
+    //protected Servo claw;
     //protected DcMotor arm;
     protected DcMotor armMotor;
     protected CRServo armControlServo;
     boolean armManual = false;
-    //protected DcMotor claw;
+    protected DcMotor claw;
+    protected DigitalChannel limitOpen;
+    protected DigitalChannel limitClosed;
 
     //Motors for each wheel
     protected DcMotor leftFront;
@@ -59,8 +63,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
     //private final double CLAW_POSITION_TWO = 0.5;
     protected final double ARM_MOTOR_POWER = 0.4;
     protected final double ARM_SERVO_POWER = 0.4;
-    //protected final double CLAW_POWER = 0.2;
+    protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected static boolean CLAW_OPEN = true;
 
     //Lift Constants
     protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
@@ -210,6 +215,11 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
+
+        limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
+        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
+        limitOpen.setMode(DigitalChannel.Mode.INPUT);
+        limitClosed.setMode(DigitalChannel.Mode.INPUT);
     }
 
     //for arm, switches version of code running from version1 to version2 and back again
@@ -249,7 +259,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
             protected void turnOff() {claw.setPosition(CLAW_POSITION_TWO);}
             protected void debug() {telemetry.addData("Claw", "On: %b, Position: %.2f", isOn(), (isOn() ? CLAW_POSITION_ONE : CLAW_POSITION_TWO));}
         });*/
-        ToggleList.add(new Toggle() {
+
+        ToggleList.add(new Toggle())
+
+        ToggleList.add(new Toggle()) {
             //The y button on gamepad2 will trigger our toggle
             protected boolean input() {return gamepad2.y;}
             protected void turnOn() {armManual = true;}
@@ -425,15 +438,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 /*    protected void armPlusClaw()
     {
 
-        if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
-            claw.setPower(-CLAW_POWER);
-        }
-        else if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
-            claw.setPower(CLAW_POWER);
-        }
-        else {
-            claw.setPower(0);
-        }
+
 
         if (gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE) {
             arm.setPower(-ARM_POWER);
@@ -449,17 +454,32 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
     //When right joystick on the second controller is pushed to the left, claw closes.  When pushed to right, claw opens.
     protected void claw()
     {
-        if (gamepad2.right_stick_x > JOYSTICK_ERROR_RANGE) {
-          if (claw.getPosition() < 1) {
-              claw.setPosition(claw.getPosition()+0.1);
-          }
+        if(gamepad1.a) {
+            if(CLAW_OPEN) {
+                if(limitOpen.getState() == false) {
+                    claw.setPower(CLAW_POWER);
+                    telemetry.addData("clawOpenSensor" , "is not pressed.");
+                }
+                else {
+                    claw.setPower(0);
+                    telemetry.addData("clawOpenSensor" , "is pressed.");
+                }
+            }
+            else {
+                if(limitClosed.getState() == false) {
+                    claw.setPower(-CLAW_POWER);
+                    telemetry.addData("clawClosedSensor" , "is not pressed.");
+                }
+                else {
+                    claw.setPower(0);
+                    telemetry.addData("clawClosedSensor" , "is pressed.");
+                }
+            }
         }
-        if (gamepad2.right_stick_x < -JOYSTICK_ERROR_RANGE) {
-          if (claw.getPosition() > 0) {
-              claw.setPosition(claw.getPosition()-0.1);
-          }
-        }
+        telemetry.update();
     }
+
+
 
     protected void arm() {
         if(armManual)
@@ -468,7 +488,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
             automaticArmControl();
     }
 
-    //When x is pressed, arm estends.  When b is pressed, arm retracts.
+    //When x is pressed, arm extends.  When b is pressed, arm retracts.
     protected void automaticArmControl()
     {
         if(gamepad2.x)
