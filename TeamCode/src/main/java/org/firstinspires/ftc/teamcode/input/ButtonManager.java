@@ -26,10 +26,10 @@ public class ButtonManager {
 			if(isPressed != wasPressed) {
 				if(isPressed) button.onPress();
 				else button.onRelease();
+				
+				// The previous button state is now the actual current state!
+				buttonTracker.setValue(isPressed);
 			}
-			
-			// The previous button state is now the actual current state!
-			buttonTracker.setValue(isPressed);
 		}
 	}
 	
