@@ -41,7 +41,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
     //Lift Objects
     protected DcMotor mainLift;
-    protected Servo smallLift;
+    //protected Servo smallLift;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -52,7 +52,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
 
     //Lift Constants
-    protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
+    //protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
     protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
@@ -87,19 +87,14 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
             armPlusClaw();
 
-                mainLift.setPower(-(gamepad2.left_trigger));
-            }
-            else {
-                mainLift.setPower(0.0);
-            }
 
-            //Small Lift Power
+            /*//Small Lift Power
             if (gamepad2.right_bumper == true){
                 smallLift.setPosition(SMALL_LIFT_LOWER_POS);
             }
             else if (gamepad2.left_bumper == true){
                 smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-            }
+            }*/
 
             //nextPosition
             /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
@@ -140,7 +135,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
         mainLift = hardwareMap.dcMotor.get("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        smallLift = hardwareMap.servo.get("smallLift");
+        //smallLift = hardwareMap.servo.get("smallLift");
 
 
         //claw = hardwareMap.servo.get("claw");
@@ -297,13 +292,13 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
             autoMainLiftRunning = false;
         }
 
-        //Small Lift Power
+        /*//Small Lift Power
         if (gamepad2.right_bumper){
             smallLift.setPosition(SMALL_LIFT_LOWER_POS);
         }
         else if (gamepad2.left_bumper){
             smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-        }
+        }*/
     }
 
     //scissor lift arm moved by pressing up or down arrows on d-pad.
