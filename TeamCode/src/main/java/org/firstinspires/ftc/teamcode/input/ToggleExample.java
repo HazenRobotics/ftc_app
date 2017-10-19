@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import java.util.ArrayList;
 
+import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
 @TeleOp(name="Toggle", group="Example")
@@ -36,8 +37,11 @@ public class ToggleExample extends LinearOpMode {
         setupButtons();
         waitForStart();
         
-        telemetry.add("Motor Power", () -> {
-        	return String.format("%.2d", motor.getPower());
+        telemetry.add("Motor Power", new Message.IMessageData() {
+            @Override
+            public String getMessage() {
+                return String.format("%.2d", motor.getPower());
+            }
         });
 
         while (opModeIsActive()) {

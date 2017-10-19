@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.autonomous.Autonomous;
 import org.firstinspires.ftc.teamcode.autonomous.StartingPosition;
 import org.firstinspires.ftc.teamcode.autonomous.controllers.GlyphController;
 import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
-import org.firstinspires.ftc.teamcode.interfaces.DcMotor;
 import org.firstinspires.ftc.teamcode.interfaces.IArm;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.ILift;
 import org.firstinspires.ftc.teamcode.interfaces.IWheels;
 import org.firstinspires.ftc.teamcode.interfaces.motors.LiftMotors;
 import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
+import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 import org.firstinspires.ftc.teamcode.sensors.ColorSensor;
 
@@ -35,7 +36,12 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void initialize() {
 		status = "Initializing";
 		
-		telemetry.add("Status", () -> { return status; });
+		telemetry.add("Status", new Message.IMessageData() {
+			@Override
+			public String getMessage() {
+				return status;
+			}
+		});
     	telemetry.update();
 		
 		arm = null;
