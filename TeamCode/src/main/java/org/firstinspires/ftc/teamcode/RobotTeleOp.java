@@ -283,28 +283,16 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
             @Override
             public void onActivate() {
-                boolean check=true;
-                while(check) {
-                    if (!limitOpen.getState()) {
-                        claw.setPower(CLAW_POWER);
-                    } else {
-                        claw.setPower(0);
-                        check=false;
-                    }
-                }
+                claw.setPower(-CLAW_POWER);
+                while(!limitClosed.getState()) idle();
+                claw.setPower(0);
             }
 
             @Override
             public void onDeactivate() {
-                boolean check=true;
-                while(check) {
-                    if (!limitClosed.getState()) {
-                        claw.setPower(-CLAW_POWER);
-                    } else {
-                        claw.setPower(0);
-                        check=false;
-                    }
-                }
+                claw.setPower(CLAW_POWER);
+                while(!limitOpen.getState()) idle();
+                claw.setPower(0);
             }
         });
     }
