@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.IWheels;
 import org.firstinspires.ftc.teamcode.models.Vector;
 
@@ -25,19 +25,14 @@ public class MechanamMotors implements IWheels {
     protected static final double ROBOT_TURNING_CIRCUMFERENCE = Math.PI * (2 * ROBOT_RADIUS);
     protected static final double DRIVE_SPEED = 1.0;
 
-    protected IHardwareMap hardwareMap;
+    protected IHardware hardware;
 
-    public MechanamMotors(IHardwareMap hardwareMap/*, DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack*/) {
-        this.hardwareMap = hardwareMap;
-        // I can't decide what way I prefer. I just implemented HardwareMap to provide idle(). We'll see if we change it.
-       /* this.leftFront = leftFront;
-        this.rightFront = rightFront;
-        this.leftBack = leftBack;
-        this.rightBack = rightBack; */
-        this.leftFront = hardwareMap.getMotor("leftFront");
-        this.rightFront = hardwareMap.getMotor("rightFront");
-        this.leftBack = hardwareMap.getMotor("leftBack");
-        this.rightBack = hardwareMap.getMotor("rightBack");
+    public MechanamMotors(IHardware hardware) {
+        this.hardware = hardware;
+        this.leftFront = hardware.getMotor("leftFront");
+        this.rightFront = hardware.getMotor("rightFront");
+        this.leftBack = hardware.getMotor("leftBack");
+        this.rightBack = hardware.getMotor("rightBack");
     }
 
     @Override
@@ -77,7 +72,7 @@ public class MechanamMotors implements IWheels {
 
         while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //can be used to display messages on the phone through telemetry
-            hardwareMap.idle();
+            hardware.idle();
         }
 
         leftFront.setPower(0);
@@ -138,7 +133,7 @@ public class MechanamMotors implements IWheels {
 
         while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //can be used to display messages on the phone through telemetry
-            hardwareMap.idle();
+            hardware.idle();
         }
 
         leftFront.setPower(0);

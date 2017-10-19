@@ -2,17 +2,17 @@ package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.ILift;
 
 public class LiftMotors implements ILift {
 	
-	protected final IHardwareMap hardwareMap;
+	protected final IHardware hardware;
     protected final DcMotor liftMotor;
     
-    public LiftMotors(IHardwareMap hardwareMap) {
-    	this.hardwareMap = hardwareMap;
-    	liftMotor = hardwareMap.getMotor("lift");
+    public LiftMotors(IHardware hardware) {
+    	this.hardware = hardware;
+    	liftMotor = hardware.getMotor("lift");
     	liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }

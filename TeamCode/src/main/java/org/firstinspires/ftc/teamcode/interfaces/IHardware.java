@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.RobotTeleOp;
 /**
  * A way for motion implementations to access their motors.
  */
-public interface IHardwareMap {
+public interface IHardware {
     /** {@link RobotTeleOp#idle()} */
     public void idle();
     /** Gets the motor with the given name */
