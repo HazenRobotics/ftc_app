@@ -4,12 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
-
-import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.input.Button;
+import org.firstinspires.ftc.teamcode.input.ButtonManager;
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 
 /**
  * Created by Alex on 9/23/2017.
@@ -17,10 +16,10 @@ import java.util.ArrayList;
 
 @TeleOp(name="TeleOp", group="TeleOp")
 @Disabled
-public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
+public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Add all global objects and lists
-    protected ArrayList<Button> ControlList = new ArrayList<Button>();
+    protected ButtonManager buttons = new ButtonManager();
 
     //Lift Vars
     protected boolean autoMainLiftRunning = false;
@@ -66,7 +65,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
     public void runOpMode() {
 
         setupHardware();
-        setupToggleList();
+        setupButtons();
         //Add any further initialization (methods) here
 
         waitForStart();
@@ -86,7 +85,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
             //armExtension();
 
             armPlusClaw();
-
+            {
                 mainLift.setPower(-(gamepad2.left_trigger));
             }
             else {
@@ -122,7 +121,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
 
 
             if(gamepad2.dpad_up == true) {
-                DPadMoving = true
                 mainLift.setPower(nextPosition-currentPosition);
             }*/
             drive();
@@ -159,50 +157,36 @@ public class RobotTeleOp extends LinearOpMode implements IHardwareMap {
     }
 
     //claw function, run by servo
-    protected void setupToggleList() {
-        //Add any mechanics that can be controlled by a toggle here
-        //EX:
-        /*ToggleList.add(new Toggle() {
-            protected boolean input() {return gamepad1.a;}
-            protected void turnOn() {motor.setPower(MOTOR_POWER);}
-            protected void turnOff() {motor.setPower(0);}
-            protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
-        })*/
+    protected void setupButtons() {
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad2.dpad_up;
+            }
 
-
-        ControlList.add(new Button() {
-            protected boolean input() {return gamepad2.dpad_up;}
-            protected void turnOn() {
+            @Override
+            public void onPress() {
                 calculateTargetPositionUP();
                 mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;}
-            protected void debug() {}
+                autoMainLiftRunning = true;
+            }
         });
 
-        ControlList.add(new Button() {
-            protected boolean input() {return gamepad2.dpad_down;}
-            protected void turnOn() {
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad2.dpad_down;
+            }
+
+            @Override
+            public void onPress() {
                 calculateTargetPositionDOWN();
+                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(-MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;}
-            protected void debug() {}
+                autoMainLiftRunning = true;
+            }
         });
-        /*ToggleList.add(new Toggle() {
-            //The y button on gamepad1 will trigger our toggle
-            protected boolean input() {return gamepad1.y;}
-            protected void turnOn() {claw.setPosition(CLAW_POSITION_ONE);}
-            protected void turnOff() {claw.setPosition(CLAW_POSITION_TWO);}
-            protected void debug() {telemetry.addData("Claw", "On: %b, Position: %.2f", isOn(), (isOn() ? CLAW_POSITION_ONE : CLAW_POSITION_TWO));}
-        });*/
-    }
-    //
-
-    protected void toggleLogic() {
-        for(Button b: ControlList) {
-            b.logic();
-            b.debug();
-        }
     }
 
     protected void drive() {
