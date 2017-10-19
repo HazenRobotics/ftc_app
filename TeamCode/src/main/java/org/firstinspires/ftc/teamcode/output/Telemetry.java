@@ -6,7 +6,7 @@ import java.util.List;
 
 /** Handles displaying messages to the app ("telemetry"). */
 public class Telemetry {
-	private final com.qualcomm.robotcore.robocol.Telemetry internal;
+	private final org.firstinspires.ftc.robotcore.external.Telemetry internal;
 	private final List<Message> messages = new ArrayList<>();
 	private final List<SimpleEntry<Message, Long>> expiries = new ArrayList<>();
 	
@@ -14,7 +14,7 @@ public class Telemetry {
 	 * Makes a new telemetry manager wrapping the Ftc telemetry.
 	 * @param internal The actual display of this telemetry.
 	 */
-	public Telemetry(com.qualcomm.robotcore.robocol.Telemetry internal) {
+	public Telemetry(org.firstinspires.ftc.robotcore.external.Telemetry internal) {
 		this.internal = internal;
 	}
 	

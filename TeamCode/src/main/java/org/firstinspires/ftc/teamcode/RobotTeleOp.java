@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.input.Button;
+import org.firstinspires.ftc.teamcode.input.ButtonManager;
 
 /**
  * Created by Alex on 9/23/2017.
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 public class RobotTeleOp extends LinearOpMode {
 
     //Add all global objects and lists
-    protected ArrayList<Button> ControlList = new ArrayList<Button>();
+    protected ButtonManager buttons = new ButtonManager();
 
     //Lift Vars
     protected boolean autoMainLiftRunning = false;
@@ -33,14 +35,7 @@ public class RobotTeleOp extends LinearOpMode {
     protected DcMotor armMotor;
     protected CRServo armControlServo;
     boolean armManual = false;
-    //protected DcMotor claw;
-
-    //Motors for each wheel
-    protected DcMotor leftFront;
-    protected DcMotor rightFront;
-    protected DcMotor leftBack;
-    protected DcMotor rightBack;
-
+    //
     //Motors for each wheel
     protected DcMotor leftFront;
     protected DcMotor rightFront;
@@ -75,19 +70,14 @@ public class RobotTeleOp extends LinearOpMode {
     public void runOpMode() {
 
         setupHardware();
-        setupToggleList();
+        setupButtons();
         //Add any further initialization (methods) here
 
         waitForStart();
 
         while (opModeIsActive()) {
-            //toggleLogic();
-            //clawFunction();
-
             lift();
 
-            //Add any non-toggles here
-            // Debugs to show the motor position
             lift_position = mainLift.getCurrentPosition();
             telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
 
@@ -95,72 +85,6 @@ public class RobotTeleOp extends LinearOpMode {
             //armExtension();
 
             claw();
-            toggleLogic();
-
-            //nextPosition
-            /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphOne;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphTwo;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphThree;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphFour;
-            }
-
-            //D Pad used to control Main Lift
-            if((gamepad2.dpad_up == false) && (gamepad2.dpad_down == false)) {
-                DPadMoving = false;
-            }
-
-
-            if(gamepad2.dpad_up == true) {
-                DPadMoving = true
-                mainLift.setPower(nextPosition-currentPosition);
-            }*/
-            drive();
-
-                mainLift.setPower(-(gamepad2.left_trigger));
-            }
-            else {
-                mainLift.setPower(0.0);
-            }
-
-            //Small Lift Power
-            if (gamepad2.right_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_LOWER_POS);
-            }
-            else if (gamepad2.left_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-            }
-
-            //nextPosition
-            /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphOne;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphTwo;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphThree;
-            }
-            else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
-                nextPosition = glyphFour;
-            }
-
-            //D Pad used to control Main Lift
-            if((gamepad2.dpad_up == false) && (gamepad2.dpad_down == false)) {
-                DPadMoving = false;
-            }
-
-
-            if(gamepad2.dpad_up == true) {
-                DPadMoving = true
-                mainLift.setPower(nextPosition-currentPosition);
-            }*/
             drive();
 
             telemetry.update();
@@ -178,13 +102,6 @@ public class RobotTeleOp extends LinearOpMode {
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         smallLift = hardwareMap.servo.get("smallLift");
 
-
-        //claw = hardwareMap.servo.get("claw");
-        claw = hardwareMap.dcMotor.get("claw");
-        claw.setDirection(DcMotor.Direction.FORWARD);
-        arm = hardwareMap.dcMotor.get("arm");
-        arm.setDirection(DcMotor.Direction.FORWARD);
-
         claw = hardwareMap.servo.get("claw");
         //claw = hardwareMap.dcMotor.get("claw");
         //claw.setDirection(DcMotor.Direction.FORWARD);
@@ -201,91 +118,39 @@ public class RobotTeleOp extends LinearOpMode {
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
-        leftBack = hardwareMap.dcMotor.get("leftBack");
-        rightBack = hardwareMap.dcMotor.get("rightBack");
-
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
     }
 
-    //for arm, switches version of code running from version1 to version2 and back again
-    protected void setupToggleList() {
-        //Add any mechanics that can be controlled by a toggle here
-        //EX:
-        /*ToggleList.add(new Toggle() {
-            protected boolean input() {return gamepad1.a;}
-            protected void turnOn() {motor.setPower(MOTOR_POWER);}
-            protected void turnOff() {motor.setPower(0);}
-            protected void debug() {telemetry.addData("Motor", "On: %b, Power: %.2f", isOn(), (isOn() ? MOTOR_POWER : 0.0));}
-        })*/
+    //claw function, run by servo
+    protected void setupButtons() {
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad2.dpad_up;
+            }
 
-
-        ControlList.add(new Button() {
-            protected boolean input() {return gamepad2.dpad_up;}
-            protected void turnOn() {
+            @Override
+            public void onPress() {
                 calculateTargetPositionUP();
                 mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;}
-            protected void debug() {}
+                autoMainLiftRunning = true;
+            }
         });
 
-        ControlList.add(new Button() {
-            protected boolean input() {return gamepad2.dpad_down;}
-            protected void turnOn() {
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad2.dpad_down;
+            }
+
+            @Override
+            public void onPress() {
                 calculateTargetPositionDOWN();
+                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 mainLift.setPower(-MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;}
-            protected void debug() {}
+                autoMainLiftRunning = true;
+            }
         });
-        /*ToggleList.add(new Toggle() {
-            //The y button on gamepad1 will trigger our toggle
-            protected boolean input() {return gamepad1.y;}
-            protected void turnOn() {claw.setPosition(CLAW_POSITION_ONE);}
-            protected void turnOff() {claw.setPosition(CLAW_POSITION_TWO);}
-            protected void debug() {telemetry.addData("Claw", "On: %b, Position: %.2f", isOn(), (isOn() ? CLAW_POSITION_ONE : CLAW_POSITION_TWO));}
-        });*/
-        ToggleList.add(new Toggle() {
-            //The y button on gamepad2 will trigger our toggle
-            protected boolean input() {return gamepad2.y;}
-            protected void turnOn() {armManual = true;}
-            protected void turnOff() {armManual = false;}
-            protected void debug() {telemetry.addData("Arm Version", (isOn() ? "manual" : "automatic"));}
-        });
-    }
-    //
-
-    protected void toggleLogic() {
-        for(Button b: ControlList) {
-            b.logic();
-            b.debug();
-        }
-    }
-
-    protected void drive() {
-
-        //left stick controls movement
-        //right stick controls turning
-
-        double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
-        double magnitude = Math.abs(y) + Math.abs(x) + Math.abs(turn_x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
-
-
-        double leftFrontPower = (y + x + turn_x) / scale;
-        double rightFrontPower = (y - x - turn_x) / scale;
-        double leftBackPower =(y - x + turn_x) / scale;
-        double rightBackPower = (y + x - turn_x) / scale;
-
-        //setting power for each of the 4 wheels
-        leftFront.setPower(leftFrontPower);
-        rightFront.setPower(rightFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightBack.setPower(rightBackPower);
     }
 
     /*
