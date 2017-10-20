@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 /**
  * Created by davegoldy on 4/8/17.
  */
-@Autonomous(button = "Drive Straight", group = "Autonomous")
+@Autonomous(name = "Drive Straight", group = "Autonomous")
 public class DriveStraight extends LinearOpMode
 {
     private DcMotor fRightMotor;

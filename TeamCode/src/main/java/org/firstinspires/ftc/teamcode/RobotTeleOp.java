@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.models.Vector;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
-@TeleOp(button="TeleOp", group="TeleOp")
+@TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends OpMode {
     protected Telemetry telemetry = new Telemetry(super.telemetry);
     protected ButtonManager buttons = new ButtonManager();
