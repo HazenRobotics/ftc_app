@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.input.gamepad.values;
 
-/** Crappy hack. Forgive me. */
+/** Crappy hack so I can write the function {@link org.firstinspires.ftc.teamcode.input.ButtonManager#makeFieldGetter}. Forgive me. */
 public class GamepadJoystickGetter implements IGamepadJoystick {
 	private final IValueGetter<Float> internalX;
 	private final IValueGetter<Float> internalY;

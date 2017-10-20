@@ -80,7 +80,15 @@ public class RobotTeleOp extends OpMode {
         telemetry.update();
     }
     
-    /** This is probably a bit excessive. I can roll it back if you want. */
+    /**
+     * This is probably just excessive, and I'd totally roll it back if you want.<br />
+     * <br />
+     * It just lets us reduce leftFront = hardwareMap.dcMotor.get("leftFront");<br />
+     * which I reduced to leftFront = getDcMotor("leftFront"); which is probably good enough,<br />
+     * to initialize("leftFront");<br />
+     * <br />
+     * at the cost of being complex and breaking editor automatic variable rename.
+     */
     private void initialize(String name) {
     	Field field =  getClass().getDeclaredField(name);
     	String getterName = "get" + field.getType().getSimpleName();
@@ -89,7 +97,7 @@ public class RobotTeleOp extends OpMode {
     }
 
     protected void setupHardware() {
-    	initialize("mainLift");
+    	initialize("lift");
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         initialize("smallLift");
@@ -217,7 +225,7 @@ public class RobotTeleOp extends OpMode {
     }
 
     @JoystickListener(joystick = "wheels")
-    protected void drive(float x, float y) {
+    protected void withWheels(float x, float y) {
         wheels.move(Vector.fromPolar(x, y));
     }
     

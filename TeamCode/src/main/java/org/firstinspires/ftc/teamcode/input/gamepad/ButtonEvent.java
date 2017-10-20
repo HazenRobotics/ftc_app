@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.input.gamepad;
 
+/** A button can be pressed or released. */
 public enum ButtonEvent {
-	PRESS, RELEASE;
+	/** When a button is pressed. */
+	PRESS,
+	/** When a button is released. */
+	RELEASE;
 }
