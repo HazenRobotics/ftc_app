@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.input.gamepad.IJoystickAction;
 import org.firstinspires.ftc.teamcode.input.gamepad.ILinearAction;
 import org.firstinspires.ftc.teamcode.input.gamepad.JoystickDimension;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListener;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickLinearListener;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickListener;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.LinearListener;
 import org.firstinspires.ftc.teamcode.input.gamepad.values.GamepadButtonGetter;
@@ -62,10 +61,6 @@ public class ButtonManager {
 	private Map<String, IGamepadJoystick> joysticks = new HashMap<>();
 	private Map<String, List<IJoystickAction>> joystickValueActions = new HashMap<>();
 	private Map<String, List<IButtonAction>> joystickReleaseActions = new HashMap<>();
-	private Map<String, List<ILinearAction>> joystickXValueActions = new HashMap<>();
-	private Map<String, List<IButtonAction>> joystickXReleaseActions = new HashMap<>();
-	private Map<String, List<ILinearAction>> joystickYValueActions = new HashMap<>();
-	private Map<String, List<IButtonAction>> joystickYReleaseActions = new HashMap<>();
 	
 	private Map<String, ILinearValue> linears = new HashMap<>();
 	private Map<String, List<ILinearAction>> linearValueActions;
@@ -297,36 +292,21 @@ public class ButtonManager {
 	 */
 	public void registerJoystick(String name, IGamepadJoystick joystick) {
 		joysticks.put(name, joystick);
-		joystickXValueActions.put(name, new ArrayList<>());
-		joystickXReleaseActions.put(name, new ArrayList<>());
-		joystickYValueActions.put(name, new ArrayList<>());
-		joystickYReleaseActions.put(name, new ArrayList<>());
-
-		add(new Button() {
-			@Override
-			public boolean isInputPressed() {
-				return isJoystickActive(joystick, JoystickDimension.X);
-			}
-			
-			@Override
-			public void onRelease() {
-				for(IButtonAction action : joystickXReleaseActions.get(name))
-					action.act();
-			}
-		});
-		
-		add(new Button() {
-			@Override
-			public boolean isInputPressed() {
-				return isJoystickActive(joystick, JoystickDimension.Y);
-			}
-			
-			@Override
-			public void onRelease() {
-				for(IButtonAction action : joystickYReleaseActions.get(name))
-					action.act();
-			}
-		});
+		joystickValueActions.put(name, new ArrayList<>());
+		joystickReleaseActions.put(name, new ArrayList<>());
+	}
+	
+	/**
+	 * Registers a joystick for tracking with aliases for each linear component.
+	 * @param name The name of the joystick
+	 * @param value The tracker for the joystick's value
+	 */
+	public void registerJoystickWithAliases(String name, IGamepadJoystick joystick) {
+		joysticks.put(name, joystick);
+		joystickValueActions.put(name, new ArrayList<>());
+		joystickReleaseActions.put(name, new ArrayList<>());
+		registerJoystickLinearAlias(name, name + "X", JoystickDimension.X);
+		registerJoystickLinearAlias(name, name + "Y", JoystickDimension.Y);
 	}
 	
 	/**
@@ -364,10 +344,25 @@ public class ButtonManager {
 	 * @param variable The dimension of the joystick to alias
 	 */
 	public void registerJoystickLinearAlias(String joystick, String alias, JoystickDimension variable) {
-		registerLinear(alias, new ILinearValue() {
+		linears.put(alias, new ILinearValue() {
 			@Override
 			public float getValue() {
-				return getAdjustedJoystickPosition(joystick, variable);
+				return getJoystickPosition(joystick, variable);
+			}
+		});
+		linearValueActions.put(alias, new ArrayList<>());
+		linearReleaseActions.put(alias, new ArrayList<>());
+		
+		add(new Button() {
+			@Override
+			public boolean isInputPressed() {
+				return isJoystickActive(joystick, JoystickDimension.X);
+			}
+			
+			@Override
+			public void onRelease() {
+				for(IButtonAction action : linearReleaseActions.get(alias))
+					action.act();
 			}
 		});
 	}
@@ -403,44 +398,6 @@ public class ButtonManager {
 		}
 	}
 	
-	/** Gets the appropriate joystick_ValueActions depending upon the dimension you want. */
-	private Map<String, List<ILinearAction>> getJoystickLinearActions(JoystickDimension variable)
-	{
-		if(variable == JoystickDimension.X) 
-			return joystickXValueActions;
-		return joystickYValueActions;
-	}
-	
-	/** Gets the appropriate joystick_ReleaseActions depending upon the dimension you want. */
-	private Map<String, List<IButtonAction>> getJoystickLinearReleaseActions(JoystickDimension variable)
-	{
-		if(variable == JoystickDimension.X) 
-			return joystickXReleaseActions;
-		return joystickYReleaseActions;
-	}
-	
-	/** Gets the appropriate joystick_ValueActions for a specific joystick depending upon the dimension you want. */
-	private List<ILinearAction> getJoystickLinearActions(String joystick, JoystickDimension variable)
-	{
-		getJoystickLinearActions(variable).get(joystick);
-		if(variable == JoystickDimension.X) 
-			return joystickXValueActions.get(joystick);
-		return joystickYValueActions.get(joystick);
-	}
-	
-	/** Gets the appropriate joystick_ReleaseActions for a specific joystick depending upon the dimension you want. */
-	private List<IButtonAction> getJoystickLinearReleaseActions(String joystick, JoystickDimension variable)
-	{
-		return getJoystickLinearReleaseActions(variable).get(joystick);
-	}
-	
-	/** Runs the the joystick's linear actions. */
-	private void runLinearActions(String joystick, JoystickDimension variable) {
-		for(ILinearAction action : getJoystickLinearActions(joystick, variable)) {
-			action.act(getJoystickPosition(joystick, variable));
-		}
-	}
-	
 	/** Runs the joystick's normal actions. */
 	private void runJoystickActions(String joystick) {
 		for(IJoystickAction action : joystickValueActions.get(joystick)) {
@@ -456,10 +413,6 @@ public class ButtonManager {
 		for(String joystick : joysticks.keySet()) {
 			if(isJoystickActive(joystick)) {
 				runJoystickActions(joystick);
-				if(isJoystickActive(joystick, JoystickDimension.X))
-					runLinearActions(joystick, JoystickDimension.X);
-				if(isJoystickActive(joystick, JoystickDimension.Y))
-					runLinearActions(joystick, JoystickDimension.Y);
 			}
 		}
 	}
@@ -546,17 +499,6 @@ public class ButtonManager {
 						&& method.getParameterTypes()[0].equals(float.class)) {
 					ILinearAction action = makeLinearAction(method, object);
 					linearValueActions.get(annotation.name()).add(action);
-				} else throw new RuntimeException("Invalid parameters for a joystick listener!");
-			}
-			
-			for(JoystickLinearListener annotation : method.getDeclaredAnnotationsByType(JoystickLinearListener.class)) {
-				if(method.getParameterCount() == 0) {
-					IButtonAction action = makeButtonAction(method, object);
-					getJoystickLinearReleaseActions(annotation.variable()).get(annotation.joystick()).add(action);
-				} else if(method.getParameterCount() == 1
-						&& method.getParameterTypes()[0].equals(float.class)) {
-					ILinearAction action = makeLinearAction(method, object);
-					getJoystickLinearActions(annotation.variable()).get(annotation.joystick()).add(action);
 				} else throw new RuntimeException("Invalid parameters for a joystick listener!");
 			}
 			
