@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
-@TeleOp(name="Toggle", group="Example")
+@TeleOp(button="Toggle", group="Example")
 @Disabled
 public class ToggleExample extends LinearOpMode {
     protected ButtonManager buttons = new ButtonManager();

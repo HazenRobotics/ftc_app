@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 /**
  * Created by davegoldy on 4/3/17.
  */
-@Autonomous(name = "Autonomous", group = "Autonomous")
+@Autonomous(button = "Autonomous", group = "Autonomous")
 public class ProgramControl extends LinearOpMode
 {
     private DcMotor fRightMotor;

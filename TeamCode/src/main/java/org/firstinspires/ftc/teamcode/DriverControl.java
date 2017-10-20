@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
  * Created by davegoldy on 4/3/17.
  */
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(button = "TeleOp", group = "TeleOp")
 @Disabled
 public class DriverControl extends LinearOpMode
 {

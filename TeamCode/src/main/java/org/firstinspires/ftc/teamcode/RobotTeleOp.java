@@ -1,49 +1,49 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.lang.reflect.Field;
+
 import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
+import org.firstinspires.ftc.teamcode.input.gamepad.ButtonEvent;
+import org.firstinspires.ftc.teamcode.input.gamepad.JoystickDimension;
+import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListener;
+import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickLinearListener;
+import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickListener;
+import org.firstinspires.ftc.teamcode.input.gamepad.annotations.LinearListener;
+import org.firstinspires.ftc.teamcode.input.gamepad.values.IGamepadButton;
+import org.firstinspires.ftc.teamcode.input.gamepad.values.IGamepadJoystick;
+import org.firstinspires.ftc.teamcode.input.gamepad.values.ILinearValue;
 import org.firstinspires.ftc.teamcode.interfaces.IWheels;
 import org.firstinspires.ftc.teamcode.models.Position;
 import org.firstinspires.ftc.teamcode.models.Vector;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
-@TeleOp(name="TeleOp", group="TeleOp")
-public class RobotTeleOp extends LinearOpMode {
+@TeleOp(button="TeleOp", group="TeleOp")
+public class RobotTeleOp extends OpMode {
     protected Telemetry telemetry = new Telemetry(super.telemetry);
-
-    //Add all global objects and lists
     protected ButtonManager buttons = new ButtonManager();
 
-    //Lift Vars
-    protected boolean autoMainLiftRunning = false;
-    protected int lift_position;
-
-
-    //Add Motors, Servos, Sensors, etc here
-    //EX: protected DcMotor motor;
+    // The arm components
     protected Servo claw;
-    //protected DcMotor arm;
     protected DcMotor armMotor;
     protected CRServo armControlServo;
-    boolean armManual = false;
-    //
-    //Motors for each wheel
+
+    // Motors for each wheel
     protected DcMotor leftFront;
     protected DcMotor rightFront;
     protected DcMotor leftBack;
     protected DcMotor rightBack;
 
-    //Lift Objects
-    protected DcMotor mainLift;
-    protected Servo smallLift;
+    // The lift motor
+    protected DcMotor lift;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -66,257 +66,170 @@ public class RobotTeleOp extends LinearOpMode {
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
 
     protected MotionController wheels;
-
+    
     @Override
-    public void runOpMode() {
-        setupHardware();
+    public void init() {
+    	setupHardware();
+        setupTelemetry();
         setupButtons();
-        //Add any further initialization (methods) here
-
-        waitForStart();
-
-        telemetry.add("Lift Position", new Message.IMessageData() {
-            @Override
-            public String getMessage() {
-                return mainLift.toString();
-            }
-        });
-
-        while (opModeIsActive()) {
-            buttons.update();
-
-            lift();
-
-            lift_position = mainLift.getCurrentPosition();
-
-            //Arm extension part
-            //armExtension();
-
-            claw();
-            drive();
-
-            telemetry.update();
-            idle();
-        }
+    }
+    
+    @Override
+    public void loop() {
+    	buttons.update();
+        telemetry.update();
+    }
+    
+    /** This is probably a bit excessive. I can roll it back if you want. */
+    private void initialize(String name) {
+    	Field field =  getClass().getDeclaredField(name);
+    	String getterName = "get" + field.getType().getSimpleName();
+    	Object value = getClass().getMethod(getterName).invoke(this, name);
+    	field.set(this, value);
     }
 
     protected void setupHardware() {
-        mainLift = hardwareMap.dcMotor.get("mainLift");
-        mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        smallLift = hardwareMap.servo.get("smallLift");
+    	initialize("mainLift");
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        initialize("smallLift");
 
-        claw = hardwareMap.servo.get("claw");
-        //claw.setDirection(DcMotor.Direction.FORWARD);
-        armControlServo = hardwareMap.crservo.get("armControlServo");
-        armMotor = hardwareMap.dcMotor.get("armMotor");
+        initialize("claw");
+        initialize("armControlServo");
+        initialize("armMotor");
         armMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
-        leftBack = hardwareMap.dcMotor.get("leftBack");
-        rightBack = hardwareMap.dcMotor.get("rightBack");
-
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        initialize("leftFront");
+        initialize("rightFront");
+        initialize("leftBack");
+        initialize("rightBack");
 
         // TODO: add IWheels implementation
         wheels = new MotionController(null, new Position(new Vector(0, 0), 0));
     }
-
+    
+    protected void setupTelemetry() {
+    	telemetry.add("Lift Position", new Message.IMessageData() {
+            @Override
+            public String getMessage() {
+                return lift.toString();
+            }
+        });
+    }
+    
     protected void setupButtons() {
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.dpad_up;
-            }
-
-            @Override
-            public void onPress() {
-                calculateTargetPositionUP();
-                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                mainLift.setPower(MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.dpad_down;
-            }
-
-            @Override
-            public void onPress() {
-                calculateTargetPositionDOWN();
-                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                mainLift.setPower(-MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.right_trigger > 0 || gamepad2.left_trigger > 0;
-            }
-
-            @Override
-            public void onPress() {
-                float motor_power = gamepad2.right_trigger - gamepad2.left_trigger;
-                if((motor_power > 0 && mainLift.getCurrentPosition() >= COUNT_PER_GLYPH_HEIGHT * 4)
-                        || motor_power < 0 && mainLift.getCurrentPosition() <= 0)
-                    return;
-                mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                mainLift.setPower(motor_power);
-                autoMainLiftRunning = false;
-            }
-
-            @Override
-            public void onRelease() {
-                mainLift.setPower(0);
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return Math.abs(gamepad2.right_stick_x) - JOYSTICK_ERROR_RANGE > 0;
-            }
-
-            @Override
-            public void onPress() {
-                if (gamepad2.right_stick_x > 0 && claw.getPosition() < 1)
-                    claw.setPosition(claw.getPosition() + 0.1);
-                if (gamepad2.right_stick_x < 0 && claw.getPosition() <= 0)
-                    claw.setPosition(claw.getPosition() - 0.1);
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return armManual;
-            }
-
-            @Override
-            public void onPress() {
-                manualArmControl();
-            }
-
-            @Override
-            public void onRelease() {
-                automaticArmControl();
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad1.x;
-            }
-
-            @Override
-            public void onPress() {
-                armMotor.setPower(ARM_MOTOR_POWER);
-                armControlServo.setPower(ARM_SERVO_POWER);
-            }
-
-            @Override
-            public void onRelease() {
-                armMotor.setPower(0);
-                armControlServo.setPower(0);
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad1.y;
-            }
-
-            @Override
-            public void onPress() {
-                armMotor.setPower(-ARM_MOTOR_POWER);
-                armControlServo.setPower(-ARM_SERVO_POWER);
-            }
-
-            @Override
-            public void onRelease() {
-                armMotor.setPower(0);
-                armControlServo.setPower(0);
-            }
-        });
+    	buttons.registerButton("liftUp", gamepad2, "dpad_up");
+    	buttons.registerButton("liftDown", gamepad2, "dpad_down");
+    	buttons.registerButton("liftBusy", new IGamepadButton() {
+			@Override
+			public boolean isPressed() {
+				return lift.isBusy();
+			}
+    	});
+    	// TODO: WARNING: THIS (potentially) CONFLICTS WITH THE ABOVE
+    	// Either disable one, make a variable to track which one to use, or suffer potential conflicts.
+    	buttons.registerLinear("liftPower", new ILinearValue() {
+			@Override
+			public float getValue() {
+				return gamepad2.right_trigger - gamepad2.left_trigger;
+			}
+    	});
+    	
+    	buttons.registerJoystick("gamepad2RightStick", gamepad2, "right_stick");
+    	buttons.registerJoystickLinearAlias("gamepad2RightStick", "claw", JoystickDimension.X);
+    	
+    	buttons.registerButton("armUp", gamepad1, "x");
+    	buttons.registerButton("armDown", gamepad1, "y");
+    	
+    	buttons.registerJoystick("wheels", gamepad1, "right_stick");
+    	
+    	buttons.registerListeners(this);
+    }
+    
+    private int getGlyphRow() {
+    	return lift.getCurrentPosition() / COUNT_PER_GLYPH_HEIGHT;
+    }
+    
+    @ButtonListener(button = "liftUp")
+    public void onLiftUpPress() {
+    	int nextPosition = Math.max(getGlyphRow() + 1, 3);
+    	lift.setTargetPosition(nextPosition * COUNT_PER_GLYPH_HEIGHT);
+    	lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setPower(MAIN_LIFT_SPEED);
+    }
+    
+    @ButtonListener(button = "liftDown")
+    public void onLiftDownPress() {
+    	int nextPosition = Math.max(getGlyphRow() - 1, 0);
+		lift.setTargetPosition(nextPosition * COUNT_PER_GLYPH_HEIGHT);
+		lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+	    lift.setPower(-MAIN_LIFT_SPEED);
+    }
+    
+    @LinearListener(name = "liftPower")
+    public void withLiftPower(float motor_power) {
+        if((motor_power > 0 && lift.getCurrentPosition() >= COUNT_PER_GLYPH_HEIGHT * 4)
+                || motor_power < 0 && lift.getCurrentPosition() <= 0)
+            return;
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setPower(motor_power);
+        autoMainLiftRunning = false;
+    }
+    
+    @LinearListener(name = "liftPower")
+    public void onLiftPowerRelease() {
+    	lift.setPower(0);
+    }
+    
+    @ButtonListener(button = "liftBusy", event = ButtonEvent.RELEASE)
+    public void onLiftUnbusy() {
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setPower(0);
+    }
+    
+    @LinearListener(name = "claw")
+    public void withClawPower(float claw) {
+    	int clawDirection = Math.signum(claw);
+    	float clawDisplacement = clawDirection * 0.1;
+    	float nextPosition = claw.getPosition() + clawDisplacement;
+    	if ((clawDirection > 0 && claw.getPosition() < 1)
+    			|| (clawDirection < 0 && claw.getPosition() <= 0))
+            claw.setPosition(nextPosition);
+    }
+    
+    @ButtonListener(button = "armUp")
+    public void onArmUp() {
+    	armMotor.setPower(ARM_MOTOR_POWER);
+        armControlServo.setPower(ARM_SERVO_POWER);
+    }
+    
+    @ButtonListener(button = "armDown")
+    public void onArmDown() {
+    	armMotor.setPower(-ARM_MOTOR_POWER);
+        armControlServo.setPower(-ARM_SERVO_POWER);
+    }
+    
+    @ButtonListener(button = "armUp", event = ButtonEvent.RELEASE)
+    @ButtonListener(button = "armDown", event = ButtonEvent.RELEASE)
+    public void onArmRelease() {
+    	armMotor.setPower(0);
+        armControlServo.setPower(0);
     }
 
-    protected void drive() {
-        wheels.move(Vector.fromPolar(gamepad1.right_stick_y, gamepad1.right_stick_x));
+    @JoystickListener(joystick = "wheels")
+    protected void drive(float x, float y) {
+        wheels.move(Vector.fromPolar(x, y));
     }
-
-    //Add new methods for functionality down here
-
-    //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is inbetween.
-    //Finds the next Lift's Target Position when going up
-    protected void calculateTargetPositionUP() {
-        lift_position = mainLift.getCurrentPosition();
-        int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
-
-        int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
-        int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
-
-        int nextPosition = COUNT_PER_GLYPH_HEIGHT * (glyphRow + (errorUnder < MAIN_LIFT_ERROR_RANGE ? 2 : 1));
-        if (nextPosition > COUNT_PER_GLYPH_HEIGHT * 4)
-            mainLift.setTargetPosition(COUNT_PER_GLYPH_HEIGHT * 4);
-        else
-            mainLift.setTargetPosition(nextPosition);
+    
+    public DcMotor getDcMotor(String name) {
+    	return hardwareMap.dcMotor.get(name);
     }
-
-    //Finds the next Lift's Target Position when going down
-    protected void calculateTargetPositionDOWN() {
-        lift_position = mainLift.getCurrentPosition();
-        int glyphRow = lift_position / COUNT_PER_GLYPH_HEIGHT;
-
-        int errorOver = lift_position % COUNT_PER_GLYPH_HEIGHT;
-        //int errorUnder = COUNT_PER_GLYPH_HEIGHT - errorOver;
-
-        int nextPosition = COUNT_PER_GLYPH_HEIGHT * (glyphRow - (errorOver < MAIN_LIFT_ERROR_RANGE ? 1 : 0));
-        if (nextPosition < 0 )
-            mainLift.setTargetPosition(0);
-        else
-            mainLift.setTargetPosition(nextPosition);
+    
+    public Servo getServo(String name) {
+    	return hardwareMap.servo.get(name);
     }
-
-    protected void lift() {
-        // TODO: I don't know what this does, it may need refactoring.
-        //D Pad used to control Main Lift (Added as buttons), stops here
-        if(!(mainLift.isBusy() && autoMainLiftRunning)){
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(0);
-            autoMainLiftRunning = false;
-        }
-    }
-
-    //The second driver controls how fast both the continuous servo and motor runs.  Extends and retracts arm.
-    //left stick = continuous servo.
-    //right stick = motor
-    //Forward = extend, backwards = retract
-    protected void manualArmControl()
-    {
-        if(gamepad2.left_stick_y>JOYSTICK_ERROR_RANGE || gamepad2.left_stick_y<-JOYSTICK_ERROR_RANGE)
-        {
-            armControlServo.setPower(gamepad2.left_stick_x);
-        }
-        else
-        {
-            armControlServo.setPower(0);
-        }
-        if(gamepad2.right_stick_y>JOYSTICK_ERROR_RANGE || gamepad2.right_stick_y<-JOYSTICK_ERROR_RANGE)
-        {
-            armMotor.setPower(gamepad2.right_stick_y);
-        }
-        else
-        {
-            armMotor.setPower(0);
-        }
+    
+    public CRServo getCRServo(String name) {
+    	return hardwareMap.crservo.get(name);
     }
 }
