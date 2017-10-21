@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 /**
  * Created by Alex on 9/23/2017.
  */
-
+@Disabled
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
 
@@ -50,6 +51,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Lift Objects
     protected DcMotor mainLift;
+    protected Servo scoop;
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -67,6 +69,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
+    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Corrcect Sccop Down Position
+    protected static final double SCOOP_UP_POS = 1.0; //Insert Corrdct Sccop Up Positon
+
 
     @Override
     public void runOpMode() {
@@ -101,6 +106,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         mainLift = getMotor("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        scoop = hardwareMap.servo.get("scoopServo");
         claw = getMotor("claw");
         claw.setDirection(DcMotor.Direction.FORWARD);
         armControlServo = hardwareMap.crservo.get("armControlServo");
@@ -284,6 +290,12 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             mainLift.setPower(0);
             autoMainLiftRunning = false;
         }
+        //Right and Left Bumpers Control The Sccop
+        if(gamepad2.right_bumper)
+            scoop.setPosition(SCOOP_UP_POS);
+
+        if(gamepad2.left_bumper)
+            scoop.setPosition(SCOOP_DOWN_POS);
 
         // Debugs to show the motor position
         lift_position = mainLift.getCurrentPosition();
@@ -307,7 +319,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             armMotor.setPower(ARM_MOTOR_POWER);
             armControlServo.setPower(ARM_SERVO_POWER);
         }
-        else if(gamepad2.b)
+        else if(gamepad2.y)
         {
             armMotor.setPower(-ARM_MOTOR_POWER);
             armControlServo.setPower(-ARM_SERVO_POWER);
