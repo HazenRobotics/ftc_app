@@ -14,7 +14,6 @@ import java.util.ArrayList;
  */
 
 @TeleOp(name="TeleOp", group="TeleOp")
-@Disabled
 public class RobotTeleOp extends LinearOpMode {
 
     //Add all global objects and lists
