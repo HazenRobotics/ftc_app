@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.input.gamepad.ButtonEvent;
 import org.firstinspires.ftc.teamcode.input.gamepad.JoystickDimension;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListener;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickLinearListener;
+import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListeners;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickListener;
 import org.firstinspires.ftc.teamcode.input.gamepad.annotations.LinearListener;
 import org.firstinspires.ftc.teamcode.input.gamepad.values.IGamepadButton;
@@ -90,10 +90,14 @@ public class RobotTeleOp extends OpMode {
      * at the cost of being complex and breaking editor automatic variable rename.
      */
     private void initialize(String name) {
-    	Field field =  getClass().getDeclaredField(name);
-    	String getterName = "get" + field.getType().getSimpleName();
-    	Object value = getClass().getMethod(getterName).invoke(this, name);
-    	field.set(this, value);
+        try {
+            Field field = getClass().getDeclaredField(name);
+            String getterName = "get" + field.getType().getSimpleName();
+            Object value = getClass().getMethod(getterName).invoke(this, name);
+            field.set(this, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void setupHardware() {
@@ -181,7 +185,6 @@ public class RobotTeleOp extends OpMode {
             return;
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.setPower(motor_power);
-        autoMainLiftRunning = false;
     }
     
     @LinearListener(name = "liftPower")
@@ -196,10 +199,10 @@ public class RobotTeleOp extends OpMode {
     }
     
     @LinearListener(name = "claw")
-    public void withClawPower(float claw) {
-    	int clawDirection = Math.signum(claw);
-    	float clawDisplacement = clawDirection * 0.1;
-    	float nextPosition = claw.getPosition() + clawDisplacement;
+    public void withClawPower(float clawInput) {
+    	float clawDirection = Math.signum(clawInput);
+    	float clawDisplacement = clawDirection * 0.1f;
+    	double nextPosition = claw.getPosition() + clawDisplacement;
     	if ((clawDirection > 0 && claw.getPosition() < 1)
     			|| (clawDirection < 0 && claw.getPosition() <= 0))
             claw.setPosition(nextPosition);
@@ -216,9 +219,11 @@ public class RobotTeleOp extends OpMode {
     	armMotor.setPower(-ARM_MOTOR_POWER);
         armControlServo.setPower(-ARM_SERVO_POWER);
     }
-    
-    @ButtonListener(button = "armUp", event = ButtonEvent.RELEASE)
-    @ButtonListener(button = "armDown", event = ButtonEvent.RELEASE)
+
+    @ButtonListeners({
+            @ButtonListener(button = "armUp", event = ButtonEvent.RELEASE),
+            @ButtonListener(button = "armDown", event = ButtonEvent.RELEASE)
+    })
     public void onArmRelease() {
     	armMotor.setPower(0);
         armControlServo.setPower(0);

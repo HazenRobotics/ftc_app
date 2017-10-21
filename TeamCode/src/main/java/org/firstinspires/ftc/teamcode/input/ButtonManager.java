@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.input;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.AbstractMap.SimpleEntry;
@@ -73,8 +74,8 @@ public class ButtonManager {
 	
 	/** Most of the stuff needed for {@link #registerButton}, only factored out to enable {@link #registerToggle}. */
 	private Button prepareButton(final String name, final IGamepadButton button) {
-		buttonPressActions.put(name, new ArrayList<>());
-		buttonReleaseActions.put(name, new ArrayList<>());
+		buttonPressActions.put(name, new ArrayList<IButtonAction>());
+		buttonReleaseActions.put(name, new ArrayList<IButtonAction>());
 		
 		return new Button() {
 			@Override
@@ -108,26 +109,26 @@ public class ButtonManager {
 	/**
 	 * Makes it possible to implement e.g. an IGamepadButton by tracking a field, rather than making a new one each time.
 	 * @param object The object that the field is in.
+	 * @param workaround The only way to make Java stop being confused about type parameters
 	 * @param fieldName The field to track.
 	 * @return A getter for that object's field.
 	 */
-	private<T> IValueGetter<T> makeFieldGetter(Object object, String fieldName) {
-		Field field;
+	private<T> IValueGetter<T> makeFieldGetter(final Object object, final Class<T> workaround, String fieldName) {
 		try {
-			field = object.getClass().getField(fieldName);
+			final Field field = workaround.getField(fieldName);
+			return new IValueGetter<T>() {
+				@Override
+				public T get() {
+					try {
+						return (T) field.get(object);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			};
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return new IValueGetter<T>() {
-			@Override
-			public T get() {
-				try {
-					return (T) field.get(object);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
 	}
 	
 	/**
@@ -137,7 +138,7 @@ public class ButtonManager {
 	 * @param field The field to track as a button
 	 */
 	public void registerButton(final String name, final Object object, final String field) {
-		registerButton(name, new GamepadButtonGetter(makeFieldGetter(object, field)));
+		registerButton(name, new GamepadButtonGetter(makeFieldGetter(object, Boolean.class, field)));
 	}
 	
 	/**
@@ -156,7 +157,7 @@ public class ButtonManager {
 	 * @param field The field to track as a button
 	 */
 	public void registerToggle(final String name, final Object object, final String field) {
-		registerToggle(name, new GamepadButtonGetter(makeFieldGetter(object, field)));
+		registerToggle(name, new GamepadButtonGetter(makeFieldGetter(object, Boolean.class, field)));
 	}
 	
 	/** Gets the linear value with the given name. */
@@ -256,10 +257,10 @@ public class ButtonManager {
 	 * @param name The name of the variable
 	 * @param value The tracker for the object's value
 	 */
-	public void registerLinear(String name, ILinearValue value) {
+	public void registerLinear(final String name, ILinearValue value) {
 		linears.put(name, value);
-		linearValueActions.put(name, new ArrayList<>());
-		linearReleaseActions.put(name, new ArrayList<>());
+		linearValueActions.put(name, new ArrayList<ILinearAction>());
+		linearReleaseActions.put(name, new ArrayList<IButtonAction>());
 		
 		add(new Button() {
 			@Override
@@ -282,29 +283,29 @@ public class ButtonManager {
 	 * @param field The field to track
 	 */
 	public void registerLinear(String name, Object object, String field) {
-		registerLinear(name, new LinearValueGetter(makeFieldGetter(object, field)));
+		registerLinear(name, new LinearValueGetter(makeFieldGetter(object, float.class, field)));
 	}
 	
 	/**
 	 * Registers a joystick for tracking.
 	 * @param name The name of the joystick
-	 * @param value The tracker for the joystick's value
+	 * @param joystick The tracker for the joystick's value
 	 */
 	public void registerJoystick(String name, IGamepadJoystick joystick) {
 		joysticks.put(name, joystick);
-		joystickValueActions.put(name, new ArrayList<>());
-		joystickReleaseActions.put(name, new ArrayList<>());
+		joystickValueActions.put(name, new ArrayList<IJoystickAction>());
+		joystickReleaseActions.put(name, new ArrayList<IButtonAction>());
 	}
 	
 	/**
 	 * Registers a joystick for tracking with aliases for each linear component.
 	 * @param name The name of the joystick
-	 * @param value The tracker for the joystick's value
+	 * @param joystick The tracker for the joystick's value
 	 */
 	public void registerJoystickWithAliases(String name, IGamepadJoystick joystick) {
 		joysticks.put(name, joystick);
-		joystickValueActions.put(name, new ArrayList<>());
-		joystickReleaseActions.put(name, new ArrayList<>());
+		joystickValueActions.put(name, new ArrayList<IJoystickAction>());
+		joystickReleaseActions.put(name, new ArrayList<IButtonAction>());
 		registerJoystickLinearAlias(name, name + "X", JoystickDimension.X);
 		registerJoystickLinearAlias(name, name + "Y", JoystickDimension.Y);
 	}
@@ -317,8 +318,8 @@ public class ButtonManager {
 	 * @param fieldY The field representing the joystick's Y
 	 */
 	public void registerJoystick(String name, Object object, String fieldX, String fieldY) {
-		registerJoystick(name, new GamepadJoystickGetter(makeFieldGetter(object, fieldX),
-														makeFieldGetter(object, fieldY)));
+		registerJoystick(name, new GamepadJoystickGetter(makeFieldGetter(object, float.class, fieldX),
+														makeFieldGetter(object, float.class, fieldY)));
 	}
 	
 	/**
@@ -343,15 +344,15 @@ public class ButtonManager {
 	 * @param alias The new name of the dimension
 	 * @param variable The dimension of the joystick to alias
 	 */
-	public void registerJoystickLinearAlias(String joystick, String alias, JoystickDimension variable) {
+	public void registerJoystickLinearAlias(final String joystick, final String alias, final JoystickDimension variable) {
 		linears.put(alias, new ILinearValue() {
 			@Override
 			public float getValue() {
 				return getJoystickPosition(joystick, variable);
 			}
 		});
-		linearValueActions.put(alias, new ArrayList<>());
-		linearReleaseActions.put(alias, new ArrayList<>());
+		linearValueActions.put(alias, new ArrayList<ILinearAction>());
+		linearReleaseActions.put(alias, new ArrayList<IButtonAction>());
 		
 		add(new Button() {
 			@Override
@@ -425,8 +426,8 @@ public class ButtonManager {
 	}
 	
 	/** Wraps a method simple invocation into a more usable interface. */
-	private IButtonAction makeButtonAction(Method method, Object object) {
-		if(method.getParameterCount() != 0)
+	private IButtonAction makeButtonAction(final Method method, final Object object) {
+		if(method.getParameterTypes().length != 0)
 			throw new RuntimeException("Annotated button listener had too many parameters!");
 		return new IButtonAction() {
 			@Override
@@ -441,7 +442,7 @@ public class ButtonManager {
 	}
 	
 	/** Wraps a method simple invocation into a more usable interface. */
-	private ILinearAction makeLinearAction(Method method, Object object) {
+	private ILinearAction makeLinearAction(final Method method, final Object object) {
 		return new ILinearAction() {
 			@Override
 			public void act(float position) {
@@ -455,7 +456,7 @@ public class ButtonManager {
 	}
 	
 	/** Wraps a method simple invocation into a more usable interface. */
-	private IJoystickAction makeJoystickAction(Method method, Object object) {
+	private IJoystickAction makeJoystickAction(final Method method, final Object object) {
 		return new IJoystickAction() {
 			@Override
 			public void act(float x, float y) {
@@ -466,6 +467,18 @@ public class ButtonManager {
 				}
 			}
 		};
+	}
+
+	private static int getParameterCount(Method method) {
+		return method.getParameterTypes().length;
+	}
+
+	private static<T> T[] getDeclaredAnnotationsByType(Method method, Class<T> clazz) {
+		List<T> annotations = new ArrayList<T>();
+		for(Annotation annotation : method.getDeclaredAnnotations())
+			if(annotation.getClass().isAssignableFrom(clazz))
+				annotations.add((T) annotation);
+		return (T[]) annotations.toArray();
 	}
 	
 	/** Reads all of the functions in the entire given object for those tagged with @SomethingListener, and tracks them. */
@@ -479,7 +492,7 @@ public class ButtonManager {
 			// 4. Register the method into the appropriate tracker variable
 			//
 			
-			for(ButtonListener annotation : method.getDeclaredAnnotationsByType(ButtonListener.class)) {
+			for(ButtonListener annotation : getDeclaredAnnotationsByType(method, ButtonListener.class)) {
 				IButtonAction action = makeButtonAction(method, object);
 				switch(annotation.event()) {
 				case PRESS:
@@ -491,22 +504,22 @@ public class ButtonManager {
 				}
 			}
 			
-			for(LinearListener annotation : method.getDeclaredAnnotationsByType(LinearListener.class)) {
-				if(method.getParameterCount() == 0) {
+			for(LinearListener annotation : getDeclaredAnnotationsByType(method, LinearListener.class)) {
+				if(getParameterCount(method) == 0) {
 					IButtonAction action = makeButtonAction(method, object);
 					linearReleaseActions.get(annotation.name()).add(action);
-				} else if(method.getParameterCount() == 1
+				} else if(getParameterCount(method) == 1
 						&& method.getParameterTypes()[0].equals(float.class)) {
 					ILinearAction action = makeLinearAction(method, object);
 					linearValueActions.get(annotation.name()).add(action);
 				} else throw new RuntimeException("Invalid parameters for a joystick listener!");
 			}
 			
-			for(JoystickListener annotation : method.getDeclaredAnnotationsByType(JoystickListener.class)) {
-				if(method.getParameterCount() == 0) {
+			for(JoystickListener annotation : getDeclaredAnnotationsByType(method, JoystickListener.class)) {
+				if(getParameterCount(method) == 0) {
 					IButtonAction action = makeButtonAction(method, object);
 					joystickReleaseActions.get(annotation.joystick()).add(action);
-				} else if(method.getParameterCount() == 2
+				} else if(getParameterCount(method) == 2
 						&& method.getParameterTypes()[0].equals(float.class)
 						&& method.getParameterTypes()[1].equals(float.class)) {
 					IJoystickAction action = makeJoystickAction(method, object);
