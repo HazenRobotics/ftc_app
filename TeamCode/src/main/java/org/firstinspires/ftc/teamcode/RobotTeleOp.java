@@ -7,55 +7,52 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.firstinspires.ftc.teamcode.autonomous.ArmDirection;
 import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
-import org.firstinspires.ftc.teamcode.input.Button;
-import org.firstinspires.ftc.teamcode.input.ButtonManager;
-import org.firstinspires.ftc.teamcode.input.gamepad.ButtonEvent;
-import org.firstinspires.ftc.teamcode.input.gamepad.JoystickDimension;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListener;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.ButtonListeners;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.JoystickListener;
-import org.firstinspires.ftc.teamcode.input.gamepad.annotations.LinearListener;
-import org.firstinspires.ftc.teamcode.input.gamepad.values.IGamepadButton;
-import org.firstinspires.ftc.teamcode.input.gamepad.values.IGamepadJoystick;
-import org.firstinspires.ftc.teamcode.input.gamepad.values.ILinearValue;
-import org.firstinspires.ftc.teamcode.interfaces.IWheels;
 import org.firstinspires.ftc.teamcode.models.Position;
 import org.firstinspires.ftc.teamcode.models.Vector;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
+import co.lijero.react.ReactionManager;
+import co.lijero.react.Reactive;
+
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends OpMode {
     protected Telemetry telemetry = new Telemetry(super.telemetry);
-    protected ButtonManager buttons = new ButtonManager();
+    protected ReactionManager reactions = new ReactionManager();
 
     // The arm components
+    @Hardware
     protected Servo claw;
+    @Hardware
     protected DcMotor armMotor;
+    @Hardware
     protected CRServo armControlServo;
 
     // Motors for each wheel
+    @Hardware
     protected DcMotor leftFront;
+    @Hardware
     protected DcMotor rightFront;
+    @Hardware
     protected DcMotor leftBack;
+    @Hardware
     protected DcMotor rightBack;
 
     // The lift motor
+    @Hardware
     protected DcMotor lift;
 
     //Add all Constants here
-    //EX: protected final double MOTOR_POWER = 0.5;
-    //private final double CLAW_POSITION_ONE = 0.0;
-    //private final double CLAW_POSITION_TWO = 0.5;
-    protected final double ARM_MOTOR_POWER = 0.4;
-    protected final double ARM_SERVO_POWER = 0.4;
-    //protected final double CLAW_POWER = 0.2;
-    protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected static final double ARM_MOTOR_POWER = 0.4;
+    protected static final double ARM_SERVO_POWER = 0.4;
+    protected static final double JOYSTICK_ERROR_RANGE = 0.1;
 
     //Lift Constants
-    protected static final double SMALL_LIFT_LOWER_POS = 0.0, SMALL_LIFT_UPPER_POS = 0.0;
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
     protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
@@ -63,7 +60,6 @@ public class RobotTeleOp extends OpMode {
     protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
-    protected static final int MAIN_LIFT_ERROR_RANGE = 20;
 
     protected MotionController wheels;
     
@@ -76,45 +72,33 @@ public class RobotTeleOp extends OpMode {
     
     @Override
     public void loop() {
-    	buttons.update();
+    	reactions.update();
         telemetry.update();
-    }
-    
-    /**
-     * This is probably just excessive, and I'd totally roll it back if you want.<br />
-     * <br />
-     * It just lets us reduce leftFront = hardwareMap.dcMotor.get("leftFront");<br />
-     * which I reduced to leftFront = getDcMotor("leftFront"); which is probably good enough,<br />
-     * to initialize("leftFront");<br />
-     * <br />
-     * at the cost of being complex and breaking editor automatic variable rename.
-     */
-    private void initialize(String name) {
-        try {
-            Field field = getClass().getDeclaredField(name);
-            String getterName = "get" + field.getType().getSimpleName();
-            Object value = getClass().getMethod(getterName).invoke(this, name);
-            field.set(this, value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected void setupHardware() {
-    	initialize("lift");
+        Map<String, String> hardwareNameMap = new HashMap<>();
+        hardwareNameMap.put("DcMotor", "dcMotor");
+        hardwareNameMap.put("Servo", "servo");
+        hardwareNameMap.put("CRServo", "crservo");
+
+        try {
+            for (Field field : getClass().getFields()) {
+                if (field.getAnnotation(Hardware.class) != null) {
+                    String hardwareMapFieldName = hardwareNameMap.get(field.getType().getSimpleName());
+                    Object hardwareMapField = hardwareMap.getClass().getField(hardwareMapFieldName).get(hardwareMap);
+                    Object hardwareObject = hardwareMapField.getClass().getMethod("get").invoke(hardwareMapField);
+                    field.set(this, hardwareObject);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        initialize("smallLift");
 
-        initialize("claw");
-        initialize("armControlServo");
-        initialize("armMotor");
         armMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        initialize("leftFront");
-        initialize("rightFront");
-        initialize("leftBack");
-        initialize("rightBack");
 
         // TODO: add IWheels implementation
         wheels = new MotionController(null, new Position(new Vector(0, 0), 0));
@@ -128,121 +112,103 @@ public class RobotTeleOp extends OpMode {
             }
         });
     }
-    
+
+    @Reactive(depends = { "liftPowerUp", "liftPowerDown" })
+    public double liftPower(float liftPowerUp, float liftPowerDown) {
+        return liftPowerUp - liftPowerDown;
+    }
+
+    private static ArmDirection buttonsToArmDirection(boolean extend, boolean retract) {
+        if(!(extend ^ retract))
+            return ArmDirection.ZERO;
+        if(extend)
+            return ArmDirection.EXTEND;
+        // This is not a default value: we just have eliminated all other possibilities
+        return ArmDirection.RETRACT;
+    }
+
+    private static float adjustJoystickPosition(float position) {
+        return position < JOYSTICK_ERROR_RANGE ? 0 : position;
+    }
+
+    @Reactive(depends = "liftPosition")
+    public int glyphRow(int liftPosition) {
+        return liftPosition / COUNT_PER_GLYPH_HEIGHT;
+    }
+
     protected void setupButtons() {
-    	buttons.registerButton("liftUp", gamepad2, "dpad_up");
-    	buttons.registerButton("liftDown", gamepad2, "dpad_down");
-    	buttons.registerButton("liftBusy", new IGamepadButton() {
-			@Override
-			public boolean isPressed() {
-				return lift.isBusy();
-			}
-    	});
-    	// TODO: WARNING: THIS (potentially) CONFLICTS WITH THE ABOVE
-    	// Either disable one, make a variable to track which one to use, or suffer potential conflicts.
-    	buttons.registerLinear("liftPower", new ILinearValue() {
-			@Override
-			public float getValue() {
-				return gamepad2.right_trigger - gamepad2.left_trigger;
-			}
-    	});
-    	
-    	buttons.registerJoystick("gamepad2RightStick", gamepad2, "right_stick");
-    	buttons.registerJoystickLinearAlias("gamepad2RightStick", "claw", JoystickDimension.X);
-    	
-    	buttons.registerButton("armUp", gamepad1, "x");
-    	buttons.registerButton("armDown", gamepad1, "y");
-    	
-    	buttons.registerJoystick("wheels", gamepad1, "right_stick");
-    	
-    	buttons.registerListeners(this);
+        reactions.registerField("liftUp", gamepad2, "dpad_up");
+        reactions.registerField("liftDown", gamepad2, "dpad_down");
+        reactions.registerStaticMethod("liftDirection", "buttonsToArmDirection", getClass(), "liftUp", "liftDown");
+        reactions.registerMethod("liftBusy", lift, "isBusy");
+    	// TODO: WARNING: THIS CONFLICTS WITH THE ABOVE: MANUAL VS AUTOMATIC. PICK ONE.
+    	// Right now, the manual controls below override the automatic controls when it's active.
+        reactions.registerField("liftPowerUp", gamepad2, "right_trigger");
+        reactions.registerField("liftPowerDown", gamepad2, "left_trigger");
+        reactions.registerMethod("liftPosition", lift, "getCurrentPosition");
+
+        reactions.registerField("clawPower", gamepad2, "right_stick_x");
+        reactions.registerMethod("clawPosition", claw, "getCurrentPosition");
+        reactions.registerStaticMethod("clawDirection", "fromSign", ArmDirection.class, "clawPower");
+        reactions.registerField("armExtend", gamepad1, "x");
+        reactions.registerField("armRetract", gamepad1, "y");
+        reactions.registerStaticMethod("armDirection", "buttonsToArmDirection", getClass(), "armExtend", "armRetract");
+
+        reactions.registerField("rawWheelPowerX", gamepad1, "right_stick_x");
+    	reactions.registerField("rawWheelPowerY", gamepad1, "right_stick_y");
+        reactions.registerStaticMethod("wheelPowerX", "adjustJoystickValue", getClass(), "rawWheelPowerX");
+        reactions.registerStaticMethod("wheelPowerY", "adjustJoystickValue", getClass(), "rawWheelPowerY");
+
+    	reactions.register(this);
     }
-    
-    private int getGlyphRow() {
-    	return lift.getCurrentPosition() / COUNT_PER_GLYPH_HEIGHT;
+
+    @Reactive(depends = { "liftDirection", "glyphRow" })
+    public int nextGlyphRow(ArmDirection liftDirection, int glyphRow) {
+        switch(liftDirection) {
+            case EXTEND:
+                return Math.min(glyphRow + 1, 3);
+            case RETRACT:
+                return Math.max(glyphRow - 1, 0);
+        }
+        return glyphRow;
     }
-    
-    @ButtonListener(button = "liftUp")
-    public void onLiftUpPress() {
-    	int nextPosition = Math.max(getGlyphRow() + 1, 3);
-    	lift.setTargetPosition(nextPosition * COUNT_PER_GLYPH_HEIGHT);
-    	lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    @Reactive(depends = { "liftPosition", "nextGlyphRow" })
+    public void withNextGlyphRow(int liftPosition, int nextGlyphRow) {
+        int destinationLiftPosition = nextGlyphRow * COUNT_PER_GLYPH_HEIGHT;
+        int distanceToMove = destinationLiftPosition - liftPosition;
+        lift.setTargetPosition(distanceToMove);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(MAIN_LIFT_SPEED);
     }
-    
-    @ButtonListener(button = "liftDown")
-    public void onLiftDownPress() {
-    	int nextPosition = Math.max(getGlyphRow() - 1, 0);
-		lift.setTargetPosition(nextPosition * COUNT_PER_GLYPH_HEIGHT);
-		lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-	    lift.setPower(-MAIN_LIFT_SPEED);
-    }
-    
-    @LinearListener(name = "liftPower")
-    public void withLiftPower(float motor_power) {
-        if((motor_power > 0 && lift.getCurrentPosition() >= COUNT_PER_GLYPH_HEIGHT * 4)
-                || motor_power < 0 && lift.getCurrentPosition() <= 0)
+
+    @Reactive(depends = { "liftPower", "liftPosition" })
+    public void withLiftPower(float liftPower, float liftPosition) {
+        if((liftPower > 0 && liftPosition >= COUNT_PER_GLYPH_HEIGHT * 4)
+                || liftPower < 0 && liftPosition <= 0)
             return;
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.setPower(motor_power);
-    }
-    
-    @LinearListener(name = "liftPower")
-    public void onLiftPowerRelease() {
-    	lift.setPower(0);
-    }
-    
-    @ButtonListener(button = "liftBusy", event = ButtonEvent.RELEASE)
-    public void onLiftUnbusy() {
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.setPower(0);
-    }
-    
-    @LinearListener(name = "claw")
-    public void withClawPower(float clawInput) {
-    	float clawDirection = Math.signum(clawInput);
-    	float clawDisplacement = clawDirection * 0.1f;
-    	double nextPosition = claw.getPosition() + clawDisplacement;
-    	if ((clawDirection > 0 && claw.getPosition() < 1)
-    			|| (clawDirection < 0 && claw.getPosition() <= 0))
-            claw.setPosition(nextPosition);
-    }
-    
-    @ButtonListener(button = "armUp")
-    public void onArmUp() {
-    	armMotor.setPower(ARM_MOTOR_POWER);
-        armControlServo.setPower(ARM_SERVO_POWER);
-    }
-    
-    @ButtonListener(button = "armDown")
-    public void onArmDown() {
-    	armMotor.setPower(-ARM_MOTOR_POWER);
-        armControlServo.setPower(-ARM_SERVO_POWER);
+        lift.setPower(liftPower);
     }
 
-    @ButtonListeners({
-            @ButtonListener(button = "armUp", event = ButtonEvent.RELEASE),
-            @ButtonListener(button = "armDown", event = ButtonEvent.RELEASE)
-    })
-    public void onArmRelease() {
-    	armMotor.setPower(0);
-        armControlServo.setPower(0);
+    @Reactive(depends = "armDirection")
+    public void withArmDirection(ArmDirection direction) {
+        armMotor.setPower(direction.toSign() * ARM_MOTOR_POWER);
+        armControlServo.setPower(direction.toSign() * ARM_SERVO_POWER);
+    }
+    
+    @Reactive(depends = { "clawPosition", "clawDirection" })
+    public void withClawPower(float clawPosition, ArmDirection clawDirection) {
+        switch(clawDirection) {
+            case EXTEND:
+                claw.setPosition(clawPosition + 0.1f);
+            case RETRACT:
+                claw.setPosition(clawPosition - 0.1f);
+        }
     }
 
-    @JoystickListener(joystick = "wheels")
-    protected void withWheels(float x, float y) {
-        wheels.move(Vector.fromPolar(x, y));
-    }
-    
-    public DcMotor getDcMotor(String name) {
-    	return hardwareMap.dcMotor.get(name);
-    }
-    
-    public Servo getServo(String name) {
-    	return hardwareMap.servo.get(name);
-    }
-    
-    public CRServo getCRServo(String name) {
-    	return hardwareMap.crservo.get(name);
+    @Reactive(depends = { "wheelPowerX", "wheelPowerY" })
+    protected void withWheels(float wheelPowerX, float wheelPowerY) {
+        wheels.move(Vector.fromPolar(wheelPowerX, wheelPowerY));
     }
 }
