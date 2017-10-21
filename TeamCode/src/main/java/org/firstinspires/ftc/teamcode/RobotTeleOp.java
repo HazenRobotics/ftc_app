@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.input.Toggle;
-import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
+//import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
 
 import java.util.ArrayList;
 
@@ -44,11 +44,11 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected DigitalChannel limitOpen;
     protected DigitalChannel limitClosed;
 
-    //Motors for each wheel
+/*    //Motors for each wheel
     protected DcMotor leftFront;
     protected DcMotor rightFront;
     protected DcMotor leftBack;
-    protected DcMotor rightBack;
+    protected DcMotor rightBack;*/
 
     //Motors for each wheel
     protected DcMotor leftFront;
@@ -101,10 +101,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             lift_position = mainLift.getCurrentPosition();
             telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
 
-            //Arm extension part
-            //armExtension();
-
-            toggleLogic();
+            buttons.update();
 
             //nextPosition
             /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
@@ -130,7 +127,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 DPadMoving = true
                 mainLift.setPower(nextPosition-currentPosition);
             }*/
-            drive();
+            /*drive();
 
 
             {
@@ -138,7 +135,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             }
             else {
                 mainLift.setPower(0.0);
-            }
+            }*/
 
 
             /*//Small Lift Power
@@ -179,6 +176,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
+
+
     protected void setupHardware() {
         //Initializes the motor/servo variables here
         /*EX:
@@ -193,8 +192,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         //claw = hardwareMap.servo.get("claw");
         claw = hardwareMap.dcMotor.get("claw");
         claw.setDirection(DcMotor.Direction.FORWARD);
-        arm = hardwareMap.dcMotor.get("arm");
-        arm.setDirection(DcMotor.Direction.FORWARD);
+        //arm = hardwareMap.dcMotor.get("arm");
+        //arm.setDirection(DcMotor.Direction.FORWARD);
 
         //claw = hardwareMap.servo.get("claw");
         //claw = hardwareMap.dcMotor.get("claw");
@@ -299,7 +298,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         });
     }
 
-    protected void drive() {
+   /* protected void drive() {
 
         //left stick controls movement
         //right stick controls turning
@@ -321,7 +320,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightFront.setPower(rightFrontPower);
         leftBack.setPower(leftBackPower);
         rightBack.setPower(rightBackPower);
-    }
+    }*/
 
     /*
     calculate power stuff
@@ -525,5 +524,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     @Override
     public DcMotor getMotor(String name) {
         return hardwareMap.dcMotor.get(name);
+    }
+
+    @Override
+    public DigitalChannel getDigitalChannel(String name) {
+        return hardwareMap.digitalChannel.get(name);
     }
 }
