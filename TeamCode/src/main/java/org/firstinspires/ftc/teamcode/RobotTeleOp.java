@@ -258,6 +258,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             }
         });
 
+        //when b is pressed once, changes mode of the arm to manual.  Pressed again, arm automatic.
         buttons.add(new Toggle() {
             @Override
             public boolean isInputPressed() {
@@ -275,6 +276,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             }
         });
 
+        //when a is pressed once, claw closes.  when pressed again, claw opens.
         buttons.add(new Toggle() {
             @Override
             public boolean isInputPressed() {
@@ -504,7 +506,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     {
         if(gamepad2.left_stick_y>JOYSTICK_ERROR_RANGE || gamepad2.left_stick_y<-JOYSTICK_ERROR_RANGE)
         {
-            armControlServo.setPower(gamepad2.left_stick_x);
+            armControlServo.setPower(gamepad2.left_stick_y);
         }
         else
         {
