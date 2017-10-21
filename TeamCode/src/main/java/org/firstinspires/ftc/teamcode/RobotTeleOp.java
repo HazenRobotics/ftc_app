@@ -76,7 +76,7 @@ public class RobotTeleOp extends OpMode {
         telemetry.update();
     }
 
-    protected void setupHardware() {
+    protected void initializeVariables() {
         Map<String, String> hardwareNameMap = new HashMap<>();
         hardwareNameMap.put("DcMotor", "dcMotor");
         hardwareNameMap.put("Servo", "servo");
@@ -94,6 +94,10 @@ public class RobotTeleOp extends OpMode {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected void setupHardware() {
+        initializeVariables();
 
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -118,15 +122,6 @@ public class RobotTeleOp extends OpMode {
         return liftPowerUp - liftPowerDown;
     }
 
-    private static ArmDirection buttonsToArmDirection(boolean extend, boolean retract) {
-        if(!(extend ^ retract))
-            return ArmDirection.ZERO;
-        if(extend)
-            return ArmDirection.EXTEND;
-        // This is not a default value: we just have eliminated all other possibilities
-        return ArmDirection.RETRACT;
-    }
-
     private static float adjustJoystickPosition(float position) {
         return position < JOYSTICK_ERROR_RANGE ? 0 : position;
     }
@@ -139,8 +134,7 @@ public class RobotTeleOp extends OpMode {
     protected void setupButtons() {
         reactions.registerField("liftUp", gamepad2, "dpad_up");
         reactions.registerField("liftDown", gamepad2, "dpad_down");
-        reactions.registerStaticMethod("liftDirection", "buttonsToArmDirection", getClass(), "liftUp", "liftDown");
-        reactions.registerMethod("liftBusy", lift, "isBusy");
+        reactions.registerStaticMethod("liftDirection", "fromButtons", ArmDirection.class, "liftUp", "liftDown");
     	// TODO: WARNING: THIS CONFLICTS WITH THE ABOVE: MANUAL VS AUTOMATIC. PICK ONE.
     	// Right now, the manual controls below override the automatic controls when it's active.
         reactions.registerField("liftPowerUp", gamepad2, "right_trigger");
@@ -152,7 +146,7 @@ public class RobotTeleOp extends OpMode {
         reactions.registerStaticMethod("clawDirection", "fromSign", ArmDirection.class, "clawPower");
         reactions.registerField("armExtend", gamepad1, "x");
         reactions.registerField("armRetract", gamepad1, "y");
-        reactions.registerStaticMethod("armDirection", "buttonsToArmDirection", getClass(), "armExtend", "armRetract");
+        reactions.registerStaticMethod("armDirection", "fromButtons", ArmDirection.class, "armExtend", "armRetract");
 
         reactions.registerField("rawWheelPowerX", gamepad1, "right_stick_x");
     	reactions.registerField("rawWheelPowerY", gamepad1, "right_stick_y");

@@ -20,4 +20,13 @@ public enum ArmDirection {
             return RETRACT;
         return ZERO;
     }
+
+    public static ArmDirection fromButtons(boolean extend, boolean retract) {
+        if(!(extend ^ retract))
+            return ArmDirection.ZERO;
+        if(extend)
+            return ArmDirection.EXTEND;
+        // This is not a default value: we just have eliminated all other possibilities
+        return ArmDirection.RETRACT;
+    }
 }
