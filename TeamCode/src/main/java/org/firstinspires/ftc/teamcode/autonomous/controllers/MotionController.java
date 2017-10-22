@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.controllers;
 
-import org.firstinspires.ftc.teamcode.interfaces.IWheels;
+import org.firstinspires.ftc.teamcode.interfaces.Wheels;
 import org.firstinspires.ftc.teamcode.models.Position;
 import org.firstinspires.ftc.teamcode.models.Vector;
 
@@ -9,16 +9,16 @@ import org.firstinspires.ftc.teamcode.models.Vector;
  * 
  * It includes advanced motion abstractions, and the concept of absolute position.
  */
-public class MotionController implements IWheels {
+public class MotionController implements Wheels {
     private Position currentPosition;
-    private final IWheels wheels;
+    private final Wheels wheels;
 
     /**
      * This class is a decorator wrapping IWheels with more useful controls.
      * @param wheels The actual implementation of the wheels.
      * @param startingPosition The position that the robot is currently at, to track from.
      */
-    public MotionController(IWheels wheels, Position startingPosition) {
+    public MotionController(Wheels wheels, Position startingPosition) {
         this.wheels = wheels;
         this.currentPosition = startingPosition;
     }

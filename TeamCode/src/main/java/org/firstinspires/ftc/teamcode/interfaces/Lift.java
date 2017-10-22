@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.interfaces;
 /**
  * A means to control the arm's lift.
  */
-public interface ILift {
+public interface Lift {
 
 	/**
 	 * Raise the lift by however much it needs to be raised for a glyph.

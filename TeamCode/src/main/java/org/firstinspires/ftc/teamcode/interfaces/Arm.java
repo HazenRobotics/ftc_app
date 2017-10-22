@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.interfaces;
 /**
  * A means to control the robot's clamp. If that's what we're even making, I don't even know tbh.
  */
-public interface IArm {
+public interface Arm {
 	/**
 	 * Clamp the glyph in front of you.
 	 */

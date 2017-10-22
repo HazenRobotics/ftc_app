@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.models.Vector;
 /**
  * A means to control the robot's wheels.
  */
-public interface IWheels {
+public interface Wheels {
 	/**
      * Moves directly by a given displacement without any turning via mechanam wheels.
      * @param displacement The amount to move.
