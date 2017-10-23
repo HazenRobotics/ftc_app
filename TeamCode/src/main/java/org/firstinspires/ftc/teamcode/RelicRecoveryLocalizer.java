@@ -92,7 +92,7 @@ public class RelicRecoveryLocalizer {
         }
         
         public float getAngle() {
-            return Math.toDegrees(Math.atan(getX() / getY()));
+            return (float)(Math.toDegrees(Math.atan(getX() / getY())));
         }
     }
     
@@ -113,11 +113,11 @@ public class RelicRecoveryLocalizer {
     }
     
     public boolean cryptoKeyIsVisible() {
-        return (RelicRecoveryVuMark.from(relicTemplate) != RelicRecoveryVuMark.UNKNOWN);
+        return (RelicRecoveryVuMark.from(cryptoKey) != RelicRecoveryVuMark.UNKNOWN);
     }
     
     public RelicRecoveryVuMark cryptoKey() {
-        return RelicRecoveryVuMark.from(relicTemplate);
+        return RelicRecoveryVuMark.from(cryptoKey);
     }
 
     private OpenGLMatrix createMatrix (float x, float y, float z, float u, float v, float w) {
