@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmodes;
 
-import org.firstinspires.ftc.teamcode.autonomous.StartingPosition;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name="Autonomous Blue 2", group="Autonomous")
+import org.firstinspires.ftc.teamcode.autonomous.StartingPosition;
+@Disabled
+//@Autonomous(name="Autonomous Blue 2", group="Autonomous")
 public class AutonomousOpModeBlue2 extends AutonomousBaseOpMode {
 	public AutonomousOpModeBlue2() {
 		super(StartingPosition.BLUE_2);

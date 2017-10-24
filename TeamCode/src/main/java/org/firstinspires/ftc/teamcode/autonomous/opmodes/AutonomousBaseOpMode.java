@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.autonomous.Autonomous;
 import org.firstinspires.ftc.teamcode.autonomous.StartingPosition;
@@ -76,5 +77,10 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	@Override
 	public DcMotor getMotor(String name) {
 		return hardwareMap.dcMotor.get(name);
+	}
+
+	@Override
+	public DigitalChannel getDigitalChannel(String name) {
+		return hardwareMap.digitalChannel.get(name);
 	}
 }
