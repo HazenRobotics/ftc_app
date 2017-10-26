@@ -13,14 +13,15 @@ import java.util.Map;
 import org.firstinspires.ftc.teamcode.autonomous.controllers.MotionController;
 import org.firstinspires.ftc.teamcode.models.Position;
 import org.firstinspires.ftc.teamcode.models.Vector;
-import org.firstinspires.ftc.teamcode.output.Message;
 
-import co.lijero.react.ReactionManager;
-import co.lijero.react.Reactive;
+import co.lijero.ab4j.react.Reactions;
+import co.lijero.ab4j.react.Reactive;
+import co.lijero.ab4j.type.TypeException;
+import co.lijero.ab4j.value.Value;
 
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends OpMode {
-    protected ReactionManager reactions = new ReactionManager();
+    protected Reactions reactions = new Reactions();
     protected Telemetry telemetry = new Telemetry(super.telemetry, reactions);
 
     // The arm components
@@ -132,7 +133,7 @@ public class RobotTeleOp extends OpMode {
     }
 
     /** Tracks a bunch of variables in the Reactive system. */
-    protected void setupTrackers() {
+    protected void setupTrackers() throws IllegalAccessException, TypeException, NoSuchMethodException, NoSuchFieldException {
     	/*
     	 * This is where the reaction system starts: what the reactive system does does in fact
     	 * have a name-- the reactive programming paradigm. But that's not important right now.
@@ -177,8 +178,8 @@ public class RobotTeleOp extends OpMode {
     	 *  So from now on, liftUp will always be whatever value gamepad2.dpad_up is.
     	 */
     	// Lift automatic controls
-    	reactions.make().name("liftUp").onObject(gamepad2).get("dpad_up").finish();
-    	reactions.make().name("liftDown").onObject(gamepad2).get("dpad_down").finish();
+    	reactions.define("liftUp", Value.fromField("dpad_up", gamepad2));
+        reactions.define("lfitDown", Value.fromField("dpad_down", gamepad2));
         /*
          * This is new. Here, we're saying
          * 		liftDirection = ArmDirection.fromButtons(liftUp, liftDown)
@@ -192,24 +193,22 @@ public class RobotTeleOp extends OpMode {
          * run: now instead of getting a field, we're making a method call. We're calling ArmDirection.fromButtons
          * on the values of liftUp and liftDown-- the first parameter is the method name, and the rest of it is
          * the values passed into the method.
-         * 
-         * We can't write ArmDirection::fromButtons, because what do you think this is, Java 8?
          */
-    	reactions.make().name("liftDirection").onClass(MotionType.class).run("fromButtons", "liftUp", "liftDown").finish();
+        reactions.define("liftDirection", Value.from(MotionType::fromButtons), "liftUp", "liftDown");
         
         // Lift manual controls
-    	reactions.make().name("liftPowerUp").onObject(gamepad2).get("right_trigger").finish();
-    	reactions.make().name("liftPowerDown").onObject(gamepad2).get("left_trigger").finish();
+        reactions.define("liftPowerUp", Value.fromField("right_trigger", gamepad2));
+        reactions.define("liftPowerDown", Value.fromField("left_trigger", gamepad2));
 
         // Claw controls
-    	reactions.make().name("clawPower").onObject(gamepad2).get("right_stick_x").finish();
-    	reactions.make().name("clawPosition").onObject(claw).run("getPosition").finish();
-    	reactions.make().name("clawDirection").onClass(MotionType.class).run("fromSign", "clawPower").finish();
+        reactions.define("clawPower", Value.fromField("right_stick_x", gamepad2));
+        reactions.define("clawPosition", Value.fromMethod("getPosition", claw));
+        reactions.define("clawDirection", Value.from(MotionType::fromSign), "fromSign", "clawPower");
         
         // Arm controls
-    	reactions.make().name("armExtend").onObject(gamepad1).get("x").finish();
-    	reactions.make().name("armRetract").onObject(gamepad1).get("y").finish();
-    	reactions.make().name("armDirection").onClass(MotionType.class).run("fromButtons", "armExtend", "armRetract").finish();
+        reactions.define("armExtend", Value.fromField("x", gamepad1));
+        reactions.define("armRetract", Value.fromField("y", gamepad1));
+        reactions.define("armDirection", Value.from(MotionType::fromButtons), "armExtend", "armRetract");
 
         // Movement controls
         registerJoystick(gamepad1, "right_stick", "wheelPowerX", "wheelPowerY");
@@ -225,13 +224,13 @@ public class RobotTeleOp extends OpMode {
      * 
      * @param base_name The base name of the joystick, e.g. right_stick for the values gamepad.right_stick_x and right_stick_y
      */
-    protected void registerJoystick(Object gamepad, String base_name, String x_name, String y_name) {
+    protected void registerJoystick(Object gamepad, String base_name, String x_name, String y_name) throws NoSuchFieldException, IllegalAccessException, TypeException {
     	String raw_x_name = "__raw_" + base_name + "_x";
     	String raw_y_name = "__raw_" + base_name + "_y";
-    	reactions.make().name(raw_x_name).onObject(gamepad).get(base_name + "_x").finish();
-    	reactions.make().name(raw_y_name).onObject(gamepad).get(base_name + "_y").finish();
-    	reactions.make().name(x_name).onClass(getClass()).run("adjustJoystickValue", raw_x_name).finish();
-    	reactions.make().name(y_name).onClass(getClass()).run("adjustJoystickValue", raw_y_name).finish();
+        reactions.define(raw_x_name, Value.fromField(base_name + "_x", gamepad));
+        reactions.define(raw_y_name, Value.fromField(base_name + "_y", gamepad));
+        reactions.define(x_name, Value.from(RobotTeleOp::adjustJoystickPosition), raw_x_name);
+        reactions.define(y_name, Value.from(RobotTeleOp::adjustJoystickPosition), raw_y_name);
     }
     
     /*

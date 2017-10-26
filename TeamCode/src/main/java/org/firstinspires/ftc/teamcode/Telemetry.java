@@ -8,17 +8,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
-import co.lijero.react.ReactionManager;
-import co.lijero.react.Tracker;
+import co.lijero.ab4j.react.Reactions;
 
 /**
  * The Telemetry consumes reactive values and displays them to the phone app.
  */
 public class Telemetry {
 	/** The actual FTC telemetry to display to. */
-	private final org.firstinspires.ftc.teamcode.Telemetry display;
+	private final org.firstinspires.ftc.robotcore.external.Telemetry display;
 	/** The system we're tracking variables from. */
-	private final ReactionManager reactions;
+	private final Reactions reactions;
 	/** The constant strings that we're currently displaying: telemetry key, value */
 	private final Map<String, String> displayedValues = new HashMap<>();
 	/** The expirable values and their expiry times: variable, expiry time */
@@ -26,9 +25,9 @@ public class Telemetry {
 	
 	/**
 	 * @param display The FTC telemetry to display to.
-	 * @param reactiveVariables The variables we're tracking.
+	 * @param reactions The variables we're tracking.
 	 */
-	public Telemetry(org.firstinspires.ftc.teamcode.Telemetry display, ReactionManager reactions) {
+	public Telemetry(org.firstinspires.ftc.robotcore.external.Telemetry display, Reactions reactions) {
 		this.display = display;
 		this.reactions = reactions;
 	}
@@ -36,12 +35,9 @@ public class Telemetry {
 	/** Display a reactive variable in Telemetry. */
 	public void track(String key, String variable) {
 		// Track the variable in the reactions system to update its value here.
-		reactions.make().name("__telemetry_" + key).run(new Tracker() {
-			@Override
-			public void update(Object... dependencies) {
-				displayedValues.put(key, dependencies[0].toString());
-			}
-		}, variable).finish();
+		reactions.define("__telemetry_" + key, (String value) -> {
+			displayedValues.put(key, value);
+		}, variable);
 	}
 	
 	/**
