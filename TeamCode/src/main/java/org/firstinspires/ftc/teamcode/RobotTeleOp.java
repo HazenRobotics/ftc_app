@@ -41,6 +41,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected CRServo armControlServo;
     protected boolean armManual = false;
     protected DcMotor claw;
+    protected DigitalChannel limitOpen;
     protected DigitalChannel limitClosed;
 
     //Wheel Motors
@@ -122,15 +123,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftFront = getMotor("leftFront");
-        rightFront = getMotor("rightFront");
-        leftBack = getMotor("leftBack");
-        rightBack = getMotor("rightBack");
 
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-
+        limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
         limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
+        limitOpen.setMode(DigitalChannel.Mode.INPUT);
         limitClosed.setMode(DigitalChannel.Mode.INPUT);
     }
 
@@ -207,16 +203,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
-        if(clawClosing && limitClosed.getState()){
+        if((clawClosing && limitClosed.getState()) || (!clawClosing && limitOpen.getState()))
             claw.setPower(0);
-        }
-        else if((!clawClosing)) {
-            clawRuntime.reset();
-            while (clawRuntime.seconds() < 2.0) {
-                idle();
-            }
-            claw.setPower(0);
-        }
 
     }
 

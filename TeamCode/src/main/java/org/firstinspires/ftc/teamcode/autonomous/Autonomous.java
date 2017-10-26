@@ -55,6 +55,7 @@ public class Autonomous implements Runnable {
 		if(startingPosition.getTeamColor().approximatelyEquals(colorSensor.sense()))
 			motion.strafe(JEWEL_STRAFE_DISTANCE, SIDE_OF_COLOR_SENSOR);
 		else
+
 			motion.strafe(JEWEL_STRAFE_DISTANCE, SIDE_OPPOSITE_TO_COLOR_SENSOR);
 	}
 	
