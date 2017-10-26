@@ -73,14 +73,14 @@ public class RelicRecoveryLocalizer {
     }
     
     public void activate() {
-        CryptoBoxTape.activate();
+        cryptoBoxTape.activate();
         relicTrackables.activate();
     }
     
     public class MatrixPosition {
-        OpenGLMatrix matrix
+        OpenGLMatrix matrix;
         public MatrixPosition(OpenGLMatrix matrix) {
-            this.matrix = matrix.clone();
+            this.matrix = matrix;
         }
         
         public float getX() {

@@ -132,25 +132,7 @@ public class VuforiaTest extends LinearOpMode {
         blueTape.setLocation(createMatrix(100, 100, 100, 90, 0, 0));
     }
 
-    public void getBlueX(){
-        x = Orientation.getOrientation(lastLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
-        telemetry.addData(Bl)
-    }
-    public void getBlueY(){
 
-    }
-    public void getBlueAngle(){
-
-    }
-    public void getRedX(){
-
-    }
-    public void getRedy(){
-
-    }
-    public void getRedAngle(){
-
-    }
 }
 
 
