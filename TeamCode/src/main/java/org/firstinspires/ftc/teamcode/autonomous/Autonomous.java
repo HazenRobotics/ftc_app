@@ -30,7 +30,7 @@ public class Autonomous implements Runnable {
 	private final GlyphController arm;
 	private final ColorSensor colorSensor;
 	
-	public Autonomous(StartingPosition startingPosition, MotionController motion, ColorSensor colorSensor, GlyphController arm) {
+	public Autonomous(StartingPosition startingPosition, MotionController motion, GlyphController arm, ColorSensor colorSensor) {
 		this.startingPosition = startingPosition;
 		this.motion = new MotionController(motion, startingPosition.getStartingPosition());
 		this.colorSensor = colorSensor;
@@ -55,6 +55,7 @@ public class Autonomous implements Runnable {
 		if(startingPosition.getTeamColor().approximatelyEquals(colorSensor.sense()))
 			motion.strafe(JEWEL_STRAFE_DISTANCE, SIDE_OF_COLOR_SENSOR);
 		else
+
 			motion.strafe(JEWEL_STRAFE_DISTANCE, SIDE_OPPOSITE_TO_COLOR_SENSOR);
 	}
 	
