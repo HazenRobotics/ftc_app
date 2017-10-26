@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -32,6 +34,10 @@ public class RobotTeleOp extends OpMode {
     @Hardware
     protected CRServo armControlServo;
 
+    // Digital channels
+    protected DigitalChannel limitOpen;
+    protected DigitalChannel limitClosed;
+
     // Motors for each wheel
     @Hardware
     protected DcMotor leftFront;
@@ -45,11 +51,16 @@ public class RobotTeleOp extends OpMode {
     // The lift motor
     @Hardware
     protected DcMotor lift;
+    @Hardware
+    protected Servo scoop;
 
     //Add all Constants here
     protected static final double ARM_MOTOR_POWER = 0.4;
     protected static final double ARM_SERVO_POWER = 0.4;
-    protected static final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected final double CLAW_POWER = 0.2;
+    protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected ElapsedTime clawRuntime = new ElapsedTime();
+
 
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
@@ -61,14 +72,19 @@ public class RobotTeleOp extends OpMode {
     protected static final double MAIN_LIFT_SPEED = 0.5;
 
     protected MotionController wheels;
-    
+
+    protected static final int MAIN_LIFT_ERROR_RANGE = 20;
+    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Corrcect Sccop Down Position
+    protected static final double SCOOP_UP_POS = 1.0; //Insert Corrdct Sccop Up Positon
+
+
     @Override
     public void init() {
     	setupHardware();
         setupTelemetry();
         setupTrackers();
     }
-    
+
     @Override
     public void loop() {
     	reactions.update();
@@ -109,19 +125,31 @@ public class RobotTeleOp extends OpMode {
         }
     }
 
+
+
     protected void setupHardware() {
         initializeVariables();
 
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        claw.setDirection(DcMotor.Direction.FORWARD);
+
         armMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+
+        limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
+        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
+        limitOpen.setMode(DigitalChannel.Mode.INPUT);
+        limitClosed.setMode(DigitalChannel.Mode.INPUT);
 
         // TODO: add IWheels implementation
         // This branch doesn't have motion_implementation stuff yet
         wheels = new MotionController(null, new Position(new Vector(0, 0), 0));
     }
-    
+
     protected void setupTelemetry() {
     	// We display the reactive value liftPosition to the telemetry
     	telemetry.track("Lift Position", "liftPosition");
@@ -137,10 +165,10 @@ public class RobotTeleOp extends OpMode {
     	/*
     	 * This is where the reaction system starts: what the reactive system does does in fact
     	 * have a name-- the reactive programming paradigm. But that's not important right now.
-    	 * 
+    	 *
     	 * Conceptually, this is pretty abstract, but it'll make a lot more sense once you see
     	 * how it's used. Just bear with me, okay?
-    	 * 
+    	 *
     	 * In normal programming, a variable contains a value, e.g.
     	 * 	 x = 0
     	 * but in reactive programming, a variable tracks a value /over time/. This means that a
@@ -151,18 +179,18 @@ public class RobotTeleOp extends OpMode {
     	 * In normal programming, y = 6. In reactive programming, y = 10. Y is not a value of x
     	 * times 2, it is DEFINED AS x * 2. No matter what x is, y will always be x * 2. It
     	 * works a lot like how math does, essentially, at least in terms of domain constraints.
-    	 * 
+    	 *
     	 * From here, the actual usage will explain it to you.
     	 */
-    	
+
     	/*
     	 * Here, we are reactively saying
     	 *    liftUp = gamepad2.dpad_up
     	 *  which is important to remember means "liftUp is defined as gamepad2.dpad_up", not
     	 *  "liftUp is the current value of gamepad2.dpad_up".
-    	 *  
+    	 *
     	 *  Let's break the line down a bit.
-    	 *  
+    	 *
     	 *  reactions: reactions stores all of the variables in the system.
     	 *  make: we are now making a new variable-- this is like the =
     	 *  name: gives the name of the variable
@@ -174,7 +202,7 @@ public class RobotTeleOp extends OpMode {
     	 * we can't just write in gamepad2.dpad_up, or Java would just interpret it as the current
     	 *  	value of dpad_up! We have to write it in some other way, and this is how we do it-- break it into
     	 *  	gamepad2 (onObject) and the field (get).
-    	 *  
+    	 *
     	 *  So from now on, liftUp will always be whatever value gamepad2.dpad_up is.
     	 */
     	// Lift automatic controls
@@ -186,16 +214,16 @@ public class RobotTeleOp extends OpMode {
          *
          * There are clearer ways to write this same thing, but this makes more sense since it's
          * shorter, and we're going to be doing this a lot. We'll get to the other ways later.
-         * 
+         *
          * onClass: we're using this instead of onObject because ArmDirection.fromButtons is static, so it
          * doesn't make sense to give it something to call fromButtons on!
-         * 
+         *
          * run: now instead of getting a field, we're making a method call. We're calling ArmDirection.fromButtons
          * on the values of liftUp and liftDown-- the first parameter is the method name, and the rest of it is
          * the values passed into the method.
          */
         reactions.define("liftDirection", Value.from(MotionType::fromButtons), "liftUp", "liftDown");
-        
+
         // Lift manual controls
         reactions.define("liftPowerUp", Value.fromField("right_trigger", gamepad2));
         reactions.define("liftPowerDown", Value.fromField("left_trigger", gamepad2));
@@ -204,7 +232,7 @@ public class RobotTeleOp extends OpMode {
         reactions.define("clawPower", Value.fromField("right_stick_x", gamepad2));
         reactions.define("clawPosition", Value.fromMethod("getPosition", claw));
         reactions.define("clawDirection", Value.from(MotionType::fromSign), "fromSign", "clawPower");
-        
+
         // Arm controls
         reactions.define("armExtend", Value.fromField("x", gamepad1));
         reactions.define("armRetract", Value.fromField("y", gamepad1));
@@ -218,10 +246,10 @@ public class RobotTeleOp extends OpMode {
          */
     	reactions.register(this);
     }
-    
+
     /**
      * This makes registering joysticks easier by automating the gamepad access and adjustJoystickValue conversions.
-     * 
+     *
      * @param base_name The base name of the joystick, e.g. right_stick for the values gamepad.right_stick_x and right_stick_y
      */
     protected void registerJoystick(Object gamepad, String base_name, String x_name, String y_name) throws NoSuchFieldException, IllegalAccessException, TypeException {
@@ -232,21 +260,21 @@ public class RobotTeleOp extends OpMode {
         reactions.define(x_name, Value.from(RobotTeleOp::adjustJoystickPosition), raw_x_name);
         reactions.define(y_name, Value.from(RobotTeleOp::adjustJoystickPosition), raw_y_name);
     }
-    
+
     /*
      * Now we're getting to why it matters.
-     * 
+     *
      * @Reactive means that this is NOT A METHOD, it is a VARIABLE.
      * Can you think of why?
-     * 
+     *
      * If you were attentive earlier, you may have made the connection that, wait a minute, variables aren't
      * values, they're definitions of a value? Isn't that just a function? Well yes, it is! This function
      * tells us that
      * 		glyphRow = liftPosition / COUNT_PER_GLYPH_HEIGHT
      * .
-     * 
+     *
      * Breakdown:
-     * 
+     *
      * @Reactive: This is a variable in the reactive system
      * 		name = "asad": While we do not use it here, you can set the name of the variable in the reactive system
      * 			to be something other than the method name. We're not doing that here, so it's just called glyphRow.
@@ -255,7 +283,7 @@ public class RobotTeleOp extends OpMode {
      * 			automatic too, just like the variable name is, but it's not possible because Java doesn't keep
      * 			parameter names at runtime unless you have debug symbols enabled, and I wouldn't want to force that.
      *			I could technically do it with a compiler plugin but hahaha no.
-     * 
+     *
      * Actually, the rest I hope is obvious.
      */
     /** Calculates the row that the lift is currently closest to. */
@@ -291,11 +319,23 @@ public class RobotTeleOp extends OpMode {
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(MAIN_LIFT_SPEED);
     }
-    
+
     @Reactive(depends = { "liftPowerUp", "liftPowerDown" })
     public double liftPower(float liftPowerUp, float liftPowerDown) {
         return liftPowerUp - liftPowerDown;
     }
+        //D Pad used to control Main Lift (Added as buttons), stops here
+        if(!(mainLift.isBusy() && autoMainLiftRunning)){
+            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            mainLift.setPower(0);
+            autoMainLiftRunning = false;
+        }
+        //Right and Left Bumpers Control The Sccop
+        if(gamepad2.right_bumper)
+            scoop.setPosition(SCOOP_UP_POS);
+
+        if(gamepad2.left_bumper)
+            scoop.setPosition(SCOOP_DOWN_POS);
 
     @Reactive(depends = { "liftPower", "liftPosition" })
     public void runLiftManual(float liftPower, float liftPosition) {
@@ -305,13 +345,17 @@ public class RobotTeleOp extends OpMode {
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.setPower(liftPower);
     }
+        // Debugs to show the motor position
+        lift_position = mainLift.getCurrentPosition();
+        telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
+    }
 
     @Reactive(depends = "armDirection")
     public void runArm(MotionType direction) {
         armMotor.setPower(direction.toSign() * ARM_MOTOR_POWER);
         armControlServo.setPower(direction.toSign() * ARM_SERVO_POWER);
     }
-    
+
     /*
      * Remember that registerConversion thing earlier?
      * This is the long way of doing that. I could actually still do that,
@@ -321,14 +365,24 @@ public class RobotTeleOp extends OpMode {
     public float clawMovement(MotionType clawDirection) {
     	return clawDirection.toSign() * 0.1f;
     }
-    
+
     @Reactive(depends = { "clawPosition", "clawMovement" })
     public void runClaw(float clawPosition, float clawMovement) {
-    	claw.setPosition(clawPosition + clawMovement);
+        claw.setPosition(clawPosition + clawMovement);
     }
 
     @Reactive(depends = { "wheelPowerX", "wheelPowerY" })
     protected void withWheels(float wheelPowerX, float wheelPowerY) {
         wheels.move(Vector.fromPolar(wheelPowerX, wheelPowerY));
+    }
+
+    @Override
+    public DcMotor getMotor(String name) {
+        return hardwareMap.dcMotor.get(name);
+    }
+
+    @Override
+    public DigitalChannel getDigitalChannel(String name) {
+        return hardwareMap.digitalChannel.get(name);
     }
 }

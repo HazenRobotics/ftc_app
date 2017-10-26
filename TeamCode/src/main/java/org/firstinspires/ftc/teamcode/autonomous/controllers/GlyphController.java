@@ -25,14 +25,14 @@ public class GlyphController {
 	 */
 	public void pickUp() {
 		arm.grabGlyph();
-		lift.raise();
+		lift.setLiftHeight(1);
 	}
 	
 	/**
 	 * Sets down any glyph the robot may be carrying.
 	 */
 	public void setDown() {
-		lift.lower();
+		lift.setLiftHeight(0);
 		arm.dropGlyph();
 	}
 }
