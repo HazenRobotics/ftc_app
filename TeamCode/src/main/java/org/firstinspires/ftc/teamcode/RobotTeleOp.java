@@ -303,7 +303,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
         // Debugs to show the motor position
         lift_position = mainLift.getCurrentPosition();
-        telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
+        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
     }
 
 
@@ -341,17 +341,23 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Forward = extend, backwards = retract
     protected void manualArmControl()
     {
+        //potentially change to motor or put in limit switches.
         if(gamepad2.left_stick_y > JOYSTICK_ERROR_RANGE || gamepad2.left_stick_y < -JOYSTICK_ERROR_RANGE)
         {
             armControlServo.setPower(gamepad2.left_stick_y);
+            telemetry.addData("Left Stick Power: ",gamepad2.left_stick_y);
+            telemetry.update();
         }
         else
         {
             armControlServo.setPower(0);
         }
+
         if(gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE || gamepad2.right_stick_y < -JOYSTICK_ERROR_RANGE)
         {
             armMotor.setPower(gamepad2.right_stick_y);
+            telemetry.addData("Right Stick Power: ",gamepad2.right_stick_y);
+            telemetry.update();
         }
         else
         {
