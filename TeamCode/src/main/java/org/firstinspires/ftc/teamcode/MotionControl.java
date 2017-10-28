@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
  * Created by Robotics on 10/10/2017.
@@ -18,14 +19,37 @@ public class MotionControl {
     protected static final double COUNTS_PER_REV = 1440.0;
     protected static final double WHEEL_DIAMETER = 4.0;
     protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER);
-    protected static final double ROBOT_RADIUS = 1.0;
+    protected static final double ROBOT_RADIUS = 9.0;
     protected static final double ROBOT_TURNING_CIRCUMFERENCE = Math.PI * (2 * ROBOT_RADIUS);
     protected static final double DRIVE_SPEED = 1.0;
 
     //Global Variables
 
-    public void move(double moveDistance, double strafeAngle)
-    {
+
+    public MotionControl(HardwareMap hardwareMap) {
+        leftFront = hardwareMap.dcMotor.get("leftFront");
+        leftBack = hardwareMap.dcMotor.get("leftBack");
+        rightFront = hardwareMap.dcMotor.get("rightFront");
+        rightBack = hardwareMap.dcMotor.get("rightBack");
+    }
+
+    public void move(double moveDistance, double strafeAngle) {
+        move(moveDistance, strafeAngle, 1.0);
+    }
+
+    public void turn(double turnAngle) {
+        turn(turnAngle, 1.0);
+    }
+
+    public double move(double strafeAngle, Condition condition) {
+        return move(strafeAngle, condition, 1.0);
+    }
+
+    public void turn(boolean positiveDir, Condition condition) {
+        turn(positiveDir, condition, 1.0);
+    }
+
+    public void move(double moveDistance, double strafeAngle, double speed) {
         double counts = moveDistance * COUNTS_PER_INCH;
         double strafeAngleRadians = Math.toRadians(strafeAngle);
         double x = Math.cos(strafeAngleRadians);
@@ -46,22 +70,22 @@ public class MotionControl {
         int leftBackTarget = (int) (leftBackPower * counts);
         int rightBackTarget = (int) (rightBackPower * counts);
 
-        leftFront.setTargetPosition(leftFrontTarget);
-        leftBack.setTargetPosition(leftBackTarget);
-        rightFront.setTargetPosition(rightFrontTarget);
-        rightBack.setTargetPosition(rightBackTarget);
+        leftFront.setTargetPosition(leftFront.getCurrentPosition() + leftFrontTarget);
+        leftBack.setTargetPosition(leftBack.getCurrentPosition() + leftBackTarget);
+        rightFront.setTargetPosition(rightFront.getCurrentPosition() + rightFrontTarget);
+        rightBack.setTargetPosition(rightBack.getCurrentPosition() + rightBackTarget);
 
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(leftFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightFront.setPower(rightFrontPower);
-        rightBack.setPower(rightBackPower);
+        leftFront.setPower(leftFrontPower * speed);
+        leftBack.setPower(leftBackPower * speed);
+        rightFront.setPower(rightFrontPower * speed);
+        rightBack.setPower(rightBackPower * speed);
 
-        while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
+        while (leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //can be used to display messages on the phone through telemetry
             //idle();
         }
@@ -77,8 +101,7 @@ public class MotionControl {
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void turn(double turnAngle)
-    {
+    public void turn(double turnAngle, double speed) {
         double turnDistance = (turnAngle / 360) * ROBOT_TURNING_CIRCUMFERENCE;
         double counts = turnDistance * COUNTS_PER_INCH;
 
@@ -87,13 +110,14 @@ public class MotionControl {
         double leftBackPower = 0;
         double rightBackPower = 0;
 
-        if(turnAngle > 0){ //checks to see if angle is positive or negative to determine if bot turns left or right
+        if (turnAngle > 0) { //checks to see if angle is positive or negative to determine if bot turns left or right
             leftFrontPower = -DRIVE_SPEED;
             leftBackPower = -DRIVE_SPEED;
             rightFrontPower = DRIVE_SPEED;
             rightBackPower = DRIVE_SPEED;
         }
-        else{
+        //s
+        else {
             leftFrontPower = DRIVE_SPEED;
             leftBackPower = DRIVE_SPEED;
             rightFrontPower = -DRIVE_SPEED;
@@ -106,23 +130,22 @@ public class MotionControl {
         int leftBackTarget = (int) (leftBackPower * counts);
         int rightBackTarget = (int) (rightBackPower * counts);
 
-        leftFront.setTargetPosition(leftFrontTarget);
-        leftBack.setTargetPosition(leftBackTarget);
-        rightFront.setTargetPosition(rightFrontTarget);
-        rightBack.setTargetPosition(rightBackTarget);
+        leftFront.setTargetPosition(leftFront.getCurrentPosition() + leftFrontTarget);
+        leftBack.setTargetPosition(leftBack.getCurrentPosition() + leftBackTarget);
+        rightFront.setTargetPosition(rightFront.getCurrentPosition() + rightFrontTarget);
+        rightBack.setTargetPosition(rightBack.getCurrentPosition() + rightBackTarget);
 
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(leftFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightFront.setPower(rightFrontPower);
-        rightBack.setPower(rightBackPower);
+        leftFront.setPower(leftFrontPower * speed);
+        leftBack.setPower(leftBackPower * speed);
+        rightFront.setPower(rightFrontPower * speed);
+        rightBack.setPower(rightBackPower * speed);
 
-        while(leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
-            //can be used to display messages on the phone through telemetry
+        while (leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
             //idle();
         }
 
@@ -136,4 +159,94 @@ public class MotionControl {
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+    public void turn(boolean positiveDir, Condition condition, double speed) {
+        double leftFrontPower = 0;
+        double rightFrontPower = 0;
+        double leftBackPower = 0;
+        double rightBackPower = 0;
+
+        if (positiveDir) {
+            leftFrontPower = -DRIVE_SPEED;
+            leftBackPower = -DRIVE_SPEED;
+            rightFrontPower = DRIVE_SPEED;
+            rightBackPower = DRIVE_SPEED;
+        } else {
+            leftFrontPower = DRIVE_SPEED;
+            leftBackPower = DRIVE_SPEED;
+            rightFrontPower = -DRIVE_SPEED;
+            rightBackPower = -DRIVE_SPEED;
+        }
+
+        leftFront.setPower(leftFrontPower * speed);
+        leftBack.setPower(leftBackPower * speed);
+        rightFront.setPower(rightFrontPower * speed);
+        rightBack.setPower(rightBackPower * speed);
+
+        while (!condition.isTrue()) {
+            //idle()
+        }
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public double move(double strafeAngle, Condition condition, double speed) {
+
+
+        double strafeAngleRadians = Math.toRadians(strafeAngle);
+        double x = Math.cos(strafeAngleRadians);
+        double y = Math.sin(strafeAngleRadians);
+
+        double magnitude = Math.abs(y) + Math.abs(x); //total sum of all inputs
+        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
+
+        double leftFrontPower = (y + x) / scale;
+        double rightFrontPower = (y - x) / scale;
+        double leftBackPower = (y - x) / scale;
+        double rightBackPower = (y + x) / scale;
+
+        int initialCounts;
+
+        if (leftFrontPower != 0) {
+            initialCounts = leftFront.getCurrentPosition();
+        } else {
+            initialCounts = rightFront.getCurrentPosition();
+        }
+
+        //pick wheel to track
+        //get that wheels initial position
+
+        leftFront.setPower(leftFrontPower * speed);
+        leftBack.setPower(leftBackPower * speed);
+        rightFront.setPower(rightFrontPower * speed);
+        rightBack.setPower(rightBackPower * speed);
+
+        while (!condition.isTrue()) {
+            //idle();
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+
+        int finalCounts;
+        double distance;
+
+        if (leftFrontPower != 0) {
+            finalCounts = leftFront.getCurrentPosition();
+            distance = (finalCounts - initialCounts) / (leftFrontPower * COUNTS_PER_INCH);
+        } else {
+            finalCounts = rightFront.getCurrentPosition();
+            distance = (finalCounts - initialCounts) / (rightFrontPower * COUNTS_PER_INCH);
+        }
+
+        //get final position
+        //do inverse math to find distance moved
+
+        return distance;
+    }
+
 }

@@ -29,10 +29,10 @@ public class I2cRangeSensor {
         //rangeAdress = new I2cAddr(0x14);
     }
     //constructor for custum address
-    //give 7 bit adress
-    public I2cRangeSensor(I2cAddr adress, I2cDevice sensor) {
+    //give 7 bit address
+    public I2cRangeSensor(I2cAddr address, I2cDevice sensor) {
         RANGE = sensor;
-        changeAdress(adress);
+        changeAdress(address);
     }
     //changes the address of the sensor
     //give 7 bit adress

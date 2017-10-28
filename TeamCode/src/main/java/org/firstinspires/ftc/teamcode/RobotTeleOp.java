@@ -14,7 +14,6 @@ import java.util.ArrayList;
  */
 
 @TeleOp(name="TeleOp", group="TeleOp")
-@Disabled
 public class RobotTeleOp extends LinearOpMode {
 
     //Add all global objects and lists
@@ -85,19 +84,7 @@ public class RobotTeleOp extends LinearOpMode {
 
             armPlusClaw();
 
-                mainLift.setPower(-(gamepad2.left_trigger));
-            }
-            else {
-                mainLift.setPower(0.0);
-            }
 
-            //Small Lift Power
-            if (gamepad2.right_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_LOWER_POS);
-            }
-            else if (gamepad2.left_bumper == true){
-                smallLift.setPosition(SMALL_LIFT_UPPER_POS);
-            }
 
             //nextPosition
             /*if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
@@ -112,13 +99,10 @@ public class RobotTeleOp extends LinearOpMode {
             else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
                 nextPosition = glyphFour;
             }
-
             //D Pad used to control Main Lift
             if((gamepad2.dpad_up == false) && (gamepad2.dpad_down == false)) {
                 DPadMoving = false;
             }
-
-
             if(gamepad2.dpad_up == true) {
                 DPadMoving = true
                 mainLift.setPower(nextPosition-currentPosition);
@@ -323,7 +307,6 @@ public class RobotTeleOp extends LinearOpMode {
         //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
         if(gamepad2.y == true)
             claw.setPower(CLAW_POWER);
-
         else if(gamepad2.y == false)
             claw.setPower(0.0);
         //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
