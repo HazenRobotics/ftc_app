@@ -32,7 +32,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Claw Vars
     protected boolean clawClosing = false;
 
-
     //Add Motors, Servos, Sensors, etc here
     //EX: protected DcMotor motor;
 
@@ -41,8 +40,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected CRServo armControlServo;
     protected boolean armManual = false;
     protected DcMotor claw;
-    protected DigitalChannel limitOpen;
+    //protected DigitalChannel limitOpen;
     protected DigitalChannel limitClosed;
+    protected ElapsedTime clawRuntime = new ElapsedTime();
 
     //Wheel Motors
     protected DcMotor leftFront;
@@ -60,8 +60,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
-    protected ElapsedTime clawRuntime = new ElapsedTime();
-
 
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
@@ -110,6 +108,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         scoop = hardwareMap.servo.get("scoopServo");
+
         claw = getMotor("claw");
         claw.setDirection(DcMotor.Direction.FORWARD);
         armControlServo = hardwareMap.crservo.get("armControlServo");
@@ -124,9 +123,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
 
-        limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
+        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
         limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
-        limitOpen.setMode(DigitalChannel.Mode.INPUT);
+        //limitOpen.setMode(DigitalChannel.Mode.INPUT);
         limitClosed.setMode(DigitalChannel.Mode.INPUT);
     }
 
@@ -203,9 +202,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
-        if((clawClosing && limitClosed.getState()) || (!clawClosing && limitOpen.getState()))
+        if((clawClosing && limitClosed.getState())/* || (!clawClosing && limitOpen.getState())*/) {
             claw.setPower(0);
-
+        }
+        else if(!clawClosing)
+        {
+            clawRuntime.reset();
+            while (opModeIsActive() && (clawRuntime.seconds() < 1.5)) {
+                idle();
+            }
+            claw.setPower(0);
+        }
     }
 
     protected void drive() {
