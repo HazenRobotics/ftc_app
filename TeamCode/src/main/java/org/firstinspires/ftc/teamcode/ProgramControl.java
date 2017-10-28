@@ -37,7 +37,7 @@ public class ProgramControl extends LinearOpMode
     }
 
     /**
-     * This method will drive forward and count the number of lines it sees. When the 4th
+     * This method will mainLift forward and count the number of lines it sees. When the 4th
      * line is seen, the robot will stop.
      */
     private void countLines()
@@ -178,7 +178,7 @@ public class ProgramControl extends LinearOpMode
     }
 
     /**
-     * This method will drive the robot forward until the distance sensor on the front of the robot is
+     * This method will mainLift the robot forward until the distance sensor on the front of the robot is
      * about 3 inches from the wall. At this point the robot will stop moving and the
      * autonomous program is complete.
      */
@@ -217,7 +217,7 @@ public class ProgramControl extends LinearOpMode
         fLeftMotor = hardwareMap.dcMotor.get("leftMotor");
         fRightMotor = hardwareMap.dcMotor.get("rightMotor");
 
-        // eg: Set the drive motor directions:
+        // eg: Set the mainLift motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         fLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         fRightMotor.setDirection(DcMotor.Direction.FORWARD);

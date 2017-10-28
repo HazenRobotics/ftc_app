@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 /**
  * Created by Alex on 9/23/2017.
  */
-@Disabled
+
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
 
@@ -64,16 +64,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
 
     //Lift Constants
-    protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
-    protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
-    protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
-    protected static final double LIFT_INCHES_PER_REV = 0.0;// Dont know yet
-    protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
+    protected static final double GLYPH_HEIGHT = 6.0; //Insert Glyph Height Here
+    protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1120;
+    protected static final double GEAR_DIAMETER_INCHES = 2.5 ;     // For figuring circumference
+    //protected static final double LIFT_INCHES_PER_REV = 0.0;// Dont know yet Not Needed?
+    protected static final int LIFT_COUNTS_PER_INCH = ((LIFT_COUNTS_PER_MOTOR_REV ) /
+                                                        (int)(GEAR_DIAMETER_INCHES * Math.PI));
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
-    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Corrcect Sccop Down Position
-    protected static final double SCOOP_UP_POS = 1.0; //Insert Corrdct Sccop Up Positon
+    protected static final double SCOOP_DOWN_POS = 0.0;
+    protected static final double SCOOP_UP_POS = 0.75;
 
 
     @Override
@@ -157,7 +158,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             public void onPress() {
                 calculateTargetPositionDOWN();
                 mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                mainLift.setPower(-MAIN_LIFT_SPEED);
+                mainLift.setPower(MAIN_LIFT_SPEED);
                 autoMainLiftRunning = true;
             }
         });
@@ -296,7 +297,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
         // Debugs to show the motor position
         lift_position = mainLift.getCurrentPosition();
-        telemetry.addData("main lift position","MainLift Position:"+String.format("%.2f",lift_position));
+        telemetry.addData("main mainLift position","MainLift Position:"+String.format("%.2i",lift_position));
     }
 
 

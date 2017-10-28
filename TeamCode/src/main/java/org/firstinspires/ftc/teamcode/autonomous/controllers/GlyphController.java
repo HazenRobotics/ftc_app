@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.interfaces.IArm;
 import org.firstinspires.ftc.teamcode.interfaces.ILift;
 
 /**
- * A means for autonomous to access the lift and arm, and control glyphs.
+ * A means for autonomous to access the mainLift and arm, and control glyphs.
  */
 public class GlyphController {
 	private final IArm arm;
@@ -13,7 +13,7 @@ public class GlyphController {
 	/**
 	 * Creates a new glyph controller using the given hardware.
 	 * @param arm The arm to grab glyphs.
-	 * @param lift The lift to raise the arm.
+	 * @param lift The mainLift to raise the arm.
 	 */
 	public GlyphController(IArm arm, ILift lift) {
 		this.arm = arm;

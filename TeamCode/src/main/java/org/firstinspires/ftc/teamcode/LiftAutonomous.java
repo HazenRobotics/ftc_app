@@ -21,7 +21,9 @@ public class LiftAutonomous extends LinearOpMode {
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
     protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
     protected static final double LIFT_INCHES_PER_REV = 0.0;// Dont know yet
-    protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
+    protected static final double GEAR_DIAMETER_INCHES = 2.5;
+    protected static final int LIFT_COUNTS_PER_INCH = ((int)(LIFT_COUNTS_PER_MOTOR_REV ) /
+            (int)(GEAR_DIAMETER_INCHES * Math.PI));
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;

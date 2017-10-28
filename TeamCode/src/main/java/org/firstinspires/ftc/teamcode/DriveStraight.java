@@ -50,7 +50,7 @@ public class DriveStraight extends LinearOpMode
         fLeftMotor = hardwareMap.dcMotor.get("leftMotor");
         fRightMotor = hardwareMap.dcMotor.get("rightMotor");
 
-        // eg: Set the drive motor directions:
+        // eg: Set the mainLift motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
         fLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         fRightMotor.setDirection(DcMotor.Direction.FORWARD);
