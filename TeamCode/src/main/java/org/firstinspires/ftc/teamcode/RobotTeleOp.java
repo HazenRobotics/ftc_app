@@ -241,7 +241,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Add new methods for functionality down here
 
-    //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is inbetween.
+    //Sets new position for main life when using the up d pad by using the current position to figure out what height marker it is in between.
     //Finds the next Lift's Target Position when going up
     protected void calculateTargetPositionUP() {
         lift_position = mainLift.getCurrentPosition();
@@ -294,7 +294,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             mainLift.setPower(0);
             autoMainLiftRunning = false;
         }
-        //Right and Left Bumpers Control The Sccop
+        //Right and Left Bumpers Control The Scoop
         if(gamepad2.right_bumper)
             scoop.setPosition(SCOOP_UP_POS);
 
