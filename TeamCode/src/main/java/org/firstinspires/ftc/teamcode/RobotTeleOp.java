@@ -70,8 +70,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
-    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Corrcect Sccop Down Position
-    protected static final double SCOOP_UP_POS = 1.0; //Insert Corrdct Sccop Up Positon
+    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Correct Scoop Down Position
+    protected static final double SCOOP_UP_POS = 1.0; //Insert Correct Scoop Up Position
 
 
     @Override
