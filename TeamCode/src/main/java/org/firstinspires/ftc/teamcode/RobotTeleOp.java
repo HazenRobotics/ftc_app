@@ -99,13 +99,10 @@ public class RobotTeleOp extends LinearOpMode {
             else if ((currentPosition < GLYPH_HEIGHT * 0) && (currentPosition > GLYPH_HEIGHT * 0)) {
                 nextPosition = glyphFour;
             }
-
             //D Pad used to control Main Lift
             if((gamepad2.dpad_up == false) && (gamepad2.dpad_down == false)) {
                 DPadMoving = false;
             }
-
-
             if(gamepad2.dpad_up == true) {
                 DPadMoving = true
                 mainLift.setPower(nextPosition-currentPosition);
@@ -308,7 +305,6 @@ public class RobotTeleOp extends LinearOpMode {
         //When up arrow pressed, arm moves forward.  When up arrow released, arm stops moving.
         if(gamepad2.y == true)
             claw.setPower(CLAW_POWER);
-
         else if(gamepad2.y == false)
             claw.setPower(0.0);
         //When down arrow pressed, arm retracts.  When down arrow released, arm stops moving
