@@ -1,22 +1,21 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.teamcode.Condition;
-import org.firstinspires.ftc.teamcode.MotionControl;
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
+import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
+import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.RelicRecoveryLocalizer;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.models.Color;
 import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
 public class Autonomous implements Runnable {
 
-	HardwareMap hardwareMap;
+	IHardware hardware;
 	public static final float JEWEL_READ_DISTANCE = 7.5f;
 	public static final float JEWEL_KNOCK_DISTANCE = 10.5f;
 	public static final float JEWEL_STRAFE_DISTANCE = 0;
@@ -29,23 +28,23 @@ public class Autonomous implements Runnable {
 	public static final double WORKING_DISTANCE = 0; //change this to be the distance away that we need to be from the crypto box before vuforia stops working
 
 	private final StartingPosition startingPosition;
-	private final MotionControl motion;
+	private final MechanamMotors motion;
 	private final I2cColorSensor colorSensor;
     protected final RelicRecoveryLocalizer localizer;
     RelicRecoveryVuMark vuuMark;
     I2cRangeSensor rangeSensor;
 	ModernRoboticsI2cGyro gyro;
 
-	public Autonomous(HardwareMap hardwareMap, StartingPosition startingPosition) {
-		this.hardwareMap = hardwareMap;
+	public Autonomous(IHardware hardware, StartingPosition startingPosition) {
+		this.hardware = hardware;
 		this.startingPosition = startingPosition;
-		this.motion = new MotionControl(hardwareMap);
-		this.colorSensor = new I2cColorSensor(new I2cAddr(0x28), hardwareMap.i2cDevice.get("jewelSensor"));
+		this.motion = new MechanamMotors(hardware);
+		this.colorSensor = new I2cColorSensor(new I2cAddr(0x28), hardware.getDevice("jewelSensor"));
 		this.localizer = new RelicRecoveryLocalizer("AeCNMrn/////AAAAGRlPvGpkjUVapbG0iA01W9pxODQbY2cczmmaGy8CmYxrxKgX4Vf4DTayzCXCJeYBCtDVd5iWQFKFtnbAlSlvIqJmcUnLOF79x5QwSpMX9hJER259y94/" +
 				"bdZGZYj9XRg07DZZOpFwAERjcIH6HBVJcTG6/M+oLw4ObLbiY0EqZhZA6app2Tep5BDzsDSI9DwWrR2LqqPxJSRwwGqxqlkja+u3ggLEQmWalqr2n20ywTZUpHvqtBuP53AgnJZCs4HNc57+XhhjkJWLIBnb3HBPZAZMA4uZfAq" +
 				"I1uP8E1L+wgiAGretWwRrO3X/frXXIi5IJU9JDx52szfHeOr8kYBekeA/Ir5RygBs6yUNDPsepHkq", true, true);
-		rangeSensor = new I2cRangeSensor(new I2cAddr(0x28), hardwareMap.i2cDevice.get("rangeSensor"));
-		gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+		rangeSensor = new I2cRangeSensor(new I2cAddr(0x28), hardware.getDevice("rangeSensor"));
+		gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
 		gyro.calibrate();
 		//TODO: Does this even work?
 		while(gyro.isCalibrating()) {

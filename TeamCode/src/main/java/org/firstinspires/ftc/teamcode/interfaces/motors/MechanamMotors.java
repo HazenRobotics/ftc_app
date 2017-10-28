@@ -1,13 +1,18 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
+import org.firstinspires.ftc.teamcode.interfaces.IWheels;
+import org.firstinspires.ftc.teamcode.models.Condition;
+import org.firstinspires.ftc.teamcode.models.Vector;
 
 /**
  * Created by Robotics on 10/10/2017.
  */
 
-public class MotionControl {
+public class MechanamMotors implements IWheels {
     //Declare motor Variables
     protected DcMotor leftFront;
     protected DcMotor rightFront;
@@ -26,11 +31,15 @@ public class MotionControl {
     //Global Variables
 
 
-    public MotionControl(HardwareMap hardwareMap) {
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        leftBack = hardwareMap.dcMotor.get("leftBack");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
-        rightBack = hardwareMap.dcMotor.get("rightBack");
+    public MechanamMotors(IHardware hardware) {
+        leftFront = hardware.getMotor("leftFront");
+        leftBack = hardware.getMotor("leftBack");
+        rightFront = hardware.getMotor("rightFront");
+        rightBack = hardware.getMotor("rightBack");
+    }
+
+    public void move(Vector displacement) {
+        move(displacement.getMagnitude(), displacement.getAngle());
     }
 
     public void move(double moveDistance, double strafeAngle) {

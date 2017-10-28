@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.ILift;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.interfaces.ILift;
 public class LiftMotors implements ILift {
 	protected final IHardware hardware;
     protected final DcMotor liftMotor;
+    protected final Servo scoop;
 
     protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
@@ -16,10 +18,13 @@ public class LiftMotors implements ILift {
     protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
+    protected static final double SCOOP_LOWERED_POSITION = 0.0;
+    protected static final double SCOOP_RAISED_POSITION = 0.75;
 
     public LiftMotors(IHardware hardware) {
     	this.hardware = hardware;
     	liftMotor = hardware.getMotor("lift");
+        scoop = hardware.getServo("scoop");
     	liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
@@ -44,5 +49,22 @@ public class LiftMotors implements ILift {
         //once reached position, set power to 0 and start using encoders again
         liftMotor.setPower(0);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Override
+    public void setScoopTopHeight(double scoopTopHeight){
+        scoop.setPosition(scoopTopHeight);
+    }
+    @Override
+    public void setScoopBottomHeight(double scoopBottomHeight){
+        scoop.setPosition(scoopBottomHeight);
+    }
+
+    public void dropScoop() {
+        scoop.setPosition(SCOOP_LOWERED_POSITION);
+    }
+
+    public void raiseScoop() {
+        scoop.setPosition(SCOOP_RAISED_POSITION);
     }
 }

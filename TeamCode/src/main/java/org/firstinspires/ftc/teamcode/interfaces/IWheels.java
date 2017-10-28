@@ -10,7 +10,7 @@ public interface IWheels {
      * Moves directly by a given displacement without any turning via mechanam wheels.
      * @param displacement The amount to move.
      */
-	public void strafe(Vector displacement);
+	public void move(Vector displacement);
 	
 	/**
 	 * Turns the robot by a given angle.

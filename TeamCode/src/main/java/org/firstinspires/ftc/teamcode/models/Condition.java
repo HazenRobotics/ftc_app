@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.models;
 
 /**
  * Created by Robotics on 10/28/2017.
