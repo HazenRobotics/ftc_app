@@ -22,7 +22,7 @@ public class MechanumMotors implements IWheels {
 
     //Declare Constants
     //TODO: Currently arbitrary numbers, need to change for actual robot
-    protected static final double COUNTS_PER_REV = 1440.0;
+    protected static final double COUNTS_PER_REV = 1680.0;
     protected static final double WHEEL_DIAMETER = 4.0;
     protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER);
     protected static final double ROBOT_RADIUS = 9.0;
@@ -31,13 +31,17 @@ public class MechanumMotors implements IWheels {
 
     //Global Variables
 
-
     public MechanumMotors(IHardware hardware) {
         this.hardware = hardware;
         leftFront = hardware.getMotor("leftFront");
         leftBack = hardware.getMotor("leftBack");
         rightFront = hardware.getMotor("rightFront");
         rightBack = hardware.getMotor("rightBack");
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void move(Vector displacement) {
@@ -71,8 +75,8 @@ public class MechanumMotors implements IWheels {
     public void move(double strafeAngle, double moveDistance, double speed) {
         double counts = moveDistance * COUNTS_PER_INCH;
         double strafeAngleRadians = Math.toRadians(strafeAngle);
-        double x = Math.cos(strafeAngleRadians);
-        double y = Math.sin(strafeAngleRadians);
+        double x = Math.sin(strafeAngleRadians);
+        double y = Math.cos(strafeAngleRadians);
 
         double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
@@ -211,8 +215,8 @@ public class MechanumMotors implements IWheels {
 
     public double move(double strafeAngle, Condition condition, double speed) {
         double strafeAngleRadians = Math.toRadians(strafeAngle);
-        double x = Math.cos(strafeAngleRadians);
-        double y = Math.sin(strafeAngleRadians);
+        double x = Math.sin(strafeAngleRadians);
+        double y = Math.cos(strafeAngleRadians);
 
         double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1

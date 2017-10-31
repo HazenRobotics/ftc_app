@@ -41,13 +41,14 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
     	
     	status = "Waiting for start";
     	telemetry.update();
-    	
+
+        Thread autonomous = new Thread(new Autonomous(hardware, telemetry, startingPosition));
+
     	waitForStart();
 
 		status = "Running Autonomous";
 
     	// TODO: Rework this entire method of handling autonomous control flow
-    	Thread autonomous = new Thread(new Autonomous(hardware, telemetry, startingPosition));
     	autonomous.start();
     	
         while (opModeIsActive())

@@ -66,14 +66,16 @@ public class Autonomous implements Runnable {
 		this.colorSensor = new I2cColorSensor(hardware.getDevice("jewelSensor"));
 		this.rangeSensor = new I2cRangeSensor(hardware.getDevice("rangeSensor"));
 		//TODO: Might throw exception about bad cast?
-		this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
+		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
+		gyro = null;
 		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
 
-		gyro.calibrate();
+
+		/*gyro.calibrate();
 		//TODO: Does this even work?
 		while(gyro.isCalibrating()) {
 			sleep(10);
-		}
+		}*/
 
 	}
 	
@@ -81,16 +83,23 @@ public class Autonomous implements Runnable {
 	public void run() {
 		knockOverJewel();
 		readPictograph();
-		moveToCryptoBox();
-		scoreGlyph();
+		/*moveToCryptoBox();
+		scoreGlyph();*/
 	}
-	
+
+	protected double range = 0;
 	private void knockOverJewel() {
 		//Moves forward to the appropriate distance to read the color of the jewel
 		currentStep = "Reading Color";
+		telemetry.add("Range", new Message.IMessageData() {
+			@Override
+			public String getMessage() {
+				return String.valueOf(range);
+			}});
         motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
+				range = rangeSensor.readUltrasonic(DistanceUnit.INCH);
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_READ_DISTANCE;
 			}
 		});
@@ -112,7 +121,7 @@ public class Autonomous implements Runnable {
 			}
 		});
         //Drop Small Lift
-		lift.dropScoop();
+		lift.setScoopBottomHeight(0.1);
 		//Based on the color detected, knock the right or left jewel
         if (color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.BLUE) {
 			//Knock right side (same side as color sensor)
