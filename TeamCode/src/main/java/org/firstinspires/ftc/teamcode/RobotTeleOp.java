@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,7 +14,6 @@ import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.input.Toggle;
-//import org.firstinspires.ftc.teamcode.interfaces.IHardwareMap;
 
 /**
  * Created by Alex on 9/23/2017.
@@ -40,6 +40,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected CRServo armControlServo;
     protected boolean armManual = false;
     protected DcMotor claw;
+    //TODO: ??
     //protected DigitalChannel limitOpen;
     protected DigitalChannel limitClosed;
     protected ElapsedTime clawRuntime = new ElapsedTime();
@@ -62,16 +63,16 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
 
     //Lift Constants
-    protected static final double GLYPH_HEIGHT = 0.0; //Insert Glyph Height Here
-    protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // eg: TETRIX Motor Encoder
+    protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
+    protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // TODO: eg: TETRIX Motor Encoder
     protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
-    protected static final double LIFT_INCHES_PER_REV = 0.0;// Dont know yet
+    protected static final double LIFT_INCHES_PER_REV = 0.0;// TODO: Dont know yet
     protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
-    protected static final double SCOOP_DOWN_POS = 0.0; //Insert Correct Scoop Down Position
-    protected static final double SCOOP_UP_POS = 1.0; //Insert Correct Scoop Up Position
+    protected static final double SCOOP_LOWERED_POSITION = 0.0; //Servo position to which the scoop will move to when lowering
+    protected static final double SCOOP_RAISED_POSITION = 0.75; //Servo position to move to to raise scoop to correct height
 
 
     @Override
@@ -123,6 +124,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
 
+        //TODO: Should this be uncommented?
         //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
         limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
         //limitOpen.setMode(DigitalChannel.Mode.INPUT);
@@ -202,6 +204,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
+        //TODO:???
         if((clawClosing && limitClosed.getState())/* || (!clawClosing && limitOpen.getState())*/) {
             claw.setPower(0);
         }
@@ -221,8 +224,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         //right stick controls turning
 
         double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
+        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
+        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
 
@@ -296,10 +299,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
         //Right and Left Bumpers Control The Scoop
         if(gamepad2.right_bumper)
-            scoop.setPosition(SCOOP_UP_POS);
+            scoop.setPosition(SCOOP_RAISED_POSITION);
 
         if(gamepad2.left_bumper)
-            scoop.setPosition(SCOOP_DOWN_POS);
+            scoop.setPosition(SCOOP_LOWERED_POSITION);
 
         // Debugs to show the motor position
         lift_position = mainLift.getCurrentPosition();
@@ -371,7 +374,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     }
 
     @Override
+    public Servo getServo(String name) {
+        return hardwareMap.servo.get(name);
+    }
+
+    @Override
     public DigitalChannel getDigitalChannel(String name) {
         return hardwareMap.digitalChannel.get(name);
+    }
+
+    @Override
+    public I2cDevice getDevice(String name) {
+        return hardwareMap.i2cDevice.get(name);
     }
 }

@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.output;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Handles displaying messages to the app ("telemetry"). */
 public class Telemetry {
 	private final org.firstinspires.ftc.robotcore.external.Telemetry internal;
-	private final List<Message> messages = new ArrayList<>();
-	private final List<SimpleEntry<Message, Long>> expiries = new ArrayList<>();
+	private final List<Message> messages =  Collections.synchronizedList(new ArrayList<Message>());
+	private final List<SimpleEntry<Message, Long>> expiries = Collections.synchronizedList(new ArrayList<SimpleEntry<Message, Long>>());
 	
 	/**
 	 * Makes a new telemetry manager wrapping the Ftc telemetry.
@@ -21,27 +22,31 @@ public class Telemetry {
 	/**
 	 * Adds a persistent message to the telemetry
 	 * @param message The message to display
+	 * @return The message added to persistent telemetry
 	 */
-	public void add(Message message) {
+	public Message add(Message message) {
 		messages.add(message);
+		return message;
 	}
 	
 	/**
 	 * Adds a persistent message to the telemetry
 	 * @param key The message's key
 	 * @param message The content of the message
+	 * @return The message added to persistent telemetry
 	 */
-	public void add(String key, String message) {
-		add(new ConstantMessage(key, message));
+	public Message add(String key, String message) {
+		return add(new ConstantMessage(key, message));
 	}
 	
 	/**
 	 * Adds a persistent message to the telemetry
 	 * @param key The message's key
 	 * @param message The content of the message
+	 * @return The message added to persistent telemetry
 	 */
-	public void add(String key, Message.IMessageData message) {
-		add(new Message(key, message));
+	public Message add(String key, Message.IMessageData message) {
+		return add(new Message(key, message));
 	}
 	
 	/**
@@ -52,6 +57,15 @@ public class Telemetry {
 	public void notify(Message message, double expiry) {
 		add(message);
 		expiries.add(new SimpleEntry<>(message, System.currentTimeMillis() + (int)(expiry * 1000)));
+	}
+
+	/**
+	 * Removes the given message from the persistent telemetry list
+	 * @param message The message to remove
+	 * @return If the given message was in the persistent message list to be removed
+	 */
+	public boolean remove(Message message) {
+		return messages.remove(message);
 	}
 	
 	/**

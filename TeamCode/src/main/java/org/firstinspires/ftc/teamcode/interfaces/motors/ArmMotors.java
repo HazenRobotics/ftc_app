@@ -11,14 +11,19 @@ import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import java.util.Dictionary;
 
 public class ArmMotors implements IArm {
-    private IHardware hardware;
-    private DcMotor claw;
-    //private DigitalChannel limitOpen;
-    private DigitalChannel limitClosed;
-    private final double CLAW_POWER = 0.2;
-    private ElapsedTime clawRuntime = new ElapsedTime();
+    //Vars
+    protected IHardware hardware;
+    protected ElapsedTime clawRuntime = new ElapsedTime();
 
-    //initial setup, defines motor and limit switches.
+    //Objects
+    protected DcMotor claw;
+    //protected DigitalChannel limitOpen;
+    protected DigitalChannel limitClosed;
+
+    //Constants
+    protected final double CLAW_POWER = 0.2;
+
+    //Initial setup, defines motor and limit switches.
     public ArmMotors(IHardware hardware) {
         this.hardware = hardware;
         this.claw = hardware.getMotor("claw");

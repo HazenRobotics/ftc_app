@@ -26,7 +26,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	
 	public void initialize() {
 		status = "Initializing";
-		telemetry.add("Status", new Message.IMessageData() {
+		telemetry.add("Status >", new Message.IMessageData() {
 			@Override
 			public String getMessage() {
 				return status;
@@ -43,12 +43,15 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
     	telemetry.update();
     	
     	waitForStart();
-    	
+
+		status = "Running Autonomous";
+
     	// TODO: Rework this entire method of handling autonomous control flow
-    	Thread autonomous = new Thread(new Autonomous(hardware, startingPosition));
+    	Thread autonomous = new Thread(new Autonomous(hardware, telemetry, startingPosition));
     	autonomous.start();
     	
-        while (opModeIsActive());
+        while (opModeIsActive())
+			telemetry.update();
         
         // It remains to be seen whether idle() is actually interruptable. If not, I'll need something else.
         autonomous.interrupt();
