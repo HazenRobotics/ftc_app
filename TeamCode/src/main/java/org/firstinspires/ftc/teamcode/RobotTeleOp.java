@@ -236,7 +236,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
         double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
+        double y = -gamepad1.right_stick_y;
 
 
         double leftFrontPower = (y + x + turn_x) / scale;

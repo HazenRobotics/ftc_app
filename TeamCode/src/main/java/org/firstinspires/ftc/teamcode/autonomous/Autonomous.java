@@ -20,12 +20,14 @@ public class Autonomous implements Runnable {
 
 	//Buggyness with psuhes, yaya
 	//Constants
-	protected static final float JEWEL_READ_DISTANCE = 7.5f;
-	protected static final float JEWEL_KNOCK_DISTANCE = 10.5f;
-	protected static final float JEWEL_STRAFE_DISTANCE = 0;
-	protected static final float JEWEL_STRAFE_ANGLE = 75;
-	protected static final float JEWEL_BACKUP_DISTANCE = 0;
-	protected static final float COLOR_STRAFE_DISTANCE = 0.0f;
+	protected static final float JEWEL_READ_DISTANCE = 4.5f;
+	protected static final float JEWEL_KNOCK_DISTANCE = 11.5f;
+	protected static final float JEWEL_STRAFE_DISTANCE = 3.0f;
+	protected static final float SCOOP_BALL_HEIGHT = 0.1f;
+	protected static final float JEWEL_FORWARD_DISTANCE = 7.5f;
+	protected static final float JEWEL_BACKUP_DISTANCE = 14.0f;
+	protected static final float JEWEL_COLOR_POSITION=1.5f;
+
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
 	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
 	protected static final float FACING_ERROR_RANGE = 5;
@@ -91,47 +93,50 @@ public class Autonomous implements Runnable {
 	private void knockOverJewel() {
 		//Moves forward to the appropriate distance to read the color of the jewel
 		currentStep = "Reading Color";
-		telemetry.add("Range", new Message.IMessageData() {
-			@Override
-			public String getMessage() {
-				return String.valueOf(range);
-			}});
+//		telemetry.add("Range", new Message.IMessageData() {
+//			@Override
+//			public String getMessage() {
+//				return String.valueOf(range);
+//			}});
+
         motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				range = rangeSensor.readUltrasonic(DistanceUnit.INCH);
+				//range = rangeSensor.readUltrasonic(DistanceUnit.INCH);
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_READ_DISTANCE;
 			}
 		});
-		
-		//Strafes to the side if need be and then reads the color
-		motion.move(90, COLOR_STRAFE_DISTANCE);
 
         int color = colorSensor.readColor();
 		telemetry.notify("Jewel Color >", String.valueOf(color), 3.0);
-
-		motion.move(-90, COLOR_STRAFE_DISTANCE);
 		
 		//Moves back to the distance to be able to lower the small lift then knock the jewel
 		currentStep = "Knocking Jewel";
+
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_KNOCK_DISTANCE;
 			}
 		});
-        //Drop Small Lift
-		lift.setScoopBottomHeight(0.1);
+
+
 		//Based on the color detected, knock the right or left jewel
-        if (color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.BLUE) {
-			//Knock right side (same side as color sensor)
-			telemetry.notify("Hitting >", "Right Jewel", 3.0);
-            motion.move(-JEWEL_STRAFE_ANGLE, JEWEL_STRAFE_DISTANCE);
-        } else {
-			//Knock left side
-			telemetry.notify("Hitting >", "Left Jewel", 3.0);
-            motion.move(JEWEL_STRAFE_ANGLE, JEWEL_STRAFE_DISTANCE);
-        }
+		if (color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) {
+			//Strafe
+			motion.move(-90, JEWEL_STRAFE_DISTANCE);
+		}
+
+        //Drop Small Lift
+		lift.setScoopBottomHeight(SCOOP_BALL_HEIGHT);
+
+		//Forward under other coloured ball
+		motion.move(0, JEWEL_FORWARD_DISTANCE);
+
+		//Flip the ball
+
+		lift.raiseScoop();
+
         motion.move(180, JEWEL_BACKUP_DISTANCE);
     }
 
