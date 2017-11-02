@@ -55,6 +55,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected DcMotor mainLift;
     protected Servo scoop;
 
+    //Flicker
+    protected Servo flicker;
+
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
     protected final double ARM_MOTOR_POWER = 0.4;
@@ -92,6 +95,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             //arm();
             lift();
             drive();
+            flickerControl();
 
             telemetry.update();
             idle();
@@ -125,6 +129,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
+
+        flicker = getServo("flicker");
 
         //TODO: Should this be uncommented?
 //        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
@@ -367,6 +373,20 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         else
         {
             armMotor.setPower(0);
+        }
+    }
+
+    //if a is pressed (controller 1), flicker moves to rotated position, which pushes glyph off.
+    //when releases, flicker returns to original position.
+    protected void flickerControl()
+    {
+        if(gamepad1.a)
+        {
+            flicker.setPosition(1.0);
+        }
+        else
+        {
+            flicker.setPosition(0.0);
         }
     }
 
