@@ -58,6 +58,9 @@ public class Vector {
         return new Vector(this.x + displacement.x, this.y + displacement.y);
     }
 
+    public Vector scale(double scalar) {
+        return new Vector(this.x * scalar, this.y * scalar);
+    }
 
     /**
      * Gets the difference between this vector and another vector.
