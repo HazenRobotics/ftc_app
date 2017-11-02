@@ -64,6 +64,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected final double FLICKER_INCREMENTS = 0.1;
 
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
@@ -374,17 +375,25 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //if a is pressed (controller 1), flicker moves to rotated position, which pushes glyph off.
-    //when releases, flicker returns to original position.
+    //if a is pressed (controller 1), flicker moves to flick off glyph.
+    //if b is pressed, flicker moves to original position.
     protected void flickerControl()
     {
-        if(gamepad1.a)
+        while(flicker.getPosition()>0)
         {
-            flicker.setPosition(1.0);
+            if(gamepad1.a)
+            {
+                flicker.setPosition(flicker.getPosition()-FLICKER_INCREMENTS);
+            }
+            idle();
         }
-        else
+        while(flicker.getPosition()<1)
         {
-            flicker.setPosition(0.0);
+            if(gamepad1.y)
+            {
+                flicker.setPosition(flicker.getPosition()+FLICKER_INCREMENTS);
+            }
+            idle();
         }
     }
 
