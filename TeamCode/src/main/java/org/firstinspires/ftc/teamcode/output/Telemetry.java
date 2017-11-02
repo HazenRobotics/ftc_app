@@ -107,5 +107,15 @@ public class Telemetry {
 	public void update() {
 		removeExpiredMessages();
 		display();
-	} 
+	}
+
+
+	//TODO: Temp
+	public void manualAddData(String key, String data) {
+		internal.addData(key, data);
+	}
+
+	public void manualUpdate() {
+		internal.update();
+	}
 }

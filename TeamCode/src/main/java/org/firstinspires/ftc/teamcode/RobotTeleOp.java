@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 /**
  * Created by Alex on 9/23/2017.
  */
-@Disabled
+
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
 
@@ -64,6 +64,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected final double FLICKER_INCREMENTS = 0.1;
 
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
@@ -91,8 +92,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             buttons.update();
             //Add any non-toggles here
 
-            claw();
-            arm();
+            //claw();
+            //arm();
             lift();
             drive();
             flickerControl();
@@ -109,16 +110,16 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         /*EX:
         motor = getMotor("motor");
         motor.setDirection(DcMotor.Direction.FORWARD);*/
-        mainLift = getMotor("mainLift");
-        mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        scoop = hardwareMap.servo.get("scoopServo");
+//        mainLift = getMotor("mainLift");
+//        mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        scoop = hardwareMap.servo.get("scoop");
 
-        claw = getMotor("claw");
-        claw.setDirection(DcMotor.Direction.FORWARD);
-        armControlServo = hardwareMap.crservo.get("armControlServo");
-        armMotor = getMotor("armMotor");
-        armMotor.setDirection(DcMotor.Direction.FORWARD);
+//        claw = getMotor("claw");
+//        claw.setDirection(DcMotor.Direction.FORWARD);
+//        armControlServo = hardwareMap.crservo.get("armControlServo");
+//        armMotor = getMotor("armMotor");
+//        armMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftFront = getMotor("leftFront");
         rightFront = getMotor("rightFront");
@@ -126,86 +127,88 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightBack = getMotor("rightBack");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         flicker = getServo("flicker");
 
         //TODO: Should this be uncommented?
-        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
-        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
-        //limitOpen.setMode(DigitalChannel.Mode.INPUT);
-        limitClosed.setMode(DigitalChannel.Mode.INPUT);
+//        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
+//        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
+//        //limitOpen.setMode(DigitalChannel.Mode.INPUT);
+//        limitClosed.setMode(DigitalChannel.Mode.INPUT);
     }
 
     //claw function, run by servo
     protected void setupButtons() {
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.dpad_up;
-            }
+//        buttons.add(new Button() {
+//            @Override
+//            public boolean isInputPressed() {
+//                return gamepad2.dpad_up;
+//            }
+//
+//            @Override
+//            public void onPress() {
+//                calculateTargetPositionUP();
+//                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                mainLift.setPower(MAIN_LIFT_SPEED);
+//                autoMainLiftRunning = true;
+//            }
+//        });
 
-            @Override
-            public void onPress() {
-                calculateTargetPositionUP();
-                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                mainLift.setPower(MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;
-            }
-        });
-
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.dpad_down;
-            }
-
-            @Override
-            public void onPress() {
-                calculateTargetPositionDOWN();
-                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                mainLift.setPower(-MAIN_LIFT_SPEED);
-                autoMainLiftRunning = true;
-            }
-        });
+//        buttons.add(new Button() {
+//            @Override
+//            public boolean isInputPressed() {
+//                return gamepad2.dpad_down;
+//            }
+//
+//            @Override
+//            public void onPress() {
+//                calculateTargetPositionDOWN();
+//                mainLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                mainLift.setPower(-MAIN_LIFT_SPEED);
+//                autoMainLiftRunning = true;
+//            }
+//        });
 
         //when b is pressed once, changes mode of the arm to manual.  Pressed again, arm automatic.
-        buttons.add(new Toggle() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.b;
-            }
-
-            @Override
-            public void onActivate() {
-                armManual = true;
-            }
-
-            @Override
-            public void onDeactivate() {
-                armManual = false;
-            }
-        });
+//        buttons.add(new Toggle() {
+//            @Override
+//            public boolean isInputPressed() {
+//                return gamepad2.b;
+//            }
+//
+//            @Override
+//            public void onActivate() {
+//                armManual = true;
+//            }
+//
+//            @Override
+//            public void onDeactivate() {
+//                armManual = false;
+//            }
+//        });
 
         //when a is pressed once, claw closes.  when pressed again, claw opens.
-        buttons.add(new Toggle() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.a;
-            }
-
-            @Override
-            public void onActivate() {
-                claw.setPower(CLAW_POWER);
-                clawClosing = true;
-            }
-
-            @Override
-            public void onDeactivate() {
-                claw.setPower(-CLAW_POWER);
-                clawClosing = false;
-            }
-        });
+//        buttons.add(new Toggle() {
+//            @Override
+//            public boolean isInputPressed() {
+//                return gamepad2.a;
+//            }
+//
+//            @Override
+//            public void onActivate() {
+//                claw.setPower(CLAW_POWER);
+//                clawClosing = true;
+//            }
+//
+//            @Override
+//            public void onDeactivate() {
+//                claw.setPower(-CLAW_POWER);
+//                clawClosing = false;
+//            }
+//        });
     }
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
@@ -283,26 +286,26 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     protected void lift() {
         //Main Lift Power using Triggers
-        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0) && (mainLift.getCurrentPosition() < COUNT_PER_GLYPH_HEIGHT * 4)) {
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(gamepad2.right_trigger);
-            autoMainLiftRunning = false;
-        }
-        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0) && (mainLift.getCurrentPosition() > 0)){
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(-gamepad2.left_trigger);
-            autoMainLiftRunning = false;
-        }
-        else if (!autoMainLiftRunning){
-            mainLift.setPower(0.0);
-        }
-
-        //D Pad used to control Main Lift (Added as buttons), stops here
-        if(!(mainLift.isBusy() && autoMainLiftRunning)){
-            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mainLift.setPower(0);
-            autoMainLiftRunning = false;
-        }
+//        if((gamepad2.right_trigger > 0) && (gamepad2.left_trigger == 0) && (mainLift.getCurrentPosition() < COUNT_PER_GLYPH_HEIGHT * 4)) {
+//            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            mainLift.setPower(gamepad2.right_trigger);
+//            autoMainLiftRunning = false;
+//        }
+//        else if((gamepad2.right_trigger == 0) && (gamepad2.left_trigger > 0) && (mainLift.getCurrentPosition() > 0)){
+//            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            mainLift.setPower(-gamepad2.left_trigger);
+//            autoMainLiftRunning = false;
+//        }
+//        else if (!autoMainLiftRunning){
+//            mainLift.setPower(0.0);
+//        }
+//
+//        //D Pad used to control Main Lift (Added as buttons), stops here
+//        if(!(mainLift.isBusy() && autoMainLiftRunning)){
+//            mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            mainLift.setPower(0);
+//            autoMainLiftRunning = false;
+//        }
         //Right and Left Bumpers Control The Scoop
         if(gamepad2.right_bumper)
             scoop.setPosition(SCOOP_RAISED_POSITION);
@@ -311,8 +314,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             scoop.setPosition(SCOOP_LOWERED_POSITION);
 
         // Debugs to show the motor position
-        lift_position = mainLift.getCurrentPosition();
-        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
+//        lift_position = mainLift.getCurrentPosition();
+//        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
     }
 
 
@@ -374,17 +377,25 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //if a is pressed (controller 1), flicker moves to rotated position, which pushes glyph off.
-    //when releases, flicker returns to original position.
+    //if a is pressed (controller 1), flicker moves to flick off glyph.
+    //if b is pressed, flicker moves to original position.
     protected void flickerControl()
     {
-        if(gamepad1.a)
+        while(flicker.getPosition()>0)
         {
-            flicker.setPosition(1.0);
+            if(gamepad1.a)
+            {
+                flicker.setPosition(flicker.getPosition()-FLICKER_INCREMENTS);
+            }
+            idle();
         }
-        else
+        while(flicker.getPosition()<1)
         {
-            flicker.setPosition(0.0);
+            if(gamepad1.y)
+            {
+                flicker.setPosition(flicker.getPosition()+FLICKER_INCREMENTS);
+            }
+            idle();
         }
     }
 
