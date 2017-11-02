@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 /**
  * Created by Alex on 9/23/2017.
  */
-@Disabled
+
 @TeleOp(name="TeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
 
@@ -113,7 +113,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 //        mainLift = getMotor("mainLift");
 //        mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        scoop = hardwareMap.servo.get("scoopServo");
+        scoop = hardwareMap.servo.get("scoop");
 
 //        claw = getMotor("claw");
 //        claw.setDirection(DcMotor.Direction.FORWARD);
