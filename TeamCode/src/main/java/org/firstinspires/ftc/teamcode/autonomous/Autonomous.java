@@ -24,9 +24,10 @@ public class Autonomous implements Runnable {
 	protected static final float JEWEL_KNOCK_DISTANCE = 11.5f;
 	protected static final float JEWEL_STRAFE_DISTANCE = 3.0f;
 	protected static final float SCOOP_BALL_HEIGHT = 0.1f;
+    protected static final float COLOR_STRAFE_DISTANCE = 1.5f;
 	protected static final float JEWEL_FORWARD_DISTANCE = 7.5f;
 	protected static final float JEWEL_BACKUP_DISTANCE = 14.0f;
-	protected static final float JEWEL_COLOR_POSITION=1.5f;
+    protected static int COLOR;
 
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
 	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
@@ -93,7 +94,6 @@ public class Autonomous implements Runnable {
 	private void knockOverJewel() {
 		//Moves forward to the appropriate distance to read the color of the jewel
 		currentStep = "Reading Color";
-<<<<<<< HEAD
 		telemetry.add("Range", new Message.IMessageData() {
 			@Override
 			public String getMessage() {
@@ -110,14 +110,13 @@ public class Autonomous implements Runnable {
 		//Strafes to the side if need be and then reads the color
 		motion.move(90, COLOR_STRAFE_DISTANCE);
 
-        int color = colorSensor.readColor();
-		telemetry.notify("Jewel Color >", String.valueOf(color), 3.0);
+        COLOR = colorSensor.readColor();
+		telemetry.notify("Jewel Color >", String.valueOf(COLOR), 3.0);
 
 		motion.move(-90, COLOR_STRAFE_DISTANCE);
 		
 		//Moves back to the distance to be able to lower the small lift then knock the jewel
 		currentStep = "Knocking Jewel";
-=======
 //		telemetry.add("Range", new Message.IMessageData() {
 //			@Override
 //			public String getMessage() {
@@ -132,13 +131,12 @@ public class Autonomous implements Runnable {
 			}
 		});
 
-        int color = colorSensor.readColor();
-		telemetry.notify("Jewel Color >", String.valueOf(color), 3.0);
+        COLOR = colorSensor.readColor();
+		telemetry.notify("Jewel Color >", String.valueOf(COLOR), 3.0);
 		
 		//Moves back to the distance to be able to lower the small lift then knock the jewel
 		currentStep = "Knocking Jewel";
 
->>>>>>> origin/master
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
@@ -148,7 +146,7 @@ public class Autonomous implements Runnable {
 
 
 		//Based on the color detected, knock the right or left jewel
-		if (color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) {
+		if (COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) {
 			//Strafe
 			motion.move(-90, JEWEL_STRAFE_DISTANCE);
 		}
