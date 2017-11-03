@@ -20,7 +20,7 @@ public class I2cRangeSensor extends I2cSensor {
      * @param sensor The sensor object on the hardware map to be used
      */
     public I2cRangeSensor(I2cDevice sensor) {
-        super(sensor, new I2cAddr(DEFAULT_ADDRESS));
+        super(sensor, I2cAddr.create7bit(DEFAULT_ADDRESS));
     }
 
     /**

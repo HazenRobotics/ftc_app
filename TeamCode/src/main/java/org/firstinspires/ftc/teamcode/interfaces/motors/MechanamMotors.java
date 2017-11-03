@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.IWheels;
@@ -13,6 +12,8 @@ import org.firstinspires.ftc.teamcode.models.Vector;
  */
 
 public class MechanamMotors implements IWheels {
+    protected IHardware hardware;
+
     //Declare motor Variables
     protected DcMotor leftFront;
     protected DcMotor rightFront;
@@ -20,7 +21,7 @@ public class MechanamMotors implements IWheels {
     protected DcMotor rightBack;
 
     //Declare Constants
-    //currently arbitrary numbers, need to change for actual robot
+    //TODO: Currently arbitrary numbers, need to change for actual robot
     protected static final double COUNTS_PER_REV = 1440.0;
     protected static final double WHEEL_DIAMETER = 4.0;
     protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER);
@@ -32,6 +33,7 @@ public class MechanamMotors implements IWheels {
 
 
     public MechanamMotors(IHardware hardware) {
+        this.hardware = hardware;
         leftFront = hardware.getMotor("leftFront");
         leftBack = hardware.getMotor("leftBack");
         rightFront = hardware.getMotor("rightFront");
@@ -39,34 +41,41 @@ public class MechanamMotors implements IWheels {
     }
 
     public void move(Vector displacement) {
-        move(displacement.getMagnitude(), displacement.getAngle());
+        move(displacement.getAngle(), displacement.getMagnitude());
     }
 
-    public void move(double moveDistance, double strafeAngle) {
-        move(moveDistance, strafeAngle, 1.0);
+    public void move(double moveDistance) {
+        move(0, moveDistance);
     }
 
-    public void turn(double turnAngle) {
-        turn(turnAngle, 1.0);
+    public void move(Condition condition) {
+        move(0, condition);
+    }
+
+    public void move(double strafeAngle, double moveDistance) {
+        move(strafeAngle, moveDistance, DRIVE_SPEED);
     }
 
     public double move(double strafeAngle, Condition condition) {
-        return move(strafeAngle, condition, 1.0);
+        return move(strafeAngle, condition, DRIVE_SPEED);
+    }
+
+    public void turn(double turnAngle) {
+        turn(turnAngle, DRIVE_SPEED);
     }
 
     public void turn(boolean positiveDir, Condition condition) {
-        turn(positiveDir, condition, 1.0);
+        turn(positiveDir, condition, DRIVE_SPEED);
     }
 
-    public void move(double moveDistance, double strafeAngle, double speed) {
+    public void move(double strafeAngle, double moveDistance, double speed) {
         double counts = moveDistance * COUNTS_PER_INCH;
         double strafeAngleRadians = Math.toRadians(strafeAngle);
         double x = Math.cos(strafeAngleRadians);
         double y = Math.sin(strafeAngleRadians);
-        //declare targets?
 
-        double magnitude = Math.abs(y) + Math.abs(x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
+        double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
+        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
 
         double leftFrontPower = (y + x) / scale;
         double rightFrontPower = (y - x) / scale;
@@ -95,8 +104,7 @@ public class MechanamMotors implements IWheels {
         rightBack.setPower(rightBackPower * speed);
 
         while (leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
-            //can be used to display messages on the phone through telemetry
-            //idle();
+            hardware.idle();
         }
 
         leftFront.setPower(0);
@@ -155,7 +163,7 @@ public class MechanamMotors implements IWheels {
         rightBack.setPower(rightBackPower * speed);
 
         while (leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()) {
-            //idle();
+            hardware.idle();
         }
 
         leftFront.setPower(0);
@@ -193,7 +201,7 @@ public class MechanamMotors implements IWheels {
         rightBack.setPower(rightBackPower * speed);
 
         while (!condition.isTrue()) {
-            //idle()
+            hardware.idle();
         }
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -202,14 +210,12 @@ public class MechanamMotors implements IWheels {
     }
 
     public double move(double strafeAngle, Condition condition, double speed) {
-
-
         double strafeAngleRadians = Math.toRadians(strafeAngle);
         double x = Math.cos(strafeAngleRadians);
         double y = Math.sin(strafeAngleRadians);
 
-        double magnitude = Math.abs(y) + Math.abs(x); //total sum of all inputs
-        double scale = Math.max(1, magnitude); //determines whether magnitude or 1 is greater (prevents from setting motor to power over 1)
+        double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
+        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
 
         double leftFrontPower = (y + x) / scale;
         double rightFrontPower = (y - x) / scale;
@@ -218,6 +224,8 @@ public class MechanamMotors implements IWheels {
 
         int initialCounts;
 
+        //If the front left wheel power is not going to be zero, we can use it to track distance,
+        //otherwise use the front right wheel
         if (leftFrontPower != 0) {
             initialCounts = leftFront.getCurrentPosition();
         } else {
@@ -233,7 +241,7 @@ public class MechanamMotors implements IWheels {
         rightBack.setPower(rightBackPower * speed);
 
         while (!condition.isTrue()) {
-            //idle();
+            hardware.idle();
         }
 
         leftFront.setPower(0);
