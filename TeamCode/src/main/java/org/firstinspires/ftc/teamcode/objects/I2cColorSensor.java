@@ -16,7 +16,7 @@ public class I2cColorSensor extends I2cSensor {
      * @param sensor The sensor object on the hardware map to be used
      */
     public I2cColorSensor(I2cDevice sensor) {
-        super(sensor, I2cAddr.create7bit((DEFAULT_ADDRESS)));
+        super(sensor, I2cAddr.create8bit((DEFAULT_ADDRESS)));
     }
 
     /**
