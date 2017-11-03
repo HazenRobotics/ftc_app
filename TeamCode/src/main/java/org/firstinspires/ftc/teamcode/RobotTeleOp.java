@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -419,8 +420,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         return hardwareMap.digitalChannel.get(name);
     }
 
-    @Override
-    public I2cDevice getDevice(String name) {
-        return hardwareMap.i2cDevice.get(name);
+    public HardwareDevice get(String name) {
+        return hardwareMap.get(name);
     }
 }
