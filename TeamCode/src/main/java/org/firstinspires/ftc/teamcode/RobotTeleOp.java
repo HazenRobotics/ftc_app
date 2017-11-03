@@ -336,6 +336,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         } else {
             scoop.setPosition(gamepad1.right_trigger * SCOOP_RAISED_POSITION);
         }
+
+        telemetry.addData("Right Trigger >", gamepad1.right_trigger);
         // Debugs to show the motor position
 //        lift_position = mainLift.getCurrentPosition();
 //        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));

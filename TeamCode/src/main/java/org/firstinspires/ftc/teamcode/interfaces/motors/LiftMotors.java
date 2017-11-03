@@ -26,6 +26,7 @@ public class LiftMotors implements ILift {
     	//liftMotor = hardware.getMotor("lift");
         liftMotor = null;
         scoop = hardware.getServo("scoop");
+        scoop.setPosition(SCOOP_RAISED_POSITION);
     	/*liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
         //TODO: Do we need to manually set the scoop to the raised position to start?
