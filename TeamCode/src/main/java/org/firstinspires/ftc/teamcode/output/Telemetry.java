@@ -2,14 +2,13 @@ package org.firstinspires.ftc.teamcode.output;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /** Handles displaying messages to the app ("telemetry"). */
 public class Telemetry {
 	private final org.firstinspires.ftc.robotcore.external.Telemetry internal;
-	private final List<Message> messages =  Collections.synchronizedList(new ArrayList<Message>());
-	private final List<SimpleEntry<Message, Long>> expiries = Collections.synchronizedList(new ArrayList<SimpleEntry<Message, Long>>());
+	private final List<Message> messages =  new ArrayList<Message>();
+	private final List<SimpleEntry<Message, Long>> expires = new ArrayList<SimpleEntry<Message, Long>>();
 	
 	/**
 	 * Makes a new telemetry manager wrapping the Ftc telemetry.
@@ -56,7 +55,7 @@ public class Telemetry {
 	 */
 	public void notify(Message message, double expiry) {
 		add(message);
-		expiries.add(new SimpleEntry<>(message, System.currentTimeMillis() + (int)(expiry * 1000)));
+		expires.add(new SimpleEntry<>(message, System.currentTimeMillis() + (int)(expiry * 1000)));
 	}
 
 	/**
@@ -89,11 +88,11 @@ public class Telemetry {
 	}
 	
 	private void removeExpiredMessages() {
-		for(SimpleEntry<Message, Long> expiry : expiries) {
+		for(SimpleEntry<Message, Long> expiry : expires) {
 			if(expiry.getValue() > System.currentTimeMillis())
 				break;
 			messages.remove(expiry.getKey());
-			expiries.remove(expiry);
+			expires.remove(expiry);
 		}
 	}
 	
@@ -101,21 +100,12 @@ public class Telemetry {
 		for(Message message : messages) {
 			internal.addData(message.getKey(), message.getMessage());
 		}
+		internal.update();
 	}
 	
 	/** Display the messages to the telemetry */
 	public void update() {
 		removeExpiredMessages();
 		display();
-	}
-
-
-	//TODO: Temp
-	public void manualAddData(String key, String data) {
-		internal.addData(key, data);
-	}
-
-	public void manualUpdate() {
-		internal.update();
 	}
 }
