@@ -332,9 +332,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 //        }
         //Right Trigger Controls The Scoop
         if(scoopUp) {
-            scoop.setPosition(SCOOP_RAISED_POSITION - gamepad2.right_trigger * SCOOP_RAISED_POSITION);
+            scoop.setPosition(SCOOP_RAISED_POSITION - gamepad1.right_trigger * SCOOP_RAISED_POSITION);
         } else {
-            scoop.setPosition(gamepad2.right_trigger * SCOOP_RAISED_POSITION);
+            scoop.setPosition(gamepad1.right_trigger * SCOOP_RAISED_POSITION);
         }
         // Debugs to show the motor position
 //        lift_position = mainLift.getCurrentPosition();
@@ -403,7 +403,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected void flickerControl()
     {
         //Down by default, left trigger moves it up
-        flicker.setPosition(1.0 - gamepad2.left_trigger);
+        flicker.setPosition(1.0 - gamepad1.left_trigger);
     }
 
     @Override
