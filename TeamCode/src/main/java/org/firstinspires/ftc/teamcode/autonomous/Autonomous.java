@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.motors.LiftMotors;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MechanumMotors;
+import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
 import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.RelicRecoveryLocalizer;
 
@@ -39,7 +39,7 @@ public class Autonomous implements Runnable {
 	protected final IHardware hardware;
 	protected final Telemetry telemetry;
 	protected final StartingPosition startingPosition;
-	protected final MechanumMotors motion;
+	protected final MechanamMotors motion;
 	protected final LiftMotors lift;
 	protected final I2cColorSensor colorSensor;
 	protected final I2cRangeSensor rangeSensor;
@@ -63,7 +63,7 @@ public class Autonomous implements Runnable {
 		this.hardware = hardware;
 		this.telemetry = telemetry;
 		this.startingPosition = startingPosition;
-		this.motion = new MechanumMotors(hardware);
+		this.motion = new MechanamMotors(hardware);
 		this.lift = new LiftMotors(hardware);
 		this.colorSensor = new I2cColorSensor(hardware.getDevice("jewelSensor"));
 		this.rangeSensor = new I2cRangeSensor(hardware.getDevice("rangeSensor"));
