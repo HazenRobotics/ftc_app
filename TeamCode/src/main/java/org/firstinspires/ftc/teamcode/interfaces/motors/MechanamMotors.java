@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.interfaces.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.IWheels;
@@ -38,6 +39,11 @@ public class MechanamMotors implements IWheels {
         leftBack = hardware.getMotor("leftBack");
         rightFront = hardware.getMotor("rightFront");
         rightBack = hardware.getMotor("rightBack");
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void move(Vector displacement) {
