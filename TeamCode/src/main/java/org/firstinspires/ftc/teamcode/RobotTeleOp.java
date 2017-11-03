@@ -29,6 +29,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected boolean autoMainLiftRunning = false;
     protected int lift_position;
 
+    protected boolean scoopUp = true;
+
     //Claw Vars
     protected boolean clawClosing = false;
 
@@ -113,7 +115,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 //        mainLift = getMotor("mainLift");
 //        mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        scoop = hardwareMap.servo.get("scoop");
+        scoop = getServo("scoop");
 
 //        claw = getMotor("claw");
 //        claw.setDirection(DcMotor.Direction.FORWARD);
@@ -133,6 +135,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
         flicker = getServo("flicker");
 
+        scoop.setPosition(SCOOP_RAISED_POSITION);
+
+        flicker.setPosition(1.0);
+
         //TODO: Should this be uncommented?
 //        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
 //        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
@@ -142,6 +148,22 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //claw function, run by servo
     protected void setupButtons() {
+
+        //Toggles the scoop being up or down by default
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.right_bumper;
+            }
+
+            @Override
+            public void onPress() {
+                scoopUp = !scoopUp;
+            }
+        });
+
+
+
 //        buttons.add(new Button() {
 //            @Override
 //            public boolean isInputPressed() {
@@ -236,7 +258,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
         double x = gamepad1.left_stick_x;
-        double y = -gamepad1.right_stick_y;
+        double y = gamepad1.right_stick_y;
 
 
         double leftFrontPower = (y + x + turn_x) / scale;
@@ -306,13 +328,12 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 //            mainLift.setPower(0);
 //            autoMainLiftRunning = false;
 //        }
-        //Right and Left Bumpers Control The Scoop
-        if(gamepad2.right_bumper)
-            scoop.setPosition(SCOOP_RAISED_POSITION);
-
-        if(gamepad2.left_bumper)
-            scoop.setPosition(SCOOP_LOWERED_POSITION);
-
+        //Right Trigger Controls The Scoop
+        if(scoopUp) {
+            scoop.setPosition(SCOOP_RAISED_POSITION - gamepad2.right_trigger * SCOOP_RAISED_POSITION);
+        } else {
+            scoop.setPosition(gamepad2.right_trigger * SCOOP_RAISED_POSITION);
+        }
         // Debugs to show the motor position
 //        lift_position = mainLift.getCurrentPosition();
 //        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
@@ -377,26 +398,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //if a is pressed (controller 1), flicker moves to flick off glyph.
-    //if b is pressed, flicker moves to original position.
     protected void flickerControl()
     {
-        while(flicker.getPosition()>0)
-        {
-            if(gamepad1.a)
-            {
-                flicker.setPosition(flicker.getPosition()-FLICKER_INCREMENTS);
-            }
-            idle();
-        }
-        while(flicker.getPosition()<1)
-        {
-            if(gamepad1.y)
-            {
-                flicker.setPosition(flicker.getPosition()+FLICKER_INCREMENTS);
-            }
-            idle();
-        }
+        //Down by default, left trigger moves it up
+        flicker.setPosition(1.0 - gamepad2.left_trigger);
     }
 
     @Override
