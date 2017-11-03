@@ -85,7 +85,7 @@ public class Autonomous implements Runnable {
 	@Override
 	public void run() {
 		knockOverJewel();
-		readPictograph();
+		//readPictograph();
 		/*moveToCryptoBox();
 		scoreGlyph();*/
 	}
