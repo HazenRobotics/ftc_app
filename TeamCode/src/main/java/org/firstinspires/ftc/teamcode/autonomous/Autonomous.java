@@ -20,12 +20,12 @@ public class Autonomous implements Runnable {
 
 	//Buggyness with psuhes, yaya
 	//Constants
-	protected static final float JEWEL_READ_DISTANCE = 7.5f;
-	protected static final float JEWEL_KNOCK_DISTANCE = 10.5f;
-	protected static final float JEWEL_STRAFE_DISTANCE = 0;
+	protected static final float JEWEL_READ_DISTANCE = 4.5f;
+	protected static final float JEWEL_KNOCK_DISTANCE = 11.5f;
+	protected static final float JEWEL_STRAFE_DISTANCE = 3.0f;
 	protected static final float JEWEL_STRAFE_ANGLE = 75;
-	protected static final float JEWEL_BACKUP_DISTANCE = 0;
-	protected static final float COLOR_STRAFE_DISTANCE = 0.0f;
+	protected static final float JEWEL_BACKUP_DISTANCE = 13.0f;
+	protected static final float COLOR_STRAFE_DISTANCE = 1.5f;
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
 	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
 	protected static final float FACING_ERROR_RANGE = 5;
