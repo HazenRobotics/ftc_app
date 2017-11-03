@@ -406,6 +406,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     }
 
     @Override
+    public void idle(long milliseconds) {
+        // This is probably the wrong way to handle this-- spin loop.
+        // However, it's better than Thread.idleFor()-- probably.
+        long endTime = System.currentTimeMillis() + milliseconds;
+        while(System.currentTimeMillis() < endTime && opModeIsActive()) {
+            telemetry.update();
+            idle();
+        }
+    }
+
+    @Override
     public DcMotor getMotor(String name) {
         return hardwareMap.dcMotor.get(name);
     }
@@ -420,6 +431,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         return hardwareMap.digitalChannel.get(name);
     }
 
+    @Override
     public HardwareDevice get(String name) {
         return hardwareMap.get(name);
     }
