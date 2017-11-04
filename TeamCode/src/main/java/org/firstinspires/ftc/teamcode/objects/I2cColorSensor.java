@@ -83,10 +83,10 @@ public class I2cColorSensor extends I2cSensor {
     public void enableLed(boolean state) {
         if (state) {
             //0 == LED on
-            SENSORReader.write8(3, 0);
+            SENSORReader.write8(0x03, 0x00);
         } else {
             //1 == LED off
-            SENSORReader.write8(3, 1);
+            SENSORReader.write8(0x03, 0x01);
         }
     }
 }

@@ -155,7 +155,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
-                return gamepad1.right_bumper;
+                return gamepad2.right_bumper;
             }
 
             @Override
@@ -332,12 +332,12 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 //        }
         //Right Trigger Controls The Scoop
         if(scoopUp) {
-            scoop.setPosition(SCOOP_RAISED_POSITION - gamepad1.right_trigger * SCOOP_RAISED_POSITION);
+            scoop.setPosition(SCOOP_RAISED_POSITION - gamepad2.right_trigger * SCOOP_RAISED_POSITION);
         } else {
-            scoop.setPosition(gamepad1.right_trigger * SCOOP_RAISED_POSITION);
+            scoop.setPosition(gamepad2.right_trigger * SCOOP_RAISED_POSITION);
         }
 
-        telemetry.addData("Right Trigger >", gamepad1.right_trigger);
+        telemetry.addData("Right Trigger >", gamepad2.right_trigger);
         // Debugs to show the motor position
 //        lift_position = mainLift.getCurrentPosition();
 //        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
@@ -405,7 +405,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected void flickerControl()
     {
         //Down by default, left trigger moves it up
-        flicker.setPosition(1.0 - gamepad1.left_trigger);
+        flicker.setPosition(1.0 - gamepad2.left_trigger);
     }
 
     @Override

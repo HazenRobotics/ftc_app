@@ -74,12 +74,13 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		this.telemetry = new Telemetry(super.telemetry);
 		this.motion = new MechanamMotors(hardware);
 		this.lift = new LiftMotors(hardware);
+		hardware.getServo("flicker").setPosition(1);
 		this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
 		this.rangeSensor = new I2cRangeSensor((I2cDevice) hardware.get("rangeSensor"));
 		//TODO: Might throw exception about bad cast?
 		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
 		gyro = null;
-		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
+		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, false);
 
 
 		/*gyro.calibrate();
@@ -87,7 +88,6 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		while(gyro.isCalibrating()) {
 			sleep(10);
 		}*/
-
 	}
 
 	@Override
@@ -112,13 +112,13 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//Moves forward to the appropriate distance to read the color of the jewel
 		currentStep = "Reading Color";
 
-        motion.move(new Condition() {
+        motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
 				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_READ_DISTANCE;
 			}
-		});
+		}, DRIVE_SPEED);
 
         COLOR = colorSensor.readColor();
 		telemetry.notify("Jewel Color >", String.valueOf(COLOR), 3.0);
