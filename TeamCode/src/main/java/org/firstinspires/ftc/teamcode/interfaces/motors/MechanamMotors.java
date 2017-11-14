@@ -77,8 +77,8 @@ public class MechanamMotors implements IWheels {
     public void move(double strafeAngle, double moveDistance, double speed) {
         double counts = moveDistance * COUNTS_PER_INCH;
         double strafeAngleRadians = Math.toRadians(strafeAngle);
-        double x = Math.cos(strafeAngleRadians);
-        double y = Math.sin(strafeAngleRadians);
+        double x = Math.sin(strafeAngleRadians);
+        double y = Math.cos(strafeAngleRadians);
 
         double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
@@ -217,8 +217,8 @@ public class MechanamMotors implements IWheels {
 
     public double move(double strafeAngle, Condition condition, double speed) {
         double strafeAngleRadians = Math.toRadians(strafeAngle);
-        double x = Math.cos(strafeAngleRadians);
-        double y = Math.sin(strafeAngleRadians);
+        double x = Math.sin(strafeAngleRadians);
+        double y = Math.cos(strafeAngleRadians);
 
         double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
