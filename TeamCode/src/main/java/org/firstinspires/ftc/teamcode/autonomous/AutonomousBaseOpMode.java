@@ -102,8 +102,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		currentStep = "Running Autonomous";
 		telemetry.update();
 
-		knockOverJewel();
+
 		//readPictograph();
+		knockOverJewel();
 		//moveToCryptoBox();
 		//scoreGlyph();
 	}
@@ -125,7 +126,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		//Moves back to the distance to be able to lower the small lift then knock the jewel
 		currentStep = "Knocking Jewel";
-		motion.move(0, new Condition() {
+		motion.move(180, new Condition() {
 			@Override
 			public boolean isTrue() {
 				telemetry.update();
@@ -173,22 +174,24 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//wait so that vuforia has time to attempt to read the key
 		currentStep = "Reading Pictograph";
 		sleep(1000);
-		double displacement = motion.move(90, new Condition() {
+		/*double displacement = motion.move(90, new Condition() {
 			@Override
 			public boolean isTrue() {
 				telemetry.update();
 				return localizer.cryptoKeyIsVisible();
 			}
-		}, 0.5);
+		}, 0.5);*/
 		vuuMark = localizer.cryptoKey();
-		motion.move(-90, displacement);
+		//motion.move(-90, displacement);
 
-		currentStep = "Turning towards CryptoBox";
-		telemetry.update();
-		motion.turn(startingPosition.getAngleToCryptoBox());
 	}
 
 	private void moveToCryptoBox(){
+
+		currentStep = "Turning towards CryptoBox";
+		telemetry.update();
+
+		motion.turn(startingPosition.getAngleToCryptoBox());
 
 		motion.turn(true, new Condition() {
 			@Override
@@ -202,38 +205,44 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		double x = pos.getX();
 		double y = pos.getY();
-		//TODO: Improve math to account for the heading returning between 0 and 360, not -180 and 180?
-		double turnAngle = startingPosition.getTargetHeading() - gyro.getHeading();
 
-		currentStep = "Adjusting Facing to CryptoBox";
-		motion.turn(turnAngle > 0, new Condition() {
-			@Override
-			public boolean isTrue() {
-				telemetry.update();
-				return Math.abs(gyro.getHeading() - startingPosition.getTargetHeading()) < FACING_ERROR_RANGE;
-			}
-		});
+		if (((startingPosition.equals(StartingPosition.BLUE_1) || startingPosition.equals(StartingPosition.BLUE_2)) && (y>0)
+				|| ((startingPosition.equals(StartingPosition.RED_1) || startingPosition.equals(StartingPosition.RED_2)) && (y<0)))){
+			//TODO: Improve math to account for the heading returning between 0 and 360, not -180 and 180?
+			double turnAngle = startingPosition.getTargetHeading() - gyro.getHeading();
 
-		currentStep = "Aligning with CryptoBox";
-		telemetry.update();
-		//TODO: Make better aligning algorithm?
-		motion.move(-90, x);
+			currentStep = "Adjusting Facing to CryptoBox";
+			motion.turn(turnAngle > 0, new Condition() {
+				@Override
+				public boolean isTrue() {
+					telemetry.update();
+					return Math.abs(gyro.getHeading() - startingPosition.getTargetHeading()) < FACING_ERROR_RANGE;
+				}
+			});
 
-		currentStep = "Approaching CryptoBox";
-		if(tapeIsVisible()) {
+			currentStep = "Aligning with CryptoBox";
 			telemetry.update();
-			y = getTapePos().getY();
-		}
+			//TODO: Make better aligning algorithm?
+			motion.move(-90, x);
 
-		motion.move(y - VUFORIA_MOVEMENT_BUFFER_DISTANCE);
-
-		motion.move(new Condition() {
-			@Override
-			public boolean isTrue() {
+			currentStep = "Approaching CryptoBox";
+			if(tapeIsVisible()) {
 				telemetry.update();
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
+				y = getTapePos().getY();
 			}
-		});
+
+			motion.move(y - VUFORIA_MOVEMENT_BUFFER_DISTANCE);
+
+			motion.move(new Condition() {
+				@Override
+				public boolean isTrue() {
+					telemetry.update();
+					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
+				}
+			});
+		}
+		else
+			idle();
 	}
 
 	private void scoreGlyph() {
