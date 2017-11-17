@@ -38,9 +38,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
 	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
 	protected static final float FACING_ERROR_RANGE = 5;
-	protected static final String vuforiaKey = "AeCNMrn/////AAAAGRlPvGpkjUVapbG0iA01W9pxODQbY2cczmmaGy8CmYxrxKgX4Vf4DTayzCXCJeYBCtDVd5iWQFKFtnbAlSlvIqJmcUnLOF79x5QwSpMX9hJER259y94/" +
-			"bdZGZYj9XRg07DZZOpFwAERjcIH6HBVJcTG6/M+oLw4ObLbiY0EqZhZA6app2Tep5BDzsDSI9DwWrR2LqqPxJSRwwGqxqlkja+u3ggLEQmWalqr2n20ywTZUpHvqtBuP53AgnJZCs4HNc57+XhhjkJWLIBnb3HBPZAZMA4uZfAq" +
-			"I1uP8E1L+wgiAGretWwRrO3X/frXXIi5IJU9JDx52szfHeOr8kYBekeA/Ir5RygBs6yUNDPsepHkq";
+	//protected static final String vuforiaKey = "AeCNMrn/////AAAAGRlPvGpkjUVapbG0iA01W9pxODQbY2cczmmaGy8CmYxrxKgX4Vf4DTayzCXCJeYBCtDVd5iWQFKFtnbAlSlvIqJmcUnLOF79x5QwSpMX9hJER259y94/" +
+	//		"bdZGZYj9XRg07DZZOpFwAERjcIH6HBVJcTG6/M+oLw4ObLbiY0EqZhZA6app2Tep5BDzsDSI9DwWrR2LqqPxJSRwwGqxqlkja+u3ggLEQmWalqr2n20ywTZUpHvqtBuP53AgnJZCs4HNc57+XhhjkJWLIBnb3HBPZAZMA4uZfAq" +
+	//		"I1uP8E1L+wgiAGretWwRrO3X/frXXIi5IJU9JDx52szfHeOr8kYBekeA/Ir5RygBs6yUNDPsepHkq";
 
 	//Objects and sensors
 	protected IHardware hardware;
@@ -64,13 +64,13 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	}
 
 	public void initialize() {
-		currentStep = "Initializing";
-		stepMessage = telemetry.add("Step >", new Message.IMessageData() {
-			@Override
+		//currentStep = "Initializing";
+		//stepMessage = telemetry.add("Step >", new Message.IMessageData() {
+		/**	@Override
 			public String getMessage() {
 				return currentStep;
 			}
-		});
+		}); */
 		this.hardware = this;
 		this.telemetry = new Telemetry(super.telemetry);
 		this.motion = new MechanamMotors(hardware);
@@ -81,7 +81,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//TODO: Might throw exception about bad cast?
 		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
 		gyro = null;
-		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, false);
+		//his.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, false);
 
 
 		/*gyro.calibrate();
