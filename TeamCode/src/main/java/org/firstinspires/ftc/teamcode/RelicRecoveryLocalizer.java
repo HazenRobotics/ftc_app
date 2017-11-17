@@ -37,12 +37,12 @@ public class RelicRecoveryLocalizer {
         parameters.useExtendedTracking = extendedTracking;
 
         vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-        cryptoBoxTape = vuforia.loadTrackablesFromAsset("CrptoBoxTapeLines");
+        cryptoBoxTape = vuforia.loadTrackablesFromAsset("RelicRecoveryTapeLinesSmall");
         blueTape = cryptoBoxTape.get(0);
-        blueTape.setName("Blue Cryptobox Tape");
+        blueTape.setName("blueSmall");
         blueTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
         redTape = cryptoBoxTape.get(1);
-        redTape.setName("Red Cryptobox Tape");
+        redTape.setName("redSmall");
         redTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         cryptoKey = relicTrackables.get(0);
@@ -64,13 +64,13 @@ public class RelicRecoveryLocalizer {
     }
     
     public  RelicRecoveryLocalizer(String vuforiaKey, boolean extendedTracking) {
-        this(vuforiaKey, extendedTracking, false);
+        this(vuforiaKey, extendedTracking, true);
     }
     
     public  RelicRecoveryLocalizer(String vuforiaKey) {
-        this(vuforiaKey, true, false);
+        this(vuforiaKey, true, true);
     }
-    
+
     public void activate() {
         cryptoBoxTape.activate();
         relicTrackables.activate();

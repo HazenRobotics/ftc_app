@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
-public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
+public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	//Constants
 	protected static final float JEWEL_READ_DISTANCE = 4.5f;
@@ -65,12 +65,12 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	public void initialize() {
 		currentStep = "Initializing";
-		stepMessage = telemetry.add("Step >", new Message.IMessageData() {
+		/*stepMessage = telemetry.add("Step >", new Message.IMessageData() {
 			@Override
 			public String getMessage() {
 				return currentStep;
 			}
-		});
+		});*/
 		this.hardware = this;
 		this.telemetry = new Telemetry(super.telemetry);
 		this.motion = new MechanamMotors(hardware);
@@ -81,7 +81,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//TODO: Might throw exception about bad cast?
 		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
 		gyro = null;
-		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, false);
+		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
 
 
 		/*gyro.calibrate();
