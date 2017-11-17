@@ -27,7 +27,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	//Constants
 	protected static final float JEWEL_READ_DISTANCE = 4.5f;
 	protected static final float JEWEL_KNOCK_DISTANCE = 13.5f;
-	//protected static final float JEWEL_STRAFE_DISTANCE = 6.0f;
+	protected static final float JEWEL_STRAFE_DISTANCE = 6.0f;
 	protected static final float SCOOP_BALL_HEIGHT = 0.1f;
 	protected static final float JEWEL_FORWARD_DISTANCE = 7.5f;
 	protected static final float JEWEL_BACKUP_DISTANCE = 14.0f;
@@ -141,16 +141,18 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			//Strafe
 			currentStep = "Strafe";
 			telemetry.update();
-			final RelicRecoveryLocalizer.MatrixPosition init = localizer.getUpdatedCryptoKeyPosition();
-			final double originalX = init.getX();
-			motion.move(-90, new Condition() {
-				@Override
-				public boolean isTrue() {
-					RelicRecoveryLocalizer.MatrixPosition key = localizer.getUpdatedCryptoKeyPosition();
-					return key.getX() - originalX > JEWEL_STRAFFE_ERROR;
-				}
-			}, DRIVE_SPEED);
+			//final RelicRecoveryLocalizer.MatrixPosition init = localizer.getUpdatedCryptoKeyPosition();
+			//final double originalX = init.getX();
+//			motion.move(-90, new Condition() {
+//				@Override
+//				public boolean isTrue() {
+//					RelicRecoveryLocalizer.MatrixPosition key = localizer.getUpdatedCryptoKeyPosition();
+//					return key.getX() - originalX > JEWEL_STRAFFE_ERROR;
+//				}
+//			}, DRIVE_SPEED);
+			motion.move(-90, JEWEL_STRAFE_DISTANCE );
 		}
+
 
         //Drop Small Lift
 		currentStep = "Drop Small Lift";
