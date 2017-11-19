@@ -39,16 +39,16 @@ public class RelicRecoveryLocalizer {
 
         vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         cryptoBoxTape = vuforia.loadTrackablesFromAsset("RelicRecoveryTapeLinesSmall");
-        blueTape = cryptoBoxTape.get(0);
+        blueTape = cryptoBoxTape.get(1);
         blueTape.setName("blueSmall");
         blueTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
-        redTape = cryptoBoxTape.get(1);
+        redTape = cryptoBoxTape.get(0);
         redTape.setName("redSmall");
         redTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         cryptoKey = relicTrackables.get(0);
         cryptoKey.setName("Relic");
-        cryptoKey.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
+        cryptoKey.setLocation(createMatrix(0, 0, 0, -90, 0, 0));
 
         OpenGLMatrix phoneLoc = createMatrix(0, 0, 0, -90, 0, 0);
 

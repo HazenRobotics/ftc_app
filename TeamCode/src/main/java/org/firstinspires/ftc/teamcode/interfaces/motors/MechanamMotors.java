@@ -223,10 +223,10 @@ public class MechanamMotors implements IWheels {
         double magnitude = Math.abs(y) + Math.abs(x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
 
-        double leftFrontPower = (y + x) / scale;
+        double leftFrontPower = (y - x) / scale;
         double rightFrontPower = (y - x) / scale;
-        double leftBackPower = (y - x) / scale;
-        double rightBackPower = (y + x) / scale;
+        double leftBackPower = (y + x) / scale;
+        double rightBackPower = (y - x) / scale;
 
         int initialCounts;
 
