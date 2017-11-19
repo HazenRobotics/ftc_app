@@ -35,6 +35,7 @@ public class RelicRecoveryLocalizer {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         parameters.vuforiaLicenseKey = vuforiaKey;
         parameters.useExtendedTracking = extendedTracking;
+        parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
         vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         cryptoBoxTape = vuforia.loadTrackablesFromAsset("RelicRecoveryTapeLinesSmall");
