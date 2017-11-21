@@ -59,8 +59,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected DcMotor mainLift;
     protected Servo scoop;
 
-    //Flicker
-    protected Servo flicker;
+
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -68,7 +67,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
-    protected final double FLICKER_INCREMENTS = 0.1;
 
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
@@ -100,7 +98,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             //arm();
             lift();
             drive();
-            flickerControl();
 
             telemetry.update();
             idle();
@@ -135,11 +132,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        flicker = getServo("flicker");
 
-        scoop.setPosition(SCOOP_RAISED_POSITION);
-
-        flicker.setPosition(1.0);
 
         //TODO: Should this be uncommented?
 //        //limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
@@ -401,11 +394,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    protected void flickerControl()
-    {
-        //Down by default, left trigger moves it up
-        flicker.setPosition(1.0 - gamepad2.left_trigger);
-    }
+
 
     @Override
     public void idle(long milliseconds) {
