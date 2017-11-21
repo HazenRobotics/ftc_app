@@ -31,8 +31,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected boolean autoMainLiftRunning = false;
     protected int lift_position;
 
-    protected boolean scoopUp = true;
-
     //Claw Vars
     protected boolean clawClosing = false;
 
@@ -136,21 +134,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //claw function, run by servo
     protected void setupButtons() {
-
-        //Toggles the scoop being up or down by default
-        buttons.add(new Button() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.right_bumper;
-            }
-
-            @Override
-            public void onPress() {
-                scoopUp = !scoopUp;
-            }
-        });
-
-
 
         buttons.add(new Button() {
             @Override
