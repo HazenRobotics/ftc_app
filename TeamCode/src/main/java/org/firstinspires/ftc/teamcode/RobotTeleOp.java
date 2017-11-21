@@ -55,9 +55,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Lift Objects
     protected DcMotor mainLift;
-    protected Servo scoop;
-
-
 
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
@@ -65,7 +62,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
-
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // TODO: eg: TETRIX Motor Encoder
@@ -92,8 +88,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             buttons.update();
             //Add any non-toggles here
 
-            //claw();
-            //arm();
+            claw();
+            arm();
             lift();
             drive();
 
@@ -128,8 +124,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
 
         //TODO: Should this be uncommented?
         /*//limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
