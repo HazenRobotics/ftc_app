@@ -22,18 +22,23 @@ import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
-public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	//Constants
-	protected static final float JEWEL_READ_DISTANCE = 4.5f;
-	protected static final float JEWEL_KNOCK_DISTANCE = 13.5f;
-	//protected static final float JEWEL_STRAFE_DISTANCE = 6.0f;
-	protected static final float SCOOP_BALL_HEIGHT = 0.1f;
-	protected static final float JEWEL_FORWARD_DISTANCE = 7.5f;
-	protected static final float JEWEL_BACKUP_DISTANCE = 14.0f;
-	protected static final float DRIVE_SPEED = 0.3f;
+	protected static final float JEWEL_READ_DISTANCE = 5.3f;
+	protected static final float JEWEL_KNOCK_DISTANCE = 24.0f;
+	protected static final float JEWEL_STRAFE_DISTANCE = 6.0f;
+	protected static final float SCOOP_BALL_HEIGHT = 0.125f;
+	protected static final float JEWEL_FORWARD_DISTANCE = 8.0f;
+	protected static final float JEWEL_BACKUP_DISTANCE = 13.5f;
+	protected static final float DRIVE_SPEED = 0.25f;
     protected static int COLOR;
-	protected static final double JEWEL_STRAFFE_ERROR=0.0;
+	protected static final double JEWEL_STRAFFE_ERROR = 0.0;
+
+	static int count = 0;
 
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
 	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
@@ -51,26 +56,26 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected I2cColorSensor colorSensor;
 	protected I2cRangeSensor rangeSensor;
 	protected ModernRoboticsI2cGyro gyro;
-    protected RelicRecoveryLocalizer localizer;
+    final protected RelicRecoveryLocalizer localizer;
 
 	//Variables
 	protected RelicRecoveryVuMark vuuMark;
 	protected String currentStep;
 	protected Message stepMessage;
+	org.firstinspires.ftc.robotcore.external.Telemetry t;
 
 	public AutonomousBaseOpMode(StartingPosition startingPosition) {
 		this.startingPosition = startingPosition;
 
-	}
-
-	public void initialize() {
+		//Stuff
 		currentStep = "Initializing";
-		stepMessage = telemetry.add("Step >", new Message.IMessageData() {
+		/*stepMessage = telemetry.add("Step >", new Message.IMessageData() {
 			@Override
 			public String getMessage() {
 				return currentStep;
 			}
-		});
+		});*/
+		t = super.telemetry;
 		this.hardware = this;
 		this.telemetry = new Telemetry(super.telemetry);
 		this.motion = new MechanamMotors(hardware);
@@ -81,8 +86,38 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//TODO: Might throw exception about bad cast?
 		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
 		gyro = null;
-		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, false);
+		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
+		localizer.activate();
 
+
+		/*gyro.calibrate();
+		//TODO: Does this even work?
+		while(gyro.isCalibrating()) {
+			sleep(10);
+		}*/
+	}
+
+	public void initialize() {
+		currentStep = "Initializing";
+		/*stepMessage = telemetry.add("Step >", new Message.IMessageData() {
+			@Override
+			public String getMessage() {
+				return currentStep;
+			}
+		});*/
+		t = super.telemetry;
+		this.hardware = this;
+		this.telemetry = new Telemetry(super.telemetry);
+		this.motion = new MechanamMotors(hardware);
+		this.lift = new LiftMotors(hardware);
+		hardware.getServo("flicker").setPosition(1);
+		this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
+		this.rangeSensor = new I2cRangeSensor((I2cDevice) hardware.get("rangeSensor"));
+		//TODO: Might throw exception about bad cast?
+		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
+		gyro = null;
+		//this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
+		localizer.activate();
 
 		/*gyro.calibrate();
 		//TODO: Does this even work?
@@ -93,7 +128,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	@Override
 	public void runOpMode() {
-		initialize();
+		//initialize();
 
 		currentStep = "Waiting for start";
 		telemetry.update();
@@ -117,45 +152,75 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
         motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
-				telemetry.update();
+				t.addData(">", "Moving Forward: " + rangeSensor.readUltrasonic(DistanceUnit.INCH));
+				t.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_READ_DISTANCE;
 			}
 		}, DRIVE_SPEED);
 
+		sleep(1000);
+
         COLOR = colorSensor.readColor();
 		telemetry.notify("Jewel Color >", String.valueOf(COLOR), 3.0);
+
+		sleep(1000);
 
 		//Moves back to the distance to be able to lower the small lift then knock the jewel
 		currentStep = "Knocking Jewel";
 		motion.move(180, new Condition() {
 			@Override
 			public boolean isTrue() {
+				t.addData(">", "Moving Back");
 				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_KNOCK_DISTANCE;
 			}
 		}, DRIVE_SPEED);
 
+		sleep(1000);
+
 
 		//Based on the color detected, knock the right or left jewel
-		if (COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) {
+		if ((COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) ||(COLOR  >= 9 && COLOR <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
 			//Strafe
 			currentStep = "Strafe";
 			telemetry.update();
 			final RelicRecoveryLocalizer.MatrixPosition init = localizer.getUpdatedCryptoKeyPosition();
-			final double originalX = init.getX();
-			motion.move(-90, new Condition() {
-				@Override
-				public boolean isTrue() {
-					RelicRecoveryLocalizer.MatrixPosition key = localizer.getUpdatedCryptoKeyPosition();
-					return key.getX() - originalX > JEWEL_STRAFFE_ERROR;
-				}
-			}, DRIVE_SPEED);
+			final double originalX = DistanceUnit.INCH.fromCm(init.getX());
+
+			try {
+				motion.move(-90, new Condition() {
+					@Override
+					public boolean isTrue() {
+						count++;
+						RelicRecoveryLocalizer.MatrixPosition key = localizer.getUpdatedCryptoKeyPosition();
+						t.addData("Pos", "X; " + DistanceUnit.INCH.fromCm(key.getX()) + " Y: " + DistanceUnit.INCH.fromCm(key.getY()));
+						t.addData("Count >", "C: " + count);
+						t.update();
+						return DistanceUnit.INCH.fromCm(key.getX()) - originalX > JEWEL_STRAFE_DISTANCE;
+					}
+				}, DRIVE_SPEED / 5.0);
+			} catch(NullPointerException e) {
+				sleep(3);
+				t.addData("Count >", "C: " + count);
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				String sStackTrace = sw.toString();
+				t.addData("Error >", e.getLocalizedMessage());
+				t.addData("Error >", sStackTrace);
+				telemetry.update();
+			}
 		}
+
+		sleep(1000);
+
 
         //Drop Small Lift
 		currentStep = "Drop Small Lift";
 		telemetry.update();
 		lift.setScoopBottomHeight(SCOOP_BALL_HEIGHT);
+
+		sleep(5000);
 
 		//Forward under other coloured ball
 		currentStep = "Move under ball";
@@ -167,6 +232,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			}
 		}, DRIVE_SPEED);
 
+		sleep(5000);
+
 		//motion.move(0, JEWEL_FORWARD_DISTANCE);
 
 		//Flip the ball
@@ -175,8 +242,18 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		lift.raiseScoop();
 
 		telemetry.update();
+		sleep(5000);
 
-        motion.move(180, JEWEL_BACKUP_DISTANCE);
+		motion.move(180, new Condition() {
+			@Override
+			public boolean isTrue() {
+				t.addData(">", "Moving Back");
+				telemetry.update();
+				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_BACKUP_DISTANCE;
+			}
+		}, DRIVE_SPEED);
+
+		sleep(5000);
     }
 
 	private void readPictograph() {

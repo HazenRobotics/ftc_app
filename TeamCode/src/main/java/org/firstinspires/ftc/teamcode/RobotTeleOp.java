@@ -248,7 +248,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.right_stick_y;
 
-
         double leftFrontPower = (y + x + turn_x) / scale;
         double rightFrontPower = (y - x - turn_x) / scale;
         double leftBackPower = (y - x + turn_x) / scale;

@@ -35,19 +35,20 @@ public class RelicRecoveryLocalizer {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         parameters.vuforiaLicenseKey = vuforiaKey;
         parameters.useExtendedTracking = extendedTracking;
+        parameters.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
         vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-        cryptoBoxTape = vuforia.loadTrackablesFromAsset("CrptoBoxTapeLines");
-        blueTape = cryptoBoxTape.get(0);
-        blueTape.setName("Blue Cryptobox Tape");
+        cryptoBoxTape = vuforia.loadTrackablesFromAsset("RelicRecoveryTapeLinesSmall");
+        blueTape = cryptoBoxTape.get(1);
+        blueTape.setName("blueSmall");
         blueTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
-        redTape = cryptoBoxTape.get(1);
-        redTape.setName("Red Cryptobox Tape");
+        redTape = cryptoBoxTape.get(0);
+        redTape.setName("redSmall");
         redTape.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         cryptoKey = relicTrackables.get(0);
         cryptoKey.setName("Relic");
-        cryptoKey.setLocation(createMatrix(0, 0, 0, 90, 0, 0));
+        cryptoKey.setLocation(createMatrix(0, 0, 0, -90, 0, 0));
 
         OpenGLMatrix phoneLoc = createMatrix(0, 0, 0, -90, 0, 0);
 
@@ -64,13 +65,13 @@ public class RelicRecoveryLocalizer {
     }
     
     public  RelicRecoveryLocalizer(String vuforiaKey, boolean extendedTracking) {
-        this(vuforiaKey, extendedTracking, false);
+        this(vuforiaKey, extendedTracking, true);
     }
     
     public  RelicRecoveryLocalizer(String vuforiaKey) {
-        this(vuforiaKey, true, false);
+        this(vuforiaKey, true, true);
     }
-    
+
     public void activate() {
         cryptoBoxTape.activate();
         relicTrackables.activate();
