@@ -88,9 +88,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             buttons.update();
             //Add any non-toggles here
 
-//            claw();
-//            arm();
-//            lift();
+            claw();
+            arm();
+            lift();
             drive();
 
             telemetry.update();
