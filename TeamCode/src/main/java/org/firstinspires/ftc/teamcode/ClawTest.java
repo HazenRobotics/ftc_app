@@ -1,147 +1,96 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.input.Button;
+import org.firstinspires.ftc.teamcode.input.ButtonManager;
+import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.input.Toggle;
 
-/**
- * Created by Robotics on 11/19/2017.
- */
+//Created by Alex on 9/23/2017.
 
-public class ClawTest {
-    protected boolean clawClosing = false;
 
-    //Add Motors, Servos, Sensors, etc here
-    //EX: protected DcMotor motor;
 
-    //Claw and Arm Objects
-    protected DcMotor armMotor;
-    protected CRServo armControlServo;
-    protected boolean armManual = false;
+@TeleOp(name="ClawTest", group="TeleOp")
+public class ClawTest extends LinearOpMode implements IHardware {
+
+
     protected DcMotor claw;
-    //TODO: ??
-    //protected DigitalChannel limitOpen;
-    protected DigitalChannel limitClosed;
-    protected ElapsedTime clawRuntime = new ElapsedTime();
 
-    //Add all Constants here
-    //EX: protected final double MOTOR_POWER = 0.5;
-    protected final double ARM_MOTOR_POWER = 0.4;
-    protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
-    protected final double JOYSTICK_ERROR_RANGE = 0.1;
 
-    claw = getMotor("claw");
-        claw.setDirection(DcMotor.Direction.FORWARD);
-    armControlServo = hardwareMap.crservo.get("armControlServo");
-    armMotor = getMotor("armMotor");
-        armMotor.setDirection(DcMotor.Direction.FORWARD);*/
+    @Override
+    public void runOpMode() {
 
-      /*//limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
-        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
-        //limitOpen.setMode(DigitalChannel.Mode.INPUT);
-        limitClosed.setMode(DigitalChannel.Mode.INPUT);*/
-}
+        setupHardware();
+        waitForStart();
 
-    //claw function, run by servo
-    protected void setupButtons() {
-
-
-        //when a is pressed once, claw closes.  when pressed again, claw opens.
-        buttons.add(new Toggle() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.a;
-            }
-
-            @Override
-            public void onActivate() {
-                claw.setPower(CLAW_POWER);
-                clawClosing = true;
-            }
-
-            @Override
-            public void onDeactivate() {
-                claw.setPower(-CLAW_POWER);
-                clawClosing = false;
-            }
-        });
+        while (opModeIsActive()) {
+            claw();
+            telemetry.update();
+            idle();
+        }
     }
 
+
+
+    protected void setupHardware() {
+        claw = getMotor("claw");
+        claw.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
-    protected void claw() {
-        //TODO:???
-        if((clawClosing && limitClosed.getState())/* || (!clawClosing && limitOpen.getState())*/) {
-            claw.setPower(0);
-        }
-        else if(!clawClosing)
+ protected void claw() {
+        if(gamepad2.y)
         {
-            clawRuntime.reset();
-            while (opModeIsActive() && (clawRuntime.seconds() < 1.5)) {
-                idle();
-            }
-            claw.setPower(0);
-
-            //when a is pressed once, claw closes.  when pressed again, claw opens.
-            buttons.add(new Toggle() {
-                @Override
-                public boolean isInputPressed() {
-                    return gamepad2.a;
-                }
-
-                @Override
-                public void onActivate() {
-                    claw.setPower(CLAW_POWER);
-                    clawClosing = true;
-                }
-
-                @Override
-                public void onDeactivate() {
-                    claw.setPower(-CLAW_POWER);
-                    clawClosing = false;
-                }
-            });
+            claw.setPower(CLAW_POWER);
         }
-
-        //when claw has reached the correct position or moved open long enough, the claw stops moving.
-    protected void claw() {
-        //TODO:???
-        if((clawClosing && limitClosed.getState())/* || (!clawClosing && limitOpen.getState())*/) {
-            claw.setPower(0);
-        }
-        else if(!clawClosing)
+        else if(gamepad2.x)
         {
-            clawRuntime.reset();
-            while (opModeIsActive() && (clawRuntime.seconds() < 1.5)) {
-                idle();
-            }
+            claw.setPower(-CLAW_POWER);
+        }
+        else
+        {
             claw.setPower(0);
+        }
+    }
 
+    @Override
+    public void idle(long milliseconds) {
+        // This is probably the wrong way to handle this-- spin loop.
+        // However, it's better than Thread.idleFor()-- probably.
+        long endTime = System.currentTimeMillis() + milliseconds;
+        while(System.currentTimeMillis() < endTime && opModeIsActive()) {
+            telemetry.update();
+            idle();
+        }
+    }
 
+    @Override
+    public DcMotor getMotor(String name) {
+        return hardwareMap.dcMotor.get(name);
+    }
 
+    @Override
+    public Servo getServo(String name) {
+        return hardwareMap.servo.get(name);
+    }
 
+    @Override
+    public DigitalChannel getDigitalChannel(String name) {
+        return hardwareMap.digitalChannel.get(name);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public HardwareDevice get(String name) {
+        return hardwareMap.get(name);
+    }
 }
