@@ -253,7 +253,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
 
         //D Pad used to control Main Lift (Added as buttons), stops here
-        if(!(mainLift.isBusy() && autoMainLiftRunning)){
+        if(!mainLift.isBusy() && autoMainLiftRunning){
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(0);
             autoMainLiftRunning = false;
@@ -265,8 +265,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
     }
 
-    //backup code for lift
-    protected void lift2() {
+    //backup code for lift, currently not in use
+    /*protected void lift2() {
         if(gamepad2.dpad_up){
             mainLift.setPower(LIFT_POWER);
         }
@@ -276,7 +276,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         else{
             mainLift.setPower(0.0);
         }
-    }
+    }*/
 
 
 
