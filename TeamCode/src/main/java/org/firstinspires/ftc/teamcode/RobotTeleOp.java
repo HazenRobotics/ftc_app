@@ -31,21 +31,13 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected boolean autoMainLiftRunning = false;
     protected int lift_position;
 
-    //Claw Vars
-    protected boolean clawClosing = false;
-
     //Add Motors, Servos, Sensors, etc here
     //EX: protected DcMotor motor;
 
     //Claw and Arm Objects
     protected DcMotor armMotor;
-    protected CRServo armControlServo;
-    protected boolean armManual = false;
+    protected boolean armManual = true;
     protected DcMotor claw;
-    //TODO: ??
-    //protected DigitalChannel limitOpen;
-    protected DigitalChannel limitClosed;
-    protected ElapsedTime clawRuntime = new ElapsedTime();
 
     //Wheel Motors
     protected DcMotor leftFront;
@@ -59,20 +51,18 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
     protected final double ARM_MOTOR_POWER = 0.4;
-    protected final double ARM_SERVO_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
+    protected final double LIFT_POWER = 0.3;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
+
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // TODO: eg: TETRIX Motor Encoder
-    protected static final double LIFT_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
     protected static final double LIFT_INCHES_PER_REV = 0.0;// TODO: Dont know yet
     protected static final int LIFT_COUNTS_PER_INCH = (int) (LIFT_COUNTS_PER_MOTOR_REV / LIFT_INCHES_PER_REV);
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
-    protected static final double SCOOP_LOWERED_POSITION = 0.0; //Servo position to which the scoop will move to when lowering
-    protected static final double SCOOP_RAISED_POSITION = 0.75; //Servo position to move to to raise scoop to correct height
 
 
     @Override
@@ -105,15 +95,14 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         /*EX:
         motor = getMotor("motor");
         motor.setDirection(DcMotor.Direction.FORWARD);*/
-        /*mainLift = getMotor("mainLift");
+        mainLift = getMotor("mainLift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         claw = getMotor("claw");
         claw.setDirection(DcMotor.Direction.FORWARD);
-        armControlServo = hardwareMap.crservo.get("armControlServo");
         armMotor = getMotor("armMotor");
-        armMotor.setDirection(DcMotor.Direction.FORWARD);*/
+        armMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftFront = getMotor("leftFront");
         rightFront = getMotor("rightFront");
@@ -124,12 +113,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        //TODO: Should this be uncommented?
-        /*//limitOpen = hardwareMap.get(DigitalChannel.class, "clawOpenSensor");
-        limitClosed = hardwareMap.get(DigitalChannel.class, "clawClosedSensor");
-        //limitOpen.setMode(DigitalChannel.Mode.INPUT);
-        limitClosed.setMode(DigitalChannel.Mode.INPUT);*/
     }
 
     //claw function, run by servo
@@ -174,49 +157,26 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
             @Override
             public void onActivate() {
-                armManual = true;
-            }
-
-            @Override
-            public void onDeactivate() {
                 armManual = false;
             }
-        });
-
-        //when a is pressed once, claw closes.  when pressed again, claw opens.
-        buttons.add(new Toggle() {
-            @Override
-            public boolean isInputPressed() {
-                return gamepad2.a;
-            }
-
-            @Override
-            public void onActivate() {
-                claw.setPower(CLAW_POWER);
-                clawClosing = true;
-            }
 
             @Override
             public void onDeactivate() {
-                claw.setPower(-CLAW_POWER);
-                clawClosing = false;
+                armManual = true;
             }
         });
     }
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
-        //TODO:???
-        if((clawClosing && limitClosed.getState())/* || (!clawClosing && limitOpen.getState())*/) {
-            claw.setPower(0);
+        if(gamepad2.y){
+            claw.setPower(-CLAW_POWER);
         }
-        else if(!clawClosing)
-        {
-            clawRuntime.reset();
-            while (opModeIsActive() && (clawRuntime.seconds() < 1.5)) {
-                idle();
-            }
-            claw.setPower(0);
+        else if(gamepad2.a){
+            claw.setPower(CLAW_POWER);
+        }
+        else {
+            claw.setPower(0.0);
         }
     }
 
@@ -293,7 +253,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
 
         //D Pad used to control Main Lift (Added as buttons), stops here
-        if(!(mainLift.isBusy() && autoMainLiftRunning)){
+        if(!mainLift.isBusy() && autoMainLiftRunning){
             mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mainLift.setPower(0);
             autoMainLiftRunning = false;
@@ -304,6 +264,19 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         lift_position = mainLift.getCurrentPosition();
         telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
     }
+
+    //backup code for lift, currently not in use
+    /*protected void lift2() {
+        if(gamepad2.dpad_up){
+            mainLift.setPower(LIFT_POWER);
+        }
+        else if(gamepad2.dpad_down){
+            mainLift.setPower(-LIFT_POWER);
+        }
+        else{
+            mainLift.setPower(0.0);
+        }
+    }*/
 
 
 
@@ -320,17 +293,14 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         if(gamepad2.x)
         {
             armMotor.setPower(ARM_MOTOR_POWER);
-            armControlServo.setPower(ARM_SERVO_POWER);
         }
         else if(gamepad2.y)
         {
             armMotor.setPower(-ARM_MOTOR_POWER);
-            armControlServo.setPower(-ARM_SERVO_POWER);
         }
         else
         {
             armMotor.setPower(0);
-            armControlServo.setPower(0);
         }
     }
 
@@ -340,18 +310,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Forward = extend, backwards = retract
     protected void manualArmControl()
     {
-        //potentially change to motor or put in limit switches.
-        if(gamepad2.left_stick_y > JOYSTICK_ERROR_RANGE || gamepad2.left_stick_y < -JOYSTICK_ERROR_RANGE)
-        {
-            armControlServo.setPower(gamepad2.left_stick_y);
-            telemetry.addData("Left Stick Power: ",gamepad2.left_stick_y);
-            telemetry.update();
-        }
-        else
-        {
-            armControlServo.setPower(0);
-        }
-
         if(gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE || gamepad2.right_stick_y < -JOYSTICK_ERROR_RANGE)
         {
             armMotor.setPower(gamepad2.right_stick_y);
