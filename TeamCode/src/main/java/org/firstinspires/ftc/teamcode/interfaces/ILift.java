@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.interfaces;
 
 /**
- * A means to control the arm's lift.
+ * A means to control the arm's lift and scoop.
  */
 public interface ILift {
 	/**

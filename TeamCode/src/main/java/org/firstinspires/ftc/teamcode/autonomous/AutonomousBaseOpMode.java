@@ -165,7 +165,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		sleep(1000);
 
-		//Moves back to the distance to be able to lower the small lift then knock the jewel
+		//Moves back to the distance to be able to lower the scoop then knock the jewel
 		currentStep = "Knocking Jewel";
 		motion.move(180, new Condition() {
 			@Override

@@ -106,7 +106,7 @@ public class RelicRecoveryLocalizer {
     }
     
     public MatrixPosition getUpdatedRedPosition() {
-        return new MatrixPosition(redListener.getUpdatedRobotLocation());
+        return new MatrixPosition(redListener.getRobotLocation());
     }
     
     public boolean redIsVisible() {
@@ -114,7 +114,7 @@ public class RelicRecoveryLocalizer {
     }
     
     public MatrixPosition getUpdatedBluePosition() {
-        return new MatrixPosition(blueListener.getUpdatedRobotLocation());
+        return new MatrixPosition(blueListener.getRobotLocation());
     }
     
     public boolean blueIsVisible() {
@@ -122,7 +122,7 @@ public class RelicRecoveryLocalizer {
     }
 
     public MatrixPosition getUpdatedCryptoKeyPosition() {
-        return new MatrixPosition(cryptoKeyListener.getUpdatedRobotLocation());
+        return new MatrixPosition(cryptoKeyListener.getRobotLocation());
     }
     
     public boolean cryptoKeyIsVisible() {
