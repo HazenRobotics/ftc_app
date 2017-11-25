@@ -80,7 +80,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
             claw();
             arm();
-            lift();
+            //lift();
+            lift2();
             drive();
 
             telemetry.update();
@@ -95,13 +96,13 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         /*EX:
         motor = getMotor("motor");
         motor.setDirection(DcMotor.Direction.FORWARD);*/
-        mainLift = getMotor("mainLift");
+        mainLift = getMotor("lift");
         mainLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mainLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         claw = getMotor("claw");
         claw.setDirection(DcMotor.Direction.FORWARD);
-        armMotor = getMotor("armMotor");
+        armMotor = getMotor("arm");
         armMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftFront = getMotor("leftFront");
@@ -118,7 +119,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //claw function, run by servo
     protected void setupButtons() {
 
-        buttons.add(new Button() {
+        /*buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
                 return gamepad2.dpad_up;
@@ -146,7 +147,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 mainLift.setPower(-MAIN_LIFT_SPEED);
                 autoMainLiftRunning = true;
             }
-        });
+        });*/
 
         //when b is pressed once, changes mode of the arm to manual.  Pressed again, arm automatic.
         buttons.add(new Toggle() {
@@ -262,11 +263,11 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         telemetry.addData("Right Trigger >", gamepad2.right_trigger);
         // Debugs to show the motor position
         lift_position = mainLift.getCurrentPosition();
-        telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
+        telemetry.addData("Lift position", "MainLift Position:" + lift_position);
     }
 
     //backup code for lift, currently not in use
-    /*protected void lift2() {
+    protected void lift2() {
         if(gamepad2.dpad_up){
             mainLift.setPower(LIFT_POWER);
         }
@@ -276,7 +277,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         else{
             mainLift.setPower(0.0);
         }
-    }*/
+    }
 
 
 
