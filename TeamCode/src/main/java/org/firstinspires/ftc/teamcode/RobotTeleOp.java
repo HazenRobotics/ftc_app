@@ -52,7 +52,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //EX: protected final double MOTOR_POWER = 0.5;
     protected final double ARM_MOTOR_POWER = 0.4;
     protected final double CLAW_POWER = 0.2;
+    protected final double LIFT_POWER = 0.3;
     protected final double JOYSTICK_ERROR_RANGE = 0.1;
+
     //Lift Constants
     protected static final double GLYPH_HEIGHT = 0.0; //TODO: Insert Glyph Height Here
     protected static final int LIFT_COUNTS_PER_MOTOR_REV = 1440 ;    // TODO: eg: TETRIX Motor Encoder
@@ -61,8 +63,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected static final int COUNT_PER_GLYPH_HEIGHT = (int) (GLYPH_HEIGHT * LIFT_COUNTS_PER_INCH);
     protected static final double MAIN_LIFT_SPEED = 0.5;
     protected static final int MAIN_LIFT_ERROR_RANGE = 20;
-
-    protected final double LIFT_POWER = 0.3;
 
 
     @Override
@@ -264,7 +264,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         lift_position = mainLift.getCurrentPosition();
         telemetry.addData("main lift position", "MainLift Position:"+String.format("%.2f",lift_position));
     }
-    
+
     //backup code for lift
     protected void lift2() {
         if(gamepad2.dpad_up){
