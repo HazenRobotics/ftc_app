@@ -82,17 +82,26 @@ public class RelicRecoveryLocalizer {
         public MatrixPosition(OpenGLMatrix matrix) {
             this.matrix = matrix;
         }
-        
+
         public float getX() {
-            return matrix.getTranslation().getData()[0];
+            if(matrix == null)
+                return 0;
+            else
+                return matrix.getTranslation().getData()[0];
         }
         
         public float getY() {
-            return matrix.getTranslation().getData()[1];
+            if(matrix == null)
+                return 0;
+            else
+                return matrix.getTranslation().getData()[1];
         }
         
         public float getAngle() {
-            return (float)(Math.toDegrees(Math.atan(getX() / getY())));
+            if (getY() == 0 )
+                return 90.0f;
+            else
+                return (float)(Math.toDegrees(Math.atan(getX() / getY())));
         }
     }
     
