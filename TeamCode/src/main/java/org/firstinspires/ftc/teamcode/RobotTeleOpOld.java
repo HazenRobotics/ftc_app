@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.interfaces.IHardware;
  * Created by Alex on 9/23/2017.
  */
 
-@TeleOp(name="TeleOp", group="TeleOp")
+@TeleOp(name="TeleOpOld", group="TeleOp")
 public class RobotTeleOpOld extends LinearOpMode implements IHardware {
 
     //Add all global objects and lists
