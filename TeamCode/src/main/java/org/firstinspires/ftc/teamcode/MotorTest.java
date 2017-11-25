@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 /**
  * Created by Robotics on 10/5/2017.
  */
-@Disabled
-@TeleOp(name = "Motor Test", group = "BLASZ")
+//@Disabled
+@TeleOp(name = "Motor Test", group = "Test")
 public class MotorTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

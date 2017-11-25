@@ -56,7 +56,7 @@ public class RelicRecoveryLocalizer {
         blueListener.setPhoneInformation(phoneLoc, parameters.cameraDirection);
 
         redListener = ((VuforiaTrackableDefaultListener)redTape.getListener());
-        redListener.setPhoneInformation(phoneLoc, parameters.cameraDirection);g
+        redListener.setPhoneInformation(phoneLoc, parameters.cameraDirection);
 
         cryptoKeyListener = ((VuforiaTrackableDefaultListener) cryptoKey.getListener());
         cryptoKeyListener.setPhoneInformation(phoneLoc, parameters.cameraDirection);
