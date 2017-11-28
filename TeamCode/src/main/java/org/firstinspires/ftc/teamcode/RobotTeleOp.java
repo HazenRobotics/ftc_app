@@ -167,10 +167,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
         if(gamepad2.dpad_left){
-            claw.setPower(-CLAW_POWER);
+            claw.setPower(CLAW_POWER);
         }
         else if(gamepad2.dpad_right){
-            claw.setPower(CLAW_POWER);
+            claw.setPower(-CLAW_POWER);
         }
         else {
             claw.setPower(0.0);
