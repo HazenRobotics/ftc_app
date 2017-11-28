@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import java.util.ArrayList;
 
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
@@ -26,7 +25,9 @@ public class ToggleExample extends LinearOpMode {
     protected void setupButtons() {
     	buttons.add(new Toggle() {
     		public boolean isInputPressed() { return gamepad1.a; }
-    		public void onActivate() { motor.setPower(MOTOR_POWER); }
+    		public boolean onActivate() { motor.setPower(MOTOR_POWER);
+                return false;
+            }
     		public void onDeactivate() { motor.setPower(0); }
     	});
     }
