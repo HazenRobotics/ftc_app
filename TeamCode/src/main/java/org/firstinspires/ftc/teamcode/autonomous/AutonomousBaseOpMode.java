@@ -59,7 +59,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
     final protected RelicRecoveryLocalizer localizer;
 
 	//Variables
-	protected RelicRecoveryVuMark vuuMark;
+	protected RelicRecoveryVuMark vuMark;
 	protected String currentStep;
 	protected Message stepMessage;
 	org.firstinspires.ftc.robotcore.external.Telemetry t;
@@ -222,7 +222,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		sleep(5000);
 
-		//Forward under other coloured ball
+		//Forward under other colored ball
 		currentStep = "Move under ball";
 		telemetry.update();
 		motion.move(0, new Condition() {
@@ -267,7 +267,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 				return localizer.cryptoKeyIsVisible();
 			}
 		}, 0.5);*/
-		vuuMark = localizer.cryptoKey();
+		vuMark = localizer.cryptoKey();
 		//motion.move(-90, displacement);
 
 	}
@@ -295,14 +295,14 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		if (((startingPosition.equals(StartingPosition.BLUE_1) || startingPosition.equals(StartingPosition.BLUE_2)) && (y>0)
 				|| ((startingPosition.equals(StartingPosition.RED_1) || startingPosition.equals(StartingPosition.RED_2)) && (y<0)))){
 			//TODO: Improve math to account for the heading returning between 0 and 360, not -180 and 180?
-			double turnAngle = startingPosition.getTargetHeading() - gyro.getHeading();
+			double turnAngle = startingPosition.getMovementAngle() - gyro.getHeading();
 
 			currentStep = "Adjusting Facing to CryptoBox";
 			motion.turn(turnAngle > 0, new Condition() {
 				@Override
 				public boolean isTrue() {
 					telemetry.update();
-					return Math.abs(gyro.getHeading() - startingPosition.getTargetHeading()) < FACING_ERROR_RANGE;
+					return Math.abs(gyro.getHeading() - startingPosition.getMovementAngle()) < FACING_ERROR_RANGE;
 				}
 			});
 
@@ -333,6 +333,82 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	private void scoreGlyph() {
 		currentStep = "Scoring Glyph";
+		//FIXME: GARY NEEDS TO WORK ON THIS
+		/*turn(angle from starting postion);
+		move(distance from starting position);
+		if(color is red) {
+			swithc: //vumark
+			case:
+
+		}
+		else {
+			swithc:
+			case:
+		}
+		turn(angle back to box);
+		move(condition {
+			until ultrasonic right;
+		});*/
+
+		float MovementAngle = startingPosition.getMovementAngle();
+		float AngleToCryptoBox = startingPosition.getAngleToCryptoBox();
+		float BaseDistance = startingPosition.getBaseDistance();
+
+
+		motion.turn(MovementAngle);
+		motion.move(BaseDistance);
+		switch (vuMark){
+			case LEFT:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+
+				}
+				break;
+			case RIGHT:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+
+				}
+				break;
+			case CENTER:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+
+				}
+				break;
+			default: //SCORE ON FIRST ONE
+				motion.move(0,10);//change values later
+				t.addData("position:" , vuMark);
+				break;
+		}
+
+
+
+		switch(vuMark) {
+			case LEFT:
+				motion.move(-90,2);
+				motion.turn(90);
+				motion.move(10);
+				t.addData("position:", vuMark);
+				break;
+
+			case RIGHT:
+
+				break;
+			case UNKNOWN:
+				break;
+
+			default:
+				motion.move(0,10);//change values later
+				t.addData("position:" , vuMark);
+				break;
+		}
 		telemetry.update();
 	}
 
