@@ -41,12 +41,13 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	static int count = 0;
 
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
-	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
+	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 12.0f;
 	protected static final float FACING_ERROR_RANGE = 5;
 	protected static final String vuforiaKey = "AeCNMrn/////AAAAGRlPvGpkjUVapbG0iA01W9pxODQbY2cczmmaGy8CmYxrxKgX4Vf4DTayzCXCJeYBCtDVd5iWQFKFtnbAlSlvIqJmcUnLOF79x5QwSpMX9hJER259y94/" +
 			"bdZGZYj9XRg07DZZOpFwAERjcIH6HBVJcTG6/M+oLw4ObLbiY0EqZhZA6app2Tep5BDzsDSI9DwWrR2LqqPxJSRwwGqxqlkja+u3ggLEQmWalqr2n20ywTZUpHvqtBuP53AgnJZCs4HNc57+XhhjkJWLIBnb3HBPZAZMA4uZfAq" +
 			"I1uP8E1L+wgiAGretWwRrO3X/frXXIi5IJU9JDx52szfHeOr8kYBekeA/Ir5RygBs6yUNDPsepHkq";
-
+	protected static final float DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS = 1f; //FIXME: UPDATE THIS NUM
+	
 	//Objects and sensors
 	protected IHardware hardware;
 	protected Telemetry telemetry;
@@ -332,84 +333,74 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	}
 
 	private void scoreGlyph() {
-		currentStep = "Scoring Glyph";
-		//FIXME: GARY NEEDS TO WORK ON THIS
-		/*turn(angle from starting postion);
-		move(distance from starting position);
-		if(color is red) {
-			swithc: //vumark
-			case:
-
-		}
-		else {
-			swithc:
-			case:
-		}
-		turn(angle back to box);
-		move(condition {
-			until ultrasonic right;
-		});*/
-
 		float MovementAngle = startingPosition.getMovementAngle();
 		float AngleToCryptoBox = startingPosition.getAngleToCryptoBox();
 		float BaseDistance = startingPosition.getBaseDistance();
-
-
+		
+		currentStep = "Turning towards CryptoBox"; //TODO: Does this need telementary.update();
+		telemetry.update();
 		motion.turn(MovementAngle);
+		currentStep = "Moving towards CryptoBox";
+		telemetry.update();
 		motion.move(BaseDistance);
+		if(Color.getColor == Color.RED_2) { //TODO, HOW TO FIND COLOR_NUM
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
+			motion.move(3.815);
+		}
+		if(Color.getColor == Color.BLUE_2) {
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
+			motion.move(3.815);
+		}
+		
+		currentStep = "Moving to VuMark location";
+		telemetry.update();
 		switch (vuMark){
 			case LEFT:
 				if(startingPosition.getTeamColor() == Color.BLUE){
-
+					//no movement
 				}
 				if(startingPosition.getTeamColor() == Color.RED){
-
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
 				}
 				break;
 			case RIGHT:
 				if(startingPosition.getTeamColor() == Color.BLUE){
-
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
 				}
 				if(startingPosition.getTeamColor() == Color.RED){
-
+					//no movement
 				}
 				break;
 			case CENTER:
 				if(startingPosition.getTeamColor() == Color.BLUE){
-
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 1);
 				}
 				if(startingPosition.getTeamColor() == Color.RED){
-
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 1);
 				}
 				break;
-			default: //SCORE ON FIRST ONE
-				motion.move(0,10);//change values later
-				t.addData("position:" , vuMark);
+			default: //Default, score in left
+				if(startingPosition.getTeamColor() == Color.BLUE){
+					//no movement
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
+				}
 				break;
 		}
-
-
-
-		switch(vuMark) {
-			case LEFT:
-				motion.move(-90,2);
-				motion.turn(90);
-				motion.move(10);
-				t.addData("position:", vuMark);
-				break;
-
-			case RIGHT:
-
-				break;
-			case UNKNOWN:
-				break;
-
-			default:
-				motion.move(0,10);//change values later
-				t.addData("position:" , vuMark);
-				break;
-		}
+		//FIXME: RANGE SENSOR
+		currentStep = "Moving forward until close to CyrptoBox";
 		telemetry.update();
+		while(rangeSensor.readUltrasonic(DistanceUnit.INCH) > CRYPTO_BOX_TARGET_DISTANCE) {
+			motion.move(0.1);
+		}
+		//DROP GLYPH
+		while(rangeSensor.readUltrasonic(DistanceUnit.INCH) > 6) { //FIXME: TURN INTO MAGIC NUM
+			motion.move(0.1);
+		}
+		
 	}
 
 	public void idle(long milliseconds) {
