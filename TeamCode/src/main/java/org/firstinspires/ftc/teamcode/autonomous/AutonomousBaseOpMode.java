@@ -343,12 +343,12 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		currentStep = "Moving towards CryptoBox";
 		telemetry.update();
 		motion.move(BaseDistance);
-		if(Color.getColor == Color.RED_2) { //TODO, HOW TO FIND COLOR_NUM
+		if(startingPosition == RED_2) { //TODO, HOW TO FIND COLOR_NUM
 			currentStep = "Moving to adjust alignment with CryptoBox";
 			telemetry.update();
 			motion.move(3.815);
 		}
-		if(Color.getColor == Color.BLUE_2) {
+		if(startingPosition == BLUE_2) {
 			currentStep = "Moving to adjust alignment with CryptoBox";
 			telemetry.update();
 			motion.move(3.815);
@@ -393,13 +393,21 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//FIXME: RANGE SENSOR
 		currentStep = "Moving forward until close to CyrptoBox";
 		telemetry.update();
-		while(rangeSensor.readUltrasonic(DistanceUnit.INCH) > CRYPTO_BOX_TARGET_DISTANCE) {
-			motion.move(0.1);
-		}
+		motion.move(new Condition() {
+				@Override
+				public boolean isTrue() {
+					telemetry.update();
+					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
+				}
+			});
 		//DROP GLYPH
-		while(rangeSensor.readUltrasonic(DistanceUnit.INCH) > 6) { //FIXME: TURN INTO MAGIC NUM
-			motion.move(0.1);
-		}
+		motion.move(new Condition() {
+			@Override
+			public boolean isTrue() {
+				telemetry.update();
+				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < 6; //Turn into magic num
+			}
+		});
 		
 	}
 
