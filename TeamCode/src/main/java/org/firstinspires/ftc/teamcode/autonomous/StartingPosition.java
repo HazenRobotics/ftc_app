@@ -9,27 +9,34 @@ import org.firstinspires.ftc.teamcode.models.Position;
  * See {@link Position} for an explanation of the coordinate grid.
  */
 public enum StartingPosition {
-    RED_1(Color.RED, 0.0f, 90.0f),
-    RED_2(Color.RED, 90.0f, 90.0f),
-    BLUE_1(Color.BLUE, 0.0f, -90.0f),
-    BLUE_2(Color.BLUE, -90.0f, -90.0f);
+    //team color, movement angle on balance, distance from stone to box, angle to face box
+    RED_1(Color.RED, 180.0f, 27.815f, 90.0f), //top left?
+    RED_2(Color.RED, -90.0f, 24.0f, 0.0f), //bottom left? dosn't read cyrpto?
+    BLUE_1(Color.BLUE, 180.0f, 27.815f, -90f), //top right?
+    BLUE_2(Color.BLUE, -90.0f, 24.0f, 0.0f); //bottom right? dosn't read cyrpto?
 
     private final Color teamColor;
-    private final float targetHeading;
+    private final float movementAngle;
+    private final float baseDistance;
     private final float angleToCryptoBox;
 
-    private StartingPosition(Color teamColor, float targetHeading, float angleToCryptoBox) {
+    private StartingPosition(Color teamColor, float movementAngle, float baseDistance, float angleToCryptoBox) {
         this.teamColor = teamColor;
-        this.targetHeading = targetHeading;
+        this.movementAngle = movementAngle;
+        this.baseDistance = baseDistance;
         this.angleToCryptoBox = angleToCryptoBox;
     }
 
-    public float getTargetHeading() {
-        return targetHeading;
+    public float getMovementAngle() {
+        return movementAngle;
     }
 
     public float getAngleToCryptoBox() {
         return angleToCryptoBox;
+    }
+
+    public float getBaseDistance() {
+        return baseDistance;
     }
 
     /**

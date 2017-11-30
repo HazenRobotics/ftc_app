@@ -41,12 +41,13 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	static int count = 0;
 
 	protected static final float VUFORIA_MOVEMENT_BUFFER_DISTANCE = 1.5f;
-	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 3.0f;
+	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 12.0f;
 	protected static final float FACING_ERROR_RANGE = 5;
 	protected static final String vuforiaKey = "AeCNMrn/////AAAAGRlPvGpkjUVapbG0iA01W9pxODQbY2cczmmaGy8CmYxrxKgX4Vf4DTayzCXCJeYBCtDVd5iWQFKFtnbAlSlvIqJmcUnLOF79x5QwSpMX9hJER259y94/" +
 			"bdZGZYj9XRg07DZZOpFwAERjcIH6HBVJcTG6/M+oLw4ObLbiY0EqZhZA6app2Tep5BDzsDSI9DwWrR2LqqPxJSRwwGqxqlkja+u3ggLEQmWalqr2n20ywTZUpHvqtBuP53AgnJZCs4HNc57+XhhjkJWLIBnb3HBPZAZMA4uZfAq" +
 			"I1uP8E1L+wgiAGretWwRrO3X/frXXIi5IJU9JDx52szfHeOr8kYBekeA/Ir5RygBs6yUNDPsepHkq";
-
+	protected static final float DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS = 1f; //FIXME: UPDATE THIS NUM
+	
 	//Objects and sensors
 	protected IHardware hardware;
 	protected Telemetry telemetry;
@@ -59,7 +60,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
     final protected RelicRecoveryLocalizer localizer;
 
 	//Variables
-	protected RelicRecoveryVuMark vuuMark;
+	protected RelicRecoveryVuMark vuMark;
 	protected String currentStep;
 	protected Message stepMessage;
 	org.firstinspires.ftc.robotcore.external.Telemetry t;
@@ -222,7 +223,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		sleep(5000);
 
-		//Forward under other coloured ball
+		//Forward under other colored ball
 		currentStep = "Move under ball";
 		telemetry.update();
 		motion.move(0, new Condition() {
@@ -267,7 +268,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 				return localizer.cryptoKeyIsVisible();
 			}
 		}, 0.5);*/
-		vuuMark = localizer.cryptoKey();
+		vuMark = localizer.cryptoKey();
 		//motion.move(-90, displacement);
 
 	}
@@ -295,14 +296,14 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		if (((startingPosition.equals(StartingPosition.BLUE_1) || startingPosition.equals(StartingPosition.BLUE_2)) && (y>0)
 				|| ((startingPosition.equals(StartingPosition.RED_1) || startingPosition.equals(StartingPosition.RED_2)) && (y<0)))){
 			//TODO: Improve math to account for the heading returning between 0 and 360, not -180 and 180?
-			double turnAngle = startingPosition.getTargetHeading() - gyro.getHeading();
+			double turnAngle = startingPosition.getMovementAngle() - gyro.getHeading();
 
 			currentStep = "Adjusting Facing to CryptoBox";
 			motion.turn(turnAngle > 0, new Condition() {
 				@Override
 				public boolean isTrue() {
 					telemetry.update();
-					return Math.abs(gyro.getHeading() - startingPosition.getTargetHeading()) < FACING_ERROR_RANGE;
+					return Math.abs(gyro.getHeading() - startingPosition.getMovementAngle()) < FACING_ERROR_RANGE;
 				}
 			});
 
@@ -332,8 +333,82 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	}
 
 	private void scoreGlyph() {
-		currentStep = "Scoring Glyph";
+		float MovementAngle = startingPosition.getMovementAngle();
+		float AngleToCryptoBox = startingPosition.getAngleToCryptoBox();
+		float BaseDistance = startingPosition.getBaseDistance();
+		
+		currentStep = "Turning towards CryptoBox"; //TODO: Does this need telementary.update();
 		telemetry.update();
+		motion.turn(MovementAngle);
+		currentStep = "Moving towards CryptoBox";
+		telemetry.update();
+		motion.move(BaseDistance);
+		if(startingPosition == RED_2) { //TODO, HOW TO FIND COLOR_NUM
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
+			motion.move(3.815);
+		}
+		if(startingPosition == BLUE_2) {
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
+			motion.move(3.815);
+		}
+		
+		currentStep = "Moving to VuMark location";
+		telemetry.update();
+		switch (vuMark){
+			case LEFT:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+					//no movement
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
+				}
+				break;
+			case RIGHT:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+					//no movement
+				}
+				break;
+			case CENTER:
+				if(startingPosition.getTeamColor() == Color.BLUE){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 1);
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 1);
+				}
+				break;
+			default: //Default, score in left
+				if(startingPosition.getTeamColor() == Color.BLUE){
+					//no movement
+				}
+				if(startingPosition.getTeamColor() == Color.RED){
+					motion.move(DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS * 2);
+				}
+				break;
+		}
+		//FIXME: RANGE SENSOR
+		currentStep = "Moving forward until close to CyrptoBox";
+		telemetry.update();
+		motion.move(new Condition() {
+				@Override
+				public boolean isTrue() {
+					telemetry.update();
+					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
+				}
+			});
+		//DROP GLYPH
+		motion.move(new Condition() {
+			@Override
+			public boolean isTrue() {
+				telemetry.update();
+				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < 6; //Turn into magic num
+			}
+		});
+		
 	}
 
 	public void idle(long milliseconds) {
