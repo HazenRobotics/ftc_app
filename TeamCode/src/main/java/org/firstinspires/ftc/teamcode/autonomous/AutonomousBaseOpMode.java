@@ -28,12 +28,12 @@ import java.io.StringWriter;
 public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	//Constants
-	protected static final float JEWEL_READ_DISTANCE = 5.3f;
-	protected static final float JEWEL_KNOCK_DISTANCE = 24.0f;
+	protected static final float JEWEL_READ_DISTANCE = 7.3f;
+	protected static final float JEWEL_KNOCK_DISTANCE = 5.4f;
 	protected static final float JEWEL_STRAFE_DISTANCE = 6.0f;
 	protected static final float SCOOP_BALL_HEIGHT = 0.125f;
 	protected static final float JEWEL_FORWARD_DISTANCE = 8.0f;
-	protected static final float JEWEL_BACKUP_DISTANCE = 13.5f;
+	protected static final float JEWEL_BACKUP_DISTANCE = 5.5f;
 	protected static final float DRIVE_SPEED = 0.25f;
     protected static int COLOR;
 	protected static final double JEWEL_STRAFFE_ERROR = 0.0;
@@ -57,7 +57,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected I2cColorSensor colorSensor;
 	protected I2cRangeSensor rangeSensor;
 	protected ModernRoboticsI2cGyro gyro;
-    final protected RelicRecoveryLocalizer localizer;
+    protected RelicRecoveryLocalizer localizer;
 
 	//Variables
 	protected RelicRecoveryVuMark vuMark;
@@ -67,6 +67,10 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	public AutonomousBaseOpMode(StartingPosition startingPosition) {
 		this.startingPosition = startingPosition;
+	}
+
+	public void initialize() {
+
 
 		//Stuff
 		currentStep = "Initializing";
@@ -98,46 +102,18 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		}*/
 	}
 
-	public void initialize() {
-		currentStep = "Initializing";
-		/*stepMessage = telemetry.add("Step >", new Message.IMessageData() {
-			@Override
-			public String getMessage() {
-				return currentStep;
-			}
-		});*/
-		t = super.telemetry;
-		this.hardware = this;
-		this.telemetry = new Telemetry(super.telemetry);
-		this.motion = new MechanamMotors(hardware);
-		this.lift = new LiftMotors(hardware);
-		hardware.getServo("flicker").setPosition(1);
-		this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
-		this.rangeSensor = new I2cRangeSensor((I2cDevice) hardware.get("rangeSensor"));
-		//TODO: Might throw exception about bad cast?
-		//this.gyro = (ModernRoboticsI2cGyro) hardware.getDevice("gyro");
-		gyro = null;
-		//this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
-		localizer.activate();
-
-		/*gyro.calibrate();
-		//TODO: Does this even work?
-		while(gyro.isCalibrating()) {
-			sleep(10);
-		}*/
-	}
-
 	@Override
 	public void runOpMode() {
-		//initialize();
+		initialize();
 
 		currentStep = "Waiting for start";
-		telemetry.update();
+		t.update();
+		t.update();
 
 		waitForStart();
 
 		currentStep = "Running Autonomous";
-		telemetry.update();
+		t.update();
 
 
 		//readPictograph();
@@ -162,29 +138,31 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		sleep(1000);
 
         COLOR = colorSensor.readColor();
-		telemetry.notify("Jewel Color >", String.valueOf(COLOR), 3.0);
+
+		t.addData("Jewel Color >", String.valueOf(COLOR), 3.0 );
 
 		sleep(1000);
 
 		//Moves back to the distance to be able to lower the scoop then knock the jewel
 		currentStep = "Knocking Jewel";
-		motion.move(180, new Condition() {
-			@Override
-			public boolean isTrue() {
-				t.addData(">", "Moving Back");
-				telemetry.update();
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_KNOCK_DISTANCE;
-			}
-		}, DRIVE_SPEED);
+		//motion.move(180, new Condition() {
+		//	@Override
+//			public boolean isTrue() {
+//				t.addData(">", "Moving Back");
+//				t.update();
+//				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_KNOCK_DISTANCE;
+//			}
+		motion.move(180, 3);
+		//}, DRIVE_SPEED);
 
 		sleep(1000);
 
 
 		//Based on the color detected, knock the right or left jewel
-		if ((COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) ||(COLOR  >= 9 && COLOR <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
+		/*if ((COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) ||(COLOR  >= 9 && COLOR <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
 			//Strafe
 			currentStep = "Strafe";
-			telemetry.update();
+			t.update();
 			final RelicRecoveryLocalizer.MatrixPosition init = localizer.getUpdatedCryptoKeyPosition();
 			final double originalX = DistanceUnit.INCH.fromCm(init.getX());
 
@@ -209,8 +187,11 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 				String sStackTrace = sw.toString();
 				t.addData("Error >", e.getLocalizedMessage());
 				t.addData("Error >", sStackTrace);
-				telemetry.update();
+				t.update();
 			}
+		}*/
+		if(startingPosition.getTeamColor().toString().equals()){
+
 		}
 
 		sleep(1000);
@@ -218,14 +199,14 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
         //Drop Small Lift
 		currentStep = "Drop Small Lift";
-		telemetry.update();
+		t.update();
 		lift.setScoopBottomHeight(SCOOP_BALL_HEIGHT);
 
 		sleep(5000);
 
 		//Forward under other colored ball
 		currentStep = "Move under ball";
-		telemetry.update();
+		t.update();
 		motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
@@ -239,17 +220,17 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		//Flip the ball
 		currentStep = "Flip the ball";
-		telemetry.update();
+		t.update();
 		lift.raiseScoop();
 
-		telemetry.update();
+		t.update();
 		sleep(5000);
 
 		motion.move(180, new Condition() {
 			@Override
 			public boolean isTrue() {
 				t.addData(">", "Moving Back");
-				telemetry.update();
+				t.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_BACKUP_DISTANCE;
 			}
 		}, DRIVE_SPEED);
@@ -264,7 +245,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		/*double displacement = motion.move(90, new Condition() {
 			@Override
 			public boolean isTrue() {
-				telemetry.update();
+				t.update();
 				return localizer.cryptoKeyIsVisible();
 			}
 		}, 0.5);*/
@@ -276,14 +257,14 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	private void moveToCryptoBox(){
 
 		currentStep = "Turning towards CryptoBox";
-		telemetry.update();
+		t.update();
 
 		motion.turn(startingPosition.getAngleToCryptoBox());
 
 		motion.turn(true, new Condition() {
 			@Override
 			public boolean isTrue() {
-				telemetry.update();
+				t.update();
 				return tapeIsVisible();
 			}
 		});
@@ -302,19 +283,19 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			motion.turn(turnAngle > 0, new Condition() {
 				@Override
 				public boolean isTrue() {
-					telemetry.update();
+					t.update();
 					return Math.abs(gyro.getHeading() - startingPosition.getMovementAngle()) < FACING_ERROR_RANGE;
 				}
 			});
 
 			currentStep = "Aligning with CryptoBox";
-			telemetry.update();
+			t.update();
 			//TODO: Make better aligning algorithm?
 			motion.move(-90, x);
 
 			currentStep = "Approaching CryptoBox";
 			if(tapeIsVisible()) {
-				telemetry.update();
+				t.update();
 				y = getTapePos().getY();
 			}
 
@@ -323,7 +304,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			motion.move(new Condition() {
 				@Override
 				public boolean isTrue() {
-					telemetry.update();
+					t.update();
 					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
 				}
 			});
@@ -338,24 +319,41 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		float BaseDistance = startingPosition.getBaseDistance();
 		
 		currentStep = "Turning towards CryptoBox"; //TODO: Does this need telementary.update();
-		telemetry.update();
+		t.update();
 		motion.turn(MovementAngle);
 		currentStep = "Moving towards CryptoBox";
-		telemetry.update();
+		t.update();
+		/*motion.move(new Condition() {
+			protected long last = System.currentTimeMillis();
+			protected long timePassed = 0;
+			protected final long MS_TO_WAIT = 10;
+			@Override
+			public boolean isTrue() {
+				long current = System.currentTimeMillis();
+				long delta = current - last;
+				last = current;
+				timePassed += delta;
+				return timePassed >= MS_TO_WAIT;
+			}
+		});*/
+
+
 		motion.move(BaseDistance);
-		if(startingPosition == RED_2) { //TODO, HOW TO FIND COLOR_NUM
+		if(startingPosition == StartingPosition.RED_2) { //TODO, HOW TO FIND COLOR_NUM
 			currentStep = "Moving to adjust alignment with CryptoBox";
-			telemetry.update();
+			t.update();
 			motion.move(3.815);
+			motion.turn(-90.0);
 		}
-		if(startingPosition == BLUE_2) {
+		if(startingPosition == StartingPosition.BLUE_2) {
 			currentStep = "Moving to adjust alignment with CryptoBox";
-			telemetry.update();
+			t.update();
 			motion.move(3.815);
+			motion.turn(90.0);
 		}
 		
 		currentStep = "Moving to VuMark location";
-		telemetry.update();
+		t.update();
 		switch (vuMark){
 			case LEFT:
 				if(startingPosition.getTeamColor() == Color.BLUE){
@@ -392,11 +390,11 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		}
 		//FIXME: RANGE SENSOR
 		currentStep = "Moving forward until close to CyrptoBox";
-		telemetry.update();
+		t.update();
 		motion.move(new Condition() {
 				@Override
 				public boolean isTrue() {
-					telemetry.update();
+					t.update();
 					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
 				}
 			});
@@ -404,7 +402,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				telemetry.update();
+				t.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < 6; //Turn into magic num
 			}
 		});
@@ -416,7 +414,7 @@ public class 	AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		// However, it's better than Thread.idleFor()-- probably.
 		long endTime = System.currentTimeMillis() + milliseconds;
 		while(System.currentTimeMillis() < endTime && opModeIsActive()) {
-			telemetry.update();
+			t.update();
 			hardware.idle();
 		}
 	}

@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Add Motors, Servos, Sensors, etc here
-    //EX: protected DcMotor motor;
+    // EX: protected DcMotor motor;
 
     //Claw and Arm Objects
     protected DcMotor armMotor;
