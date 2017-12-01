@@ -36,6 +36,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Lift Objects
     protected DcMotor lift;
 
+    //Flicker Objects
+    protected Servo flicker;
+
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
     protected final double CLAW_POWER = 0.2;
@@ -85,6 +88,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        flicker = getServo("flicker");
+        flicker.setPosition(0.0);
     }
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
