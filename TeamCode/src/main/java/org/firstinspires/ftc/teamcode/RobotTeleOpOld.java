@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 /**
  * Created by Alex on 9/23/2017.
  */
-
+@Disabled
 @TeleOp(name="TeleOpOld", group="TeleOp")
 public class RobotTeleOpOld extends LinearOpMode implements IHardware {
 
@@ -130,6 +131,7 @@ public class RobotTeleOpOld extends LinearOpMode implements IHardware {
     }
 
     protected void drive() {
+        telemetry.addData("servo pos: ", flicker.getPosition());
 
         //left stick controls movement
         //right stick controls turning
