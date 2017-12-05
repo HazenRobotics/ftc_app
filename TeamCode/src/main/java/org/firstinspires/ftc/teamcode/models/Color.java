@@ -34,21 +34,21 @@ public class Color {
     /**
      * @return Between 0 and 255
      */
-    public int getRed() {
+    public int red() {
         return red;
     }
 
     /**
      * @return Between 0 and 255
      */
-    public int getGreen() {
+    public int green() {
         return green;
     }
 
     /**
      * @return Between 0 and 255
      */
-    public int getBlue() {
+    public int blue() {
         return blue;
     }
 
@@ -79,4 +79,10 @@ public class Color {
     public boolean approximatelyEquals(Color other, int maximumDifference) {
         return this.delta(other) <= maximumDifference;
     }
+    @Override
+    public String toString(){
+
+        return "";
+    }
+
 }

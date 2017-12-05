@@ -10,10 +10,10 @@ import org.firstinspires.ftc.teamcode.models.Position;
  */
 public enum StartingPosition {
     //team color, movement angle on balance, distance from stone to box, angle to face box
-    RED_1(Color.RED, 180.0f, 27.815f, 90.0f), //top left?
-    RED_2(Color.RED, -90.0f, 24.0f, 0.0f), //bottom left? dosn't read cyrpto?
-    BLUE_1(Color.BLUE, 180.0f, 27.815f, -90f), //top right?
-    BLUE_2(Color.BLUE, -90.0f, 24.0f, 0.0f); //bottom right? dosn't read cyrpto?
+    RED_1(Color.RED, 90.0f, 27.815f, -90.0f), //top left?
+    RED_2(Color.RED, 90.0f, 24.0f, 90.0f), //bottom left? dosn't read cyrpto?
+    BLUE_1(Color.BLUE, -90.0f, 27.815f, 90f), //top right?
+    BLUE_2(Color.BLUE, -90.0f, 24.0f, 90.0f); //bottom right? dosn't read cyrpto?
 
     private final Color teamColor;
     private final float movementAngle;
