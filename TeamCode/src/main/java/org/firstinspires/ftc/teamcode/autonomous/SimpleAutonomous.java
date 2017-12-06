@@ -42,10 +42,6 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
     protected Message stepMessage;
     org.firstinspires.ftc.robotcore.external.Telemetry t;
 
-    public SimpleAutonomous(StartingPosition startingPosition) {
-        this.startingPosition = startingPosition;
-    }
-
     public void initialize() {
         currentStep = "Initializing";
         t = super.telemetry;

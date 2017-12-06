@@ -95,9 +95,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightBack = getMotor("rightBack");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
         this.hardware = this;
         this.motion = new MechanamMotors(hardware);
