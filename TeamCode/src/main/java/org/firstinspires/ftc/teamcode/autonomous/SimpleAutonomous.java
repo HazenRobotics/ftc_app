@@ -38,6 +38,7 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
     protected static final float JEWEL_FORWARD_DISTANCE = 8.0f;
     protected static final float JEWEL_BACKUP_DISTANCE = 5.5f;
     protected static int COLOR;
+    protected static int MAXINUMDIFFERENCE = 50;
 
     //Objects and sensors
     protected IHardware hardware;
@@ -87,7 +88,7 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
 
     private void knockOverJewel() {
         //Moves forward to the appropriate distance to read the color of the jewel
-        currentStep = "Reading Color";
+        currentStep = "Reading color";
 
         final double startingUltrasonicReading = rangeSensor.readUltrasonic(DistanceUnit.INCH);
 
@@ -104,7 +105,7 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
 
         COLOR = colorSensor.readColor();
 
-        currentStep = "Jewel Color: " + String.valueOf(COLOR);
+        currentStep = "Jewel color: " + String.valueOf(COLOR);
         t.update();
 
         sleep(1000);
@@ -112,59 +113,15 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
         currentStep = "Knocking Jewel";
         t.update();
 
-        if(COLOR == 3){
-
-        }
-
-        if(startingPosition.getTeamColor() == Color.BLUE){
-
-        }
-        else{
-
-        }
 
         motion.move(180, 3);
-        //}, DRIVE_SPEED);
-
-        sleep(1000);
-
-
-        //Based on the color detected, knock the right or left jewel
-		/*if ((COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) ||(COLOR  >= 9 && COLOR <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
-			//Strafe
-			currentStep = "Strafe";
-			t.update();
-			final RelicRecoveryLocalizer.MatrixPosition init = localizer.getUpdatedCryptoKeyPosition();
-			final double originalX = DistanceUnit.INCH.fromCm(init.getX());
-
-			try {
-				motion.move(-90, new Condition() {
-					@Override
-					public boolean isTrue() {
-						count++;
-						RelicRecoveryLocalizer.MatrixPosition key = localizer.getUpdatedCryptoKeyPosition();
-						t.addData("Pos", "X; " + DistanceUnit.INCH.fromCm(key.getX()) + " Y: " + DistanceUnit.INCH.fromCm(key.getY()));
-						t.addData("Count >", "C: " + count);
-						t.update();
-						return DistanceUnit.INCH.fromCm(key.getX()) - originalX > JEWEL_STRAFE_DISTANCE;
-					}
-				}, DRIVE_SPEED / 5.0);
-			} catch(NullPointerException e) {
-				sleep(3);
-				t.addData("Count >", "C: " + count);
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				String sStackTrace = sw.toString();
-				t.addData("Error >", e.getLocalizedMessage());
-				t.addData("Error >", sStackTrace);
-				t.update();
-			}
-		}*/
 
         currentStep = "Opening flicker";
         t.update();
+
         flicker.setPosition(0.5);
+
+        sleep(1000);
 
         currentStep = "Moving towards jewel";
         t.update();
@@ -178,34 +135,28 @@ public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
 
         sleep(500);
 
-        if(startingPosition.getTeamColor() == Color.BLUE){
-            currentStep = "knocking jewel: " + startingPosition.getTeamColor();
-            t.update();
-            flicker.setPosition(0);
+        //Based on the color detected, knock the right or left jewel
+		if ((COLOR >= 1 && COLOR <= 4 && startingPosition.getTeamColor() == Color.RED) ||(COLOR  >= 9 && COLOR <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
+			flicker.setPosition(0);
+		} else {
+            flicker.setPosition(1);
         }
-        else{
-            currentStep = "knocking jewel: " + startingPosition.getTeamColor();
-            t.update();
-            flicker.setPosition(0.9);
-        }
+
         sleep(1000);
 
-
-        currentStep = "moving back";
+        currentStep = "Moving back";
         t.update();
-        motion.move(-5);
-
-        currentStep = "returnning flicker back to default posiiton";
-        t.update();
-        flicker.setPosition(1);
-
-        currentStep = "moving back";
-        motion.move(0, new Condition() {
+        motion.move(180, new Condition() {
             @Override
             public boolean isTrue() {
-                return rangeSensor.readUltrasonic(DistanceUnit.INCH) < startingUltrasonicReading;
+                t.addData(">", "Moving Back");
+                t.update();
+                return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_BACKUP_DISTANCE;
             }
         }, DRIVE_SPEED);
+
+        flicker.setPosition(0);
+
 
 
         //	OLD ROBOTIC CODE, I THINK

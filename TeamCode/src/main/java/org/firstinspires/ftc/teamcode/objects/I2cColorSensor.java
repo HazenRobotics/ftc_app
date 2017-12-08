@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
  * Created by Robotics on 2/23/2017.
  */
 public class I2cColorSensor extends I2cSensor {
-    protected static final int DEFAULT_ADDRESS = 0x3C;
+    protected static final int DEFAULT_ADDRESS = 0x3c;
     protected static final int COLOR_REG_START = 0x04; //Register to start reading
     protected static final int COLOR_READ_LENGTH = 1; //Number of byte to read
 
@@ -50,7 +50,7 @@ public class I2cColorSensor extends I2cSensor {
      */
 
     /**
-     * @return Returns a number between 0 and 16. See <a href="http://www.modernroboticsinc.com/Content/Images/uploaded/ColorNumber.png">Color Values Here</a>
+     * @return Returns a number between 0 and 16. See <a href="http://www.modernroboticsinc.com/Content/Images/uploaded/ColorNumber.png">color Values Here</a>
      */
     public int readColor() {
         cache = SENSORReader.read(COLOR_REG_START, COLOR_READ_LENGTH);
