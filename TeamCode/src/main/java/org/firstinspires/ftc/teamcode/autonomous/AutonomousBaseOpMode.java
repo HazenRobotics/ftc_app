@@ -53,8 +53,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected I2cColorSensor colorSensor;
 	protected I2cRangeSensor rangeSensor;
 	protected RelicRecoveryLocalizer localizer;
-	org.firstinspires.ftc.robotcore.external.Telemetry t;
 	//protected ModernRoboticsI2cGyro gyro;
+	org.firstinspires.ftc.robotcore.external.Telemetry t;
 
 	//Variables
 	protected RelicRecoveryVuMark vuMark;
@@ -98,7 +98,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		claw.setDirection(DcMotor.Direction.FORWARD);
 
 		//Moves during init
-		flicker.setPosition(1);
+		flicker.setDirection(Servo.Direction.REVERSE);
+		flicker.setPosition(0);
 	}
 
 	@Override
@@ -175,9 +176,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//Based on the color detected, knock the right or left jewel
 		currentStep("Flicking Jewel");
 		if ((color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) ||(color >= 9 && color <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
-			flicker.setPosition(0);
-		} else {
 			flicker.setPosition(1);
+		} else {
+			flicker.setPosition(0);
 		}
 
 		sleep(1000);
@@ -191,7 +192,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		}, DRIVE_SPEED);
 
 		currentStep("Closing Flicker");
-		flicker.setPosition(1);
+		flicker.setPosition(0);
 	}
 
 	/**
@@ -343,3 +344,4 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		return hardwareMap.get(name);
 	}
 }
+

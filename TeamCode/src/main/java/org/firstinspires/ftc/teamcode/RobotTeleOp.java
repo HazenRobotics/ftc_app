@@ -74,8 +74,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             arm();
             lift();
             drive();
-
-            telemetry.update();
             idle();
         }
     }
@@ -108,7 +106,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         this.motion = new MechanamMotors(hardware);
 
         flicker = getServo("flicker");
-        flicker.setPosition(1);
+        flicker.setDirection(Servo.Direction.REVERSE);
+        flicker.setPosition(0);
 
         gyro.calibrate();
         while(gyro.isCalibrating()){
@@ -116,8 +115,6 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
 
         sleep(500);
-        telemetry.addData("TeleOp Init Done", "");
-        telemetry.update();
     }
 
 
