@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 /**
  * Created by Alex on 9/23/2017.
  */
-@Disabled
+
 @TeleOp(name="TeleOpOld", group="TeleOp")
 public class RobotTeleOpOld extends LinearOpMode implements IHardware {
 
@@ -76,7 +76,7 @@ public class RobotTeleOpOld extends LinearOpMode implements IHardware {
             drive();
             flickerControl();
 
-            telemetry.addData("Color>", color.readColor());
+            telemetry.addData("color>", color.readColor());
             telemetry.addData("Range>", range.readUltrasonic(DistanceUnit.INCH));
 
             telemetry.update();

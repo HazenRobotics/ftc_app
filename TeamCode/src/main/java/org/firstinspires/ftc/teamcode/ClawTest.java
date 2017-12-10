@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 //Created by Alex on 9/23/2017.
 
 
-
+@Disabled
 @TeleOp(name="ClawTest", group="TeleOp")
 public class ClawTest extends LinearOpMode implements IHardware {
 

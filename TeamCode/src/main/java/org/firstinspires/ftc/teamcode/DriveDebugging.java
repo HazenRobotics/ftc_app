@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Created by Robotics on 11/3/2017.
  */
 
-@TeleOp(name = "Drive WORK!", group = "Test")
+@TeleOp(name = "Drive Debugging", group = "Test")
 public class DriveDebugging extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,9 +27,9 @@ public class DriveDebugging extends LinearOpMode{
 
         while (opModeIsActive()) {
             leftF.setPower(-gamepad1.left_stick_y);
-            leftB.setPower(gamepad1.left_stick_x);
+            leftB.setPower(-gamepad2.left_stick_y);
             rightF.setPower(-gamepad1.right_stick_y);
-            rightB.setPower(gamepad1.right_stick_x);
+            rightB.setPower(-gamepad2.right_stick_y);
         }
     }
 }

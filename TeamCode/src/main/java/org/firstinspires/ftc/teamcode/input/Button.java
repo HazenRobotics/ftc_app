@@ -16,9 +16,10 @@ public abstract class Button {
 	public Toggle toToggle() {
 		return new Toggle() {
 			@Override
-			public void onActivate() {
+			public boolean onActivate() {
 				Button.this.onPress();
-			}
+                return false;
+            }
 
 			@Override
 			public void onDeactivate() {

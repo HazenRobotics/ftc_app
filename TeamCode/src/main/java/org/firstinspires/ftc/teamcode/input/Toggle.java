@@ -19,7 +19,7 @@ public abstract class Toggle extends Button {
 	public final void onRelease() { }
 	
 	/** Called when the toggle is activated. */
-	public abstract void onActivate();
+	public abstract boolean onActivate();
 	/** Called when the toggle is deactivated. */
 	public abstract void onDeactivate();
 }
