@@ -56,7 +56,6 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected I2cRangeSensor rangeSensor;
 	protected RelicRecoveryLocalizer localizer;
 	org.firstinspires.ftc.robotcore.external.Telemetry t;
-	//protected ModernRoboticsI2cGyro gyro;
 
 	//Variables
 	protected RelicRecoveryVuMark vuMark;
@@ -100,7 +99,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		claw.setDirection(DcMotor.Direction.FORWARD);
 
 		//Moves during init
-		flicker.setPosition(1);
+		flicker.setDirection(Servo.Direction.REVERSE);
+		flicker.setPosition(0);
+
 
 		gyro = (ModernRoboticsI2cGyro) get("gyro");
 		gyro.calibrate();
@@ -149,7 +150,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep = "TMoving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
+				currentStep = "Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
 				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_COLOR_READ_DISTANCE;
 			}
@@ -195,9 +196,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		currentStep = "Flicking Jewel";
 		telemetry.update();
 		if ((color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) ||(color >= 9 && color <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
-			flicker.setPosition(0);
-		} else {
 			flicker.setPosition(1);
+		} else {
+			flicker.setPosition(0);
 		}
 
 		sleep(1000);
@@ -216,7 +217,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		currentStep = "Closing Flicker";
 		telemetry.update();
 
-		flicker.setPosition(1);
+		flicker.setPosition(0);
 	}
 
 	/**
