@@ -103,9 +103,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         this.motion = new MechanamMotors(hardware);
 
         flicker = getServo("flicker"); //SHOULD NOT BE USED DURING THIS COMP, FIX AT HAZEN
-        /*flicker.setPosition(0.0);
-        sleep(1000);
-        flicker.setPosition(1.0);*/
+
+        flicker.setPosition(1.0);
     }
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
