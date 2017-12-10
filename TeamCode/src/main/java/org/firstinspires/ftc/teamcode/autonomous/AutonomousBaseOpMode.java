@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.RelicRecoveryLocalizer;
 
 import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
+import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
 public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
@@ -57,6 +58,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	//Variables
 	protected RelicRecoveryVuMark vuMark;
+	protected String currentStep;
 
 	public AutonomousBaseOpMode(StartingPosition startingPosition) {
 		super();
@@ -69,6 +71,15 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void initialize() {
 		//Telemetry
 		t = super.telemetry;
+		currentStep = "";
+		telemetry = new Telemetry(super.telemetry);
+		telemetry.add("Step", new Message.IMessageData() {
+			@Override
+			public String getMessage() {
+				return currentStep;
+			}
+		});
+
 
 		//init hardware
 		this.hardware = this;
@@ -307,8 +318,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void idle(long milliseconds) {
 		long endTime = System.currentTimeMillis() + milliseconds;
 		while(System.currentTimeMillis() < endTime && opModeIsActive()) {
-			t.update();
-			hardware.idle();
+			super.idle();
 		}
 	}
 
