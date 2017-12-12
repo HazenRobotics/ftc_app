@@ -28,12 +28,13 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	//Constants
 	protected static final float JEWEL_COLOR_READ_DISTANCE = 6.5f;
 	protected static final float DRIVE_SPEED = 0.2f;
-	protected static final float JEWEL_FORWARD_DISTANCE = 10.0f;
+	protected static final float JEWEL_FORWARD_DISTANCE = 11.0f;
 	protected static final float JEWEL_BACKUP_DISTANCE = 15.0f;
 	protected static final float JEWEL_END_DISTANCE = 15.0f;
+	protected static final float ALIGNMENT_FORWARD_DISTANCE = 24.0f;
 	protected static final double CLAW_POWER = 0.2;
-	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 12.0f; //CryptoBox is 4in. deep
-	protected static final float CRYPTO_BOX_PUSH_TARGET_DISTANCE = 6F; //CryptoBox is 4in. deep
+	protected static final float CRYPTO_BOX_TARGET_DISTANCE = 10.0f; //CryptoBox is 4in. deep
+	protected static final float CRYPTO_BOX_PUSH_TARGET_DISTANCE = 7.0F; //CryptoBox is 4in. deep
 	protected static final float DISTANCE_BETWEEN_CRYPTO_BOX_COLUMNS = 7.63f; //CryptoBox column width is 7.63in.
 	protected static int color;
 
@@ -50,10 +51,10 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected DcMotor claw;
 	protected LiftMotors lift;
 	protected Servo flicker;
+	protected ModernRoboticsI2cGyro gyro;
 	protected I2cColorSensor colorSensor;
 	protected I2cRangeSensor rangeSensor;
 	protected RelicRecoveryLocalizer localizer;
-	//protected ModernRoboticsI2cGyro gyro;
 	org.firstinspires.ftc.robotcore.external.Telemetry t;
 
 	//Variables
@@ -70,8 +71,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	 */
 	public void initialize() {
 		//Telemetry
-		t = super.telemetry;
-		currentStep = "";
+		//t = super.telemetry;
 		telemetry = new Telemetry(super.telemetry);
 		telemetry.add("Step", new Message.IMessageData() {
 			@Override
@@ -80,10 +80,11 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			}
 		});
 
+		telemetry.update();
+
 
 		//init hardware
 		this.hardware = this;
-		this.telemetry = new Telemetry(super.telemetry);
 		this.motion = new MechanamMotors(hardware);
 		this.lift = new LiftMotors(hardware);
 		this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
@@ -100,14 +101,24 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//Moves during init
 		flicker.setDirection(Servo.Direction.REVERSE);
 		flicker.setPosition(0);
+
+
+		gyro = (ModernRoboticsI2cGyro) get("gyro");
+		gyro.calibrate();
+		if(gyro.isCalibrating()) {
+			idle();
+		}
 	}
 
 	@Override
 	public void runOpMode() {
-		currentStep("Initializing");
+
+		currentStep = "Initializing";
 		initialize();
 
-		currentStep("Waiting for start");
+
+		currentStep = "Waiting for Start";
+		telemetry.update();
 		waitForStart();
 
 		readPictograph();
@@ -121,7 +132,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	 * Reads the Pictograph using Vuforia (no motion)
 	 */
 	private void readPictograph() {
-		currentStep("Reading Pictograph");
+		currentStep = "Reading Pictograph";
+		telemetry.update();
 		sleep(1000);
 		vuMark = localizer.cryptoKey();
 	}
@@ -132,12 +144,14 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	 * Extends Flicker. Moves forward using unltrasonic sensor. Flicks off Jewel based off reads for color sensor.
 	 */
 	private void knockOverJewel() {
-		currentStep("Reading color");
+		currentStep = "Reading color";
+		telemetry.update();
 
 		motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep("Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH));
+				currentStep = "Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
+				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_COLOR_READ_DISTANCE;
 			}
 		}, DRIVE_SPEED);
@@ -146,24 +160,29 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		color = colorSensor.readColor();
 
-		currentStep("Jewel color: " + String.valueOf(color));
+		currentStep = "Jewel color: " + String.valueOf(color);
+		telemetry.update();
 
 		sleep(1000);
 
 		motion.move(180, new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep("Moving Back");
+				currentStep = "Moving Back";
+				telemetry.update();
+
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_BACKUP_DISTANCE;
 			}
 		}, DRIVE_SPEED);
 
-		currentStep("Opening flicker");
+		currentStep = "Opening flicker";
+		telemetry.update();
 		flicker.setPosition(0.5);
 
 		sleep(1000);
 
-		currentStep("Moving towards jewel");
+		currentStep = "Moving towards jewel";
+		telemetry.update();
 		motion.move(0, new Condition() {
 			@Override
 			public boolean isTrue() {
@@ -174,7 +193,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		sleep(500);
 
 		//Based on the color detected, knock the right or left jewel
-		currentStep("Flicking Jewel");
+		currentStep = "Flicking Jewel";
+		telemetry.update();
 		if ((color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) ||(color >= 9 && color <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
 			flicker.setPosition(1);
 		} else {
@@ -186,12 +206,17 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		motion.move(180, new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep("Moving Back");
+
+				currentStep = "Moving Back";
+				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_END_DISTANCE;
 			}
 		}, DRIVE_SPEED);
 
-		currentStep("Closing Flicker");
+
+		currentStep = "Closing Flicker";
+		telemetry.update();
+
 		flicker.setPosition(0);
 	}
 
@@ -204,24 +229,45 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		float AngleToCryptoBox = startingPosition.getAngleToCryptoBox();
 		float BaseDistance = startingPosition.getBaseDistance();
 
-		currentStep("Turning towards CryptoBox");
-		motion.turn(MovementAngle);
+		currentStep = "Turning towards CryptoBox";
+		telemetry.update();
 
-		currentStep("Moving towards CryptoBox");
+		gyroTurn(MovementAngle);
+
+		currentStep = "Moving towards CryptoBox";
+		telemetry.update();
+
+
 		motion.move(BaseDistance);
 
 		if(startingPosition == StartingPosition.RED_2) {
-			currentStep("Moving to adjust alignment with CryptoBox");
-			motion.move(3.815);
-			motion.turn(-90.0);
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
+			motion.move(new Condition() {
+				@Override
+				public boolean isTrue() {
+					currentStep = "Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
+					telemetry.update();
+					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < ALIGNMENT_FORWARD_DISTANCE;
+				}
+			});
+
+			gyroTurn(90);
 		}
 		if(startingPosition == StartingPosition.BLUE_2) {
-			currentStep("Moving to adjust alignment with CryptoBox");
-			motion.move(3.815);
-			motion.turn(90.0);
+			//currentStep("Moving to adjust alignment with CryptoBox");
+			motion.move(new Condition() {
+				@Override
+				public boolean isTrue() {
+					currentStep = "Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
+					telemetry.update();
+					return rangeSensor.readUltrasonic(DistanceUnit.INCH) < ALIGNMENT_FORWARD_DISTANCE;
+				}
+			});
+			gyroTurn(-90);
 		}
 
-		currentStep("Moving to VuMark location");
+		//currentStep("Moving to VuMark location");
 		switch (vuMark){
 			case LEFT:
 				if(startingPosition.getTeamColor() == Color.BLUE){
@@ -257,7 +303,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 				break;
 		}
 
-		currentStep("Turning to face CryptoBox");
+		//currentStep("Turning to face CryptoBox");
 		motion.turn(AngleToCryptoBox);
 	}
 
@@ -269,7 +315,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep("Moving forward until close to CyrptoBox");
+				//currentStep("Moving forward until close to CyrptoBox");
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
 			}
 		});
@@ -292,14 +338,14 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		double targetTime = 2;
 		runtime.reset();
 		while(runtime.seconds()  < targetTime){
-			currentStep("Releasing glyph, secs left: " + (targetTime-runtime.seconds()));
+			//currentStep("Releasing glyph, secs left: " + (targetTime-runtime.seconds()));
 		}
 		claw.setPower(0);
 
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				currentStep("Pushing glyph into box");
+				//currentStep("Pushing glyph into box");
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_PUSH_TARGET_DISTANCE;
 			}
 		});
@@ -307,15 +353,19 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 	//Helper Methods
 
-	/**
-	 * <strong>Telemetry</strong><br>
-	 * @param currentStep The current step that the robot is preforming
-	 */
-	public void currentStep(String currentStep){
-		t.addData("", currentStep);
-		t.update();
+	public void gyroTurn(final float turn){
+		final int heading = gyro.getIntegratedZValue();
+
+		motion.turn(true, new Condition() {
+			@Override
+			public boolean isTrue() {
+				return (turn < 0 ? -1 : 1) * (gyro.getIntegratedZValue() - (heading + turn)) >0;
+			}
+		});
 	}
 
+	//Hardware
+	@Override
 	public void idle(long milliseconds) {
 		long endTime = System.currentTimeMillis() + milliseconds;
 		while(System.currentTimeMillis() < endTime && opModeIsActive()) {
@@ -323,7 +373,6 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		}
 	}
 
-	//Hardware
 	@Override
 	public DcMotor getMotor(String name) {
 		return hardwareMap.dcMotor.get(name);
@@ -344,4 +393,3 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		return hardwareMap.get(name);
 	}
 }
-

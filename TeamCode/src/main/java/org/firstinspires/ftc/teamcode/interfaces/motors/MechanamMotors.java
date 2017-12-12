@@ -23,9 +23,10 @@ public class MechanamMotors implements IWheels {
 
     //Declare Constants
     //TODO: Currently arbitrary numbers, need to change for actual robot
-    protected static final double COUNTS_PER_REV = 1440.0;
+    protected static final double COUNTS_PER_REV = 1680.0;
     protected static final double WHEEL_DIAMETER = 4.0;
-    protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER);
+    protected static final double WHEEL_SLIP_MULTIPLIER = 1.0f;
+    protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER) / WHEEL_SLIP_MULTIPLIER;
     protected static final double ROBOT_RADIUS = 9.0;
     protected static final double ROBOT_TURNING_CIRCUMFERENCE = Math.PI * (2 * ROBOT_RADIUS);
     protected static final double DRIVE_SPEED = 1.0;
@@ -38,6 +39,7 @@ public class MechanamMotors implements IWheels {
         leftFront = hardware.getMotor("leftFront");
         leftBack = hardware.getMotor("leftBack");
         rightFront = hardware.getMotor("rightFront");
+
         rightBack = hardware.getMotor("rightBack");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
