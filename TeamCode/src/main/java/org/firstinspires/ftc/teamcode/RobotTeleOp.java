@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.autonomous.StartingPosition;
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.input.Toggle;
 import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
-import org.firstinspires.ftc.teamcode.output.Telemetry;
+import org.firstinspires.ftc.teamcode.models.Condition;
+
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+
 
 /**
  * Created by Alex on 9/23/2017.
@@ -25,6 +26,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     //Add Motors, Servos, Sensors, etc here
     // EX: protected DcMotor motor;
+
+    protected ButtonManager buttons = new ButtonManager();
 
     //Claw and Arm Objects
     protected DcMotor armMotor;
@@ -42,11 +45,15 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     //Flicker Objects
     protected Servo flicker;
 
+    //Sensors
+    protected ModernRoboticsI2cGyro gyro;
+
     //Add all Constants here
     //EX: protected final double MOTOR_POWER = 0.5;
-    protected final double CLAW_POWER = 0.4;
-    protected final double LIFT_POWER = 0.3;
-    protected final double JOYSTICK_ERROR_RANGE = 0.1;
+    protected final static double CLAW_POWER = 0.4;
+    protected final static double LIFT_POWER = 0.3;
+    protected final static double JOYSTICK_ERROR_RANGE = 0.05;
+    protected final  static int AUTO_TURN_AMOUNT = 90;
 
 
     protected IHardware hardware;
@@ -56,21 +63,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     public void runOpMode() {
 
         setupHardware();
+        setupButtons();
         //Add any further initialization (methods) here
 
         waitForStart();
 
-        //motion.move(7);
-
         while (opModeIsActive()) {
+            buttons.update();
             claw();
             arm();
             lift();
             drive();
-            /*telemetry.addData("flicker pos: ", flicker.getPosition());
-            flicker.setPosition(gamepad1.right_stick_y);*/
-
-            telemetry.update();
             idle();
         }
     }
@@ -102,11 +105,18 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         this.hardware = this;
         this.motion = new MechanamMotors(hardware);
 
-        flicker = getServo("flicker"); //SHOULD NOT BE USED DURING THIS COMP, FIX AT HAZEN
-        /*flicker.setPosition(0.0);
-        sleep(1000);
-        flicker.setPosition(1.0);*/
+        flicker = getServo("flicker");
+        flicker.setDirection(Servo.Direction.REVERSE);
+        flicker.setPosition(0);
+
+        gyro.calibrate();
+        while(gyro.isCalibrating()){
+            idle();
+        }
+
+        sleep(500);
     }
+
 
     //when claw has reached the correct position or moved open long enough, the claw stops moving.
     protected void claw() {
@@ -122,34 +132,17 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     }
 
     protected void drive() {
-
-
-
         //left stick controls movement
         //right stick controls turning
 
         //left stick x = strafe
         //left stick y = drive, forwards/backwards
         //right stick = turn
-
-        boolean correction  = true;
-
-
-        //POSSIBIBLE CORRECTED TO SWITCH CONTROLS
-        double turn_x = gamepad1.left_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.right_stick_y) + Math.abs(gamepad1.right_stick_x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
-        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
-        double x = gamepad1.right_stick_x;
-        double y = -gamepad1.right_stick_y;
-
-        //ORIGINAL CODE
-        /*double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
-        double magnitude = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
-        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
+        double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
         double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;*/
-
-
+        double y = -gamepad1.left_stick_y;
+        double magnitude = Math.abs(y) + Math.abs(x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
+        double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
 
         double leftFrontPower = (y + x + turn_x) / scale;
         double rightFrontPower = (y - x - turn_x) / scale;
@@ -163,7 +156,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightBack.setPower(rightBackPower);
     }
 
-    //code for lift, up arrow on dpad is up on lift, same setup for down.
+    /**
+     * <strong>lift</strong><br>
+     * Up arrow on dpad is up on lift, same setup for down.
+     */
     protected void lift() {
         if(gamepad2.dpad_up){
             lift.setPower(LIFT_POWER);
@@ -192,6 +188,57 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         {
             armMotor.setPower(0);
         }
+    }
+
+    protected void setupButtons() {
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.x;
+            }
+
+            @Override
+            public void onPress() {
+                final int startHeading = gyro.getIntegratedZValue();
+                motion.turn(true, new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        double turn_x = gamepad1.right_stick_x;
+                        double x = gamepad1.left_stick_x;
+                        double y = -gamepad1.left_stick_y;
+                        double currentHeading = gyro.getIntegratedZValue();
+                        if((Math.abs(turn_x) > JOYSTICK_ERROR_RANGE || Math.abs(x) > JOYSTICK_ERROR_RANGE ||Math.abs(y) > JOYSTICK_ERROR_RANGE)) {
+                            return true;
+                        }
+                        return (currentHeading - (startHeading - AUTO_TURN_AMOUNT)) > 0;
+                    }
+                });
+            }
+        });
+        buttons.add(new Button() {
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.b;
+            }
+
+            @Override
+            public void onPress() {
+                final int startHeading = gyro.getIntegratedZValue();
+                motion.turn(true, new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        double turn_x = gamepad1.right_stick_x;
+                        double x = gamepad1.left_stick_x;
+                        double y = -gamepad1.left_stick_y;
+                        double currentHeading = gyro.getIntegratedZValue();
+                        if(Math.abs(turn_x) > JOYSTICK_ERROR_RANGE || Math.abs(x) > JOYSTICK_ERROR_RANGE ||Math.abs(y) > JOYSTICK_ERROR_RANGE) {
+                            return true;
+                        }
+                        return (currentHeading - (startHeading + AUTO_TURN_AMOUNT)) > 0;
+                    }
+                });
+            }
+        });
     }
 
     @Override

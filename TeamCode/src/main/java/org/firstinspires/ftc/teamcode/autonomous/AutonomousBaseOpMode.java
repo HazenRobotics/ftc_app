@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.RelicRecoveryLocalizer;
 
 import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
+import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
 
 public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
@@ -52,11 +53,12 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected I2cColorSensor colorSensor;
 	protected I2cRangeSensor rangeSensor;
 	protected RelicRecoveryLocalizer localizer;
-	org.firstinspires.ftc.robotcore.external.Telemetry t;
 	//protected ModernRoboticsI2cGyro gyro;
+	org.firstinspires.ftc.robotcore.external.Telemetry t;
 
 	//Variables
 	protected RelicRecoveryVuMark vuMark;
+	protected String currentStep;
 
 	public AutonomousBaseOpMode(StartingPosition startingPosition) {
 		super();
@@ -69,6 +71,15 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void initialize() {
 		//Telemetry
 		t = super.telemetry;
+		currentStep = "";
+		telemetry = new Telemetry(super.telemetry);
+		telemetry.add("Step", new Message.IMessageData() {
+			@Override
+			public String getMessage() {
+				return currentStep;
+			}
+		});
+
 
 		//init hardware
 		this.hardware = this;
@@ -87,7 +98,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		claw.setDirection(DcMotor.Direction.FORWARD);
 
 		//Moves during init
-		flicker.setPosition(1);
+		flicker.setDirection(Servo.Direction.REVERSE);
+		flicker.setPosition(0);
 	}
 
 	@Override
@@ -164,9 +176,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		//Based on the color detected, knock the right or left jewel
 		currentStep("Flicking Jewel");
 		if ((color >= 1 && color <= 4 && startingPosition.getTeamColor() == Color.RED) ||(color >= 9 && color <= 11 && startingPosition.getTeamColor() == Color.BLUE)) {
-			flicker.setPosition(0);
-		} else {
 			flicker.setPosition(1);
+		} else {
+			flicker.setPosition(0);
 		}
 
 		sleep(1000);
@@ -180,7 +192,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		}, DRIVE_SPEED);
 
 		currentStep("Closing Flicker");
-		flicker.setPosition(1);
+		flicker.setPosition(0);
 	}
 
 	/**
@@ -307,8 +319,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void idle(long milliseconds) {
 		long endTime = System.currentTimeMillis() + milliseconds;
 		while(System.currentTimeMillis() < endTime && opModeIsActive()) {
-			t.update();
-			hardware.idle();
+			super.idle();
 		}
 	}
 
@@ -333,3 +344,4 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		return hardwareMap.get(name);
 	}
 }
+
