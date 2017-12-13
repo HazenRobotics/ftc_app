@@ -257,7 +257,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         long endTime = System.currentTimeMillis() + milliseconds;
         while(System.currentTimeMillis() < endTime && opModeIsActive()) {
             telemetry.update();
-            idle();
+            super.idle();
         }
     }
 
