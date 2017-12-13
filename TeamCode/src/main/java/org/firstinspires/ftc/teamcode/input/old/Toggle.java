@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.input;
+package org.firstinspires.ftc.teamcode.input.old;
 
 /**
  * A kind of button that is activated until pressed again, rather than being active only for the duration of the press.

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.input;
+package org.firstinspires.ftc.teamcode.input.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
