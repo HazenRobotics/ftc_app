@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 /**
  * Created by Alex on 9/23/2017.
  */
-
+@Disabled
 @TeleOp(name="TeleOpOld", group="TeleOp")
 public class RobotTeleOpOld extends LinearOpMode implements IHardware {
 
