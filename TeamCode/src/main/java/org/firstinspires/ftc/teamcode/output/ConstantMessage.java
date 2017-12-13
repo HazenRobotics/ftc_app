@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.output;
 
+import org.firstinspires.ftc.teamcode.reflection.ConstantSupplier;
+
 /**
  * A message whose content doesn't change
  */
@@ -9,11 +11,6 @@ public class ConstantMessage extends Message {
 	 * @param content The content of this message
 	 */
 	public ConstantMessage(final String key, final String content) {
-		super(key, new IMessageData() {
-			@Override
-			public String getMessage() {
-				return content;
-			}
-		});
+		super(key, new ConstantSupplier<>(content));
 	}
 }

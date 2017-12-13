@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode.output;
 
+import org.firstinspires.ftc.teamcode.reflection.Supplier;
+
 /**
  * A message displayed in {@link Telemetry}.
  */
 public class Message {
-	/** The content of a {@link Message}. */
-	public static interface IMessageData {
-		/** @return The message to display. */
-		public String getMessage();
-	}
-	
 	private final String key;
-	private final IMessageData message;
+	private final Supplier<?> message;
 	
 	/**
 	 * @param key The message's key
 	 * @param message The message's content
 	 */
-	public Message(String key, IMessageData message) {
+	public Message(String key, Supplier<?> message) {
 		this.key = key;
 		this.message = message;
 	}
@@ -29,6 +25,6 @@ public class Message {
 	
 	/** @return The message to display. */
 	public String getMessage() {
-		return message.getMessage();
+		return message.get().toString();
 	}
 }

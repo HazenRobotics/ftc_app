@@ -1,64 +1,55 @@
 package org.firstinspires.ftc.teamcode.input;
 
-import java.lang.reflect.Field;
+import org.firstinspires.ftc.teamcode.reflection.Supplier;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class Trigger extends Button {
+public class Trigger extends Button {
+    private final Supplier<Float> value;
     private float prev_pressure;
-
-    static Trigger generate(final Object obj, String fieldname) throws NoSuchFieldException, IllegalAccessException {
-        // Sorry for the copy/pastes. I'll consider implementing generic field accessors later, but that seems excessive for now.
-        final Field field = obj.getClass().getField(fieldname);
-        if(obj == null)
-            throw new IllegalArgumentException("Object was null when generating field accessor.");
-        if(!field.getType().equals(Float.TYPE))
-            throw new IllegalArgumentException("Field is not correct type for trigger: " + fieldname + " : " + field.getType());
-        return new Trigger() {
-            @Override
-            public float pressure() {
-                try {
-                    return (float) field.get(obj);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-    }
 
     public static final float PRESSURE_THRESHOLD = 0;
 
-    @Override
-    public boolean pressed() {
-        return pressure() > PRESSURE_THRESHOLD;
+    public float pressure() {
+        return value.get();
     }
 
-    public abstract float pressure();
+    private final Map<EventType, Set<EventListener<TriggerEvent>>> listeners = new HashMap<>();
 
-    private final Map<EventType, Set<AEventListener<TriggerEvent>>> listeners = new HashMap<>();
-
-    public Trigger() {
+    public Trigger(Supplier<Float> value) {
+        // Duplicated PRESSURE_THRESHOLD code due to Java's limitations, /again/
+        super(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return Math.abs(value.get()) > PRESSURE_THRESHOLD;
+            }
+        });
+        Supplier<Float> realValue = new Supplier<Float>() {
+            @Override
+            public Float get() {
+                return Math.abs(value.get()) > PRESSURE_THRESHOLD ? value.get() : 0f;
+            }
+        };
+        this.value = realValue;
         for(EventType type : EventType.values())
-            listeners.put(type, new HashSet<AEventListener<TriggerEvent>>());
+            listeners.put(type, new HashSet<EventListener<TriggerEvent>>());
     }
 
     EventType update() {
         EventType type = super.update();
 
         TriggerEvent event = new TriggerEvent(type, this, pressure() - prev_pressure);
-        for(EventType etype : EventType.values())
-            if(type.compatibleWith(etype))
-                for(AEventListener<TriggerEvent> listener : listeners.get(etype))
-                    listener.on(event);
+        runApplicableListeners(listeners, event);
 
         this.prev_pressure = pressure();
 
         return type;
     }
 
-    public void addTriggerListener(AEventListener<TriggerEvent> listener, EventType type) {
+    public void listenPressure(EventType type, EventListener<TriggerEvent> listener) {
         listeners.get(type).add(listener);
     }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.output;
 
+import org.firstinspires.ftc.teamcode.reflection.Supplier;
+
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,7 @@ public class Telemetry {
 	 * @param message The content of the message
 	 * @return The message added to persistent telemetry
 	 */
-	public Message add(String key, Message.IMessageData message) {
+	public Message add(String key, Supplier<String> message) {
 		return add(new Message(key, message));
 	}
 	
@@ -83,7 +85,7 @@ public class Telemetry {
 	 * @param message The content of the message
 	 * @param expiry The time, in seconds, it will take to expire
 	 */
-	public void notify(String key, Message.IMessageData message, double expiry) {
+	public void notify(String key, Supplier<String> message, double expiry) {
 		notify(new Message(key, message), expiry);
 	}
 	
