@@ -78,7 +78,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-
+    //initializing objects
     protected void setupHardware() {
         //Initializes the motor/servo variables here
         /*EX:
@@ -117,7 +117,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         sleep(500);
     }
 
-    //when claw has reached the correct position or moved open long enough, the claw stops moving.
+    //when the left button on the directional pad is pressed, claw closes.
+    //when the right button on the directional pad is pressed, claw opens.
+    //else, claw does not move.
+    //(D-pad controlling claw is on controller 2)
     protected void claw() {
         if(gamepad2.dpad_left){
             claw.setPower(CLAW_POWER);
@@ -130,13 +133,13 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
+    //left stick controls movement
+    //right stick controls turning
+    //left stick x = strafe
+    //left stick y = drive, forwards/backwards
+    //right stick = turn
     protected void drive() {
-        //left stick controls movement
-        //right stick controls turning
 
-        //left stick x = strafe
-        //left stick y = drive, forwards/backwards
-        //right stick = turn
         double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
@@ -157,7 +160,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
     /**
      * <strong>lift</strong><br>
-     * Up arrow on dpad is up on lift, same setup for down.
+     * Controller 2: Up arrow on dpad is up on lift, same setup for down.
      */
     protected void lift() {
         if(gamepad2.dpad_up){
@@ -171,10 +174,12 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //The second driver controls how fast both the continuous servo and motor runs.  Extends and retracts arm.
-    //left stick = continuous servo.
-    //right stick = motor
-    //Forward = extend, backwards = retract
+    /**
+     * On the second controller, the right joystick controls the arm.
+     * When the stick is pointed forward, the arm extends.
+     * When the stick is pointed back, the arm retracts.
+     * Else, doesn't move.
+     */
     protected void arm()
     {
         if(gamepad2.right_stick_y > JOYSTICK_ERROR_RANGE || gamepad2.right_stick_y < -JOYSTICK_ERROR_RANGE)
@@ -189,7 +194,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
+    //Smart turn: Controller 1
     protected void setupButtons() {
+        //Turns 90 degrees to the left when x is pressed on controller 1.
         buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
@@ -214,6 +221,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 });
             }
         });
+        //Turns 90 degrees to the right when b is pressed on controller 1.
         buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
@@ -239,6 +247,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             }
         });
     }
+
+    //IHardware functions used throughout class.
 
     @Override
     public void idle(long milliseconds) {

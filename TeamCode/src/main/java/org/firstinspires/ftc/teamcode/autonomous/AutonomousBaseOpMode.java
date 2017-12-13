@@ -95,19 +95,20 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		//claw
 		claw = getMotor("claw");
-		claw.setPower(CLAW_POWER);
+
 		claw.setDirection(DcMotor.Direction.FORWARD);
 
 		//Moves during init
 		flicker.setDirection(Servo.Direction.REVERSE);
 		flicker.setPosition(0);
 
-
+		//gyro calibration
 		gyro = (ModernRoboticsI2cGyro) get("gyro");
 		gyro.calibrate();
 		if(gyro.isCalibrating()) {
 			idle();
 		}
+		sleep(500);
 	}
 
 	@Override
@@ -255,7 +256,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			gyroTurn(90);
 		}
 		if(startingPosition == StartingPosition.BLUE_2) {
-			//currentStep("Moving to adjust alignment with CryptoBox");
+			currentStep = "Moving to adjust alignment with CryptoBox";
+			telemetry.update();
 			motion.move(new Condition() {
 				@Override
 				public boolean isTrue() {
@@ -267,7 +269,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 			gyroTurn(-90);
 		}
 
-		//currentStep("Moving to VuMark location");
+		currentStep = "Moving to VuMark location";
+		telemetry.update();
 		switch (vuMark){
 			case LEFT:
 				if(startingPosition.getTeamColor() == Color.BLUE){
@@ -303,7 +306,9 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 				break;
 		}
 
-		//currentStep("Turning to face CryptoBox");
+		currentStep = "Turning to face CryptoBox";
+		telemetry.update();
+
 		motion.turn(AngleToCryptoBox);
 	}
 
@@ -315,7 +320,8 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				//currentStep("Moving forward until close to CyrptoBox");
+				currentStep = "Moving forward until close to CyrptoBox";
+				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_TARGET_DISTANCE;
 			}
 		});
@@ -338,14 +344,16 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		double targetTime = 2;
 		runtime.reset();
 		while(runtime.seconds()  < targetTime){
-			//currentStep("Releasing glyph, secs left: " + (targetTime-runtime.seconds()));
+			currentStep = "Releasing glyph, secs left:" + (targetTime-runtime.seconds());
+			telemetry.update();
 		}
 		claw.setPower(0);
 
 		motion.move(new Condition() {
 			@Override
 			public boolean isTrue() {
-				//currentStep("Pushing glyph into box");
+				currentStep = "Pushing glyph into box";
+				telemetry.update();
 				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < CRYPTO_BOX_PUSH_TARGET_DISTANCE;
 			}
 		});
@@ -356,10 +364,12 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	public void gyroTurn(final float turn){
 		final int heading = gyro.getIntegratedZValue();
 
-		motion.turn(true, new Condition() {
+		motion.turn(turn > 0, new Condition() {
 			@Override
 			public boolean isTrue() {
-				return (turn < 0 ? -1 : 1) * (gyro.getIntegratedZValue() - (heading + turn)) >0;
+                currentStep = "turning " + turn + " degrees.  Degrees left: " + (turn < 0 ? -1 : 1) * (gyro.getIntegratedZValue() - (heading + turn));
+                telemetry.update();
+				return (turn < 0 ? -1 : 1) * (gyro.getIntegratedZValue() - (heading + turn)) > 0;
 			}
 		});
 	}

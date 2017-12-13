@@ -29,7 +29,7 @@ public class MechanamMotors implements IWheels {
     protected static final double COUNTS_PER_INCH = (COUNTS_PER_REV / WHEEL_DIAMETER) / WHEEL_SLIP_MULTIPLIER;
     protected static final double ROBOT_RADIUS = 9.0;
     protected static final double ROBOT_TURNING_CIRCUMFERENCE = Math.PI * (2 * ROBOT_RADIUS);
-    protected static final double DRIVE_SPEED = 1.0;
+    protected static final double DRIVE_SPEED = 0.5;
 
     //Global Variables
 
