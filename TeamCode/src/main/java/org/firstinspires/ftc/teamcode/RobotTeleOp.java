@@ -109,10 +109,11 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         flicker.setDirection(Servo.Direction.REVERSE);
         flicker.setPosition(0);
 
-        gyro.calibrate();
+
+       /* gyro.calibrate();
         while(gyro.isCalibrating()){
             idle();
-        }
+        }*/
 
         sleep(500);
     }

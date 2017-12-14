@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.input.Toggle;
 
 
 @Disabled
-@TeleOp(name="ClawTest", group="TeleOp")
+@TeleOp(name="ClawTest", group="Test")
 public class ClawTest extends LinearOpMode implements IHardware {
 
 

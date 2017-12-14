@@ -29,7 +29,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected static final float JEWEL_COLOR_READ_DISTANCE = 6.5f;
 	protected static final float DRIVE_SPEED = 0.2f;
 	protected static final float JEWEL_FORWARD_DISTANCE = 11.0f;
-	protected static final float JEWEL_BACKUP_DISTANCE = 15.0f;
+	protected static final float JEWEL_BACKUP_DISTANCE = 12.5f;
 	protected static final float JEWEL_END_DISTANCE = 15.0f;
 	protected static final float ALIGNMENT_FORWARD_DISTANCE = 24.0f;
 	protected static final double CLAW_POWER = 0.2;
@@ -309,7 +309,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		currentStep = "Turning to face CryptoBox";
 		telemetry.update();
 
-		motion.turn(AngleToCryptoBox);
+		gyroTurn(AngleToCryptoBox);
 	}
 
 	/**
