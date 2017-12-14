@@ -14,18 +14,18 @@ public final class Joystick extends Trigger {
     private float prev_x;
     private float prev_y;
 
-    public Joystick(Trigger x, Trigger y) {
+    public Joystick(final Trigger x, final Trigger y) {
         super(new Supplier<Float>() {
             @Override
             public Float get() {
-                return (float) Math.hypot(x.pressure(), y.pressure());
+                return (float) Math.hypot(x.value(), y.value());
             }
         });
 
         this.x = x;
         this.y = y;
         for(EventType type : EventType.values())
-            listeners.put(type, new HashSet<>());
+            listeners.put(type, new HashSet<EventListener>());
     }
 
     public Joystick(Supplier<Float> x, Supplier<Float> y) {
@@ -33,30 +33,26 @@ public final class Joystick extends Trigger {
     }
 
     public float x() {
-        return x.pressure();
+        return x.value();
     }
 
     public float y() {
-        return y.pressure();
+        return y.value();
     }
 
-    private final Map<EventType, Set<EventListener<JoystickEvent>>> listeners = new HashMap<>();
+    private final Map<EventType, Set<EventListener>> listeners = new HashMap<>();
 
-    EventType update() {
-        EventType type = super.update();
+    @Override
+    public void update() {
+        super.update();
         x.update();
         y.update();
-
-        JoystickEvent event = new JoystickEvent(type, this, x() - prev_x, y() - prev_y);
-        runApplicableListeners(listeners, event);
-
-        this.prev_x = x();
-        this.prev_y = y();
-
-        return type;
     }
 
-    public void listenJoystick(EventType type, EventListener<JoystickEvent> listener) {
-        listeners.get(type).add(listener);
+    @Override
+    public void step() {
+        super.step();
+        x.step();
+        y.step();
     }
 }

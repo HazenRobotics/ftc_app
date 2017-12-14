@@ -2,22 +2,16 @@ package org.firstinspires.ftc.teamcode.input;
 
 import org.firstinspires.ftc.teamcode.reflection.Supplier;
 
-public final class Dpad extends Button {
+public final class Dpad extends IButton {
     public final ButtonPair x;
     public final ButtonPair y;
 
-    public final Button up;
-    public final Button right;
-    public final Button down;
-    public final Button left;
+    public final IButton up;
+    public final IButton right;
+    public final IButton down;
+    public final IButton left;
 
-    public Dpad(ButtonPair x, ButtonPair y) {
-        super(new Supplier<Boolean>() {
-            @Override
-            public Boolean get() {
-                return x.pressed() || y.pressed();
-            }
-        });
+    public Dpad(final ButtonPair x, final ButtonPair y) {
         this.x = x;
         this.left = x.neg;
         this.right = x.pos;
@@ -50,19 +44,30 @@ public final class Dpad extends Button {
         return down.pressed();
     }
 
-    public Sign x() {
+    public int x() {
         return x.sign();
     }
 
-    public Sign y() {
+    public int y() {
         return y.sign();
     }
 
     @Override
-    public EventType update() {
+    public float value() {
+        return (float) Math.hypot(x.value(), y.value());
+    }
+
+    @Override
+    public void step() {
+        x.step();
+        y.step();
+        super.step();
+    }
+
+    @Override
+    public void update() {
         x.update();
         y.update();
-
-        return super.update();
+        super.update();
     }
 }

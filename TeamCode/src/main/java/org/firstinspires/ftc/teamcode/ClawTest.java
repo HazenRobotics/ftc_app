@@ -4,16 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.input.Button;
-import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.input.Toggle;
 
 //Created by Alex on 9/23/2017.
 

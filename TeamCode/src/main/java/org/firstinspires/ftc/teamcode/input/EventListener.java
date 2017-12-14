@@ -4,14 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public interface EventListener<T extends ButtonEvent> {
-    public void on(T event);
+public abstract class EventListener<T extends IButton> {
+    public abstract void on(EventType type, T button);
 
     // WARNING: we just check that the parameter is some sort of button event-- it could be a JoystickEvent when you're trying for a ButtonPair!
     // This is because of type erasure making it impossible to do so.
-    public static<T extends ButtonEvent> EventListener<T> fromMethod(Object object, String method) {
+    public static EventListener fromMethod(final Object object, String method) {
         // Search for the method in the class
-        for(Method potentialListener : object.getClass().getMethods()) {
+        for(final Method potentialListener : object.getClass().getMethods()) {
             // Does the name match?
             if(!potentialListener.getName().equals(method))
                 continue;
@@ -20,21 +20,23 @@ public interface EventListener<T extends ButtonEvent> {
             // it is NOT necessarily accessible if it's public!
             if(!potentialListener.isAccessible() && !Modifier.isPublic(potentialListener.getModifiers()))
                 continue;
-            // Does this method have a single parameter?
-            if(potentialListener.getParameterTypes().length != 1)
+            // Does this method have the correct number of parameters.
+            if(potentialListener.getParameterTypes().length != 2)
                 continue;
-            // Is that parameter an event?
-            if(!ButtonEvent.class.isAssignableFrom(potentialListener.getParameterTypes()[0]))
+            // Make sure the parameters have the appropriate types.
+            if(!EventType.class.isAssignableFrom(potentialListener.getParameterTypes()[0]))
+                continue;
+            if(!IButton.class.isAssignableFrom(potentialListener.getParameterTypes()[1]))
                 continue;
             // Make sure the event listener can't throw an exception, causing a crash.
             if(potentialListener.getExceptionTypes().length != 0)
                 throw new IllegalArgumentException("An event listener must not throw exceptions! " + method);
-            return new EventListener<T>() {
+            return new EventListener() {
                 @Override
-                public void on(ButtonEvent event) {
+                public void on(EventType type, IButton button) {
                     try {
                         // Call the listener
-                        potentialListener.invoke(object, event);
+                        potentialListener.invoke(object, type, button);
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         // This should be impossible because we checked if the listener is accessible and made sure it had no exceptions
                         throw new RuntimeException(e);

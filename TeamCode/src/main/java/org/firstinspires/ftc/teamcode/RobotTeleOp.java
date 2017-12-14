@@ -13,9 +13,8 @@ import org.firstinspires.ftc.teamcode.input.ButtonPair;
 import org.firstinspires.ftc.teamcode.input.EventListener;
 import org.firstinspires.ftc.teamcode.input.EventType;
 import org.firstinspires.ftc.teamcode.input.Gamepad;
+import org.firstinspires.ftc.teamcode.input.IButton;
 import org.firstinspires.ftc.teamcode.input.Joystick;
-import org.firstinspires.ftc.teamcode.input.Sign;
-import org.firstinspires.ftc.teamcode.input.SignEvent;
 import org.firstinspires.ftc.teamcode.input.Trigger;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
@@ -26,9 +25,9 @@ import org.firstinspires.ftc.teamcode.reflection.FieldAccessor;
 @TeleOp(name="CompTeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
     // Input and output mappings
-    public Gamepad gamepad1 = new Gamepad(super.gamepad1);
-    public Gamepad gamepad2 = new Gamepad(super.gamepad2);
-    public Telemetry telemetry = new Telemetry(super.telemetry);
+    public final Gamepad gamepad1 = new Gamepad(super.gamepad1);
+    public final Gamepad gamepad2 = new Gamepad(super.gamepad2);
+    public final Telemetry telemetry = new Telemetry(super.telemetry);
 
     // The claw and arm
     protected DcMotor arm;
@@ -93,7 +92,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     protected Trigger turn_input = gamepad1.right_stick.x;
     protected Joystick strafe_input = gamepad1.left_stick;
 
-    protected ButtonPair autoTurn_input = gamepad1.bx;
+    protected ButtonPair autoTurn_input = gamepad1.makePair(gamepad1.b, gamepad2.x);
 
     @Override
     public void runOpMode() {
@@ -112,9 +111,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
             gamepad1.update();
             gamepad2.update();
 
-            claw.setPower(-claw_input.sign().asInt() * CLAW_POWER);
-            lift.setPower(lift_input.sign().asInt() * LIFT_POWER);
-            arm.setPower(arm_input.pressure());
+            claw.setPower(-claw_input.sign() * CLAW_POWER);
+            lift.setPower(lift_input.sign() * LIFT_POWER);
+            arm.setPower(arm_input.value());
             drive();
 
             telemetry.update();
@@ -123,7 +122,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
     }
 
     protected void drive() {
-        double turn_x = turn_input.pressure();
+        double turn_x = turn_input.value();
         double x = strafe_input.x();
         double y = -strafe_input.y();
         // The total change, used to scale down the power.
@@ -142,8 +141,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightBack.setPower(rightBackPower);
     }
 
-    public void autoTurn(SignEvent event) {
-        if(event.sign == Sign.ZERO) return;
+    public void autoTurn(final IButton button) {
+        if(button.sign() == 0) return;
         final int startingDirection = gyro.getIntegratedZValue();
         motion.turn(true, new Condition() {
             @Override
@@ -151,7 +150,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 if(turn_input.pressed() || strafe_input.pressed())
                     return true;
                 double currentDirection = gyro.getIntegratedZValue();
-                return (currentDirection - (startingDirection + event.sign.asInt() * AUTO_TURN_AMOUNT)) > 0;
+                return (currentDirection - (startingDirection + button.sign() * AUTO_TURN_AMOUNT)) > 0;
             }
         });
     }

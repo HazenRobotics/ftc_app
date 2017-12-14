@@ -2,15 +2,16 @@ package org.firstinspires.ftc.teamcode.input;
 
 import org.firstinspires.ftc.teamcode.reflection.FieldAccessor;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 /** A mapping (wrapper) of the FTC gamepad buttons into our button system. */
 public final class Gamepad {
     public final Button a;
     public final Button b;
     public final Button x;
     public final Button y;
-
-    public final ButtonPair bx;
-    public final ButtonPair ay;
 
     public final ButtonPair bumpers;
     public final Button left_bumper;
@@ -26,15 +27,14 @@ public final class Gamepad {
 
     public final Dpad dpad;
 
+    private static final List<IButton> buttons = new ArrayList<>();
+
     public Gamepad(com.qualcomm.robotcore.hardware.Gamepad gamepad) {
         try {
             this.a = new Button(FieldAccessor.boola("a", gamepad));
             this.b = new Button(FieldAccessor.boola("b", gamepad));
             this.x = new Button(FieldAccessor.boola("x", gamepad));
             this.y = new Button(FieldAccessor.boola("y", gamepad));
-
-            this.bx = new ButtonPair(b, x);
-            this.ay = new ButtonPair(a, y);
 
             this.left_bumper = new Button(FieldAccessor.boola("left_bumper", gamepad));
             this.right_bumper = new Button(FieldAccessor.boola("right_bumper", gamepad));
@@ -58,19 +58,29 @@ public final class Gamepad {
             // If the official Gamepad has changed, there's nothing we can do.
             throw new RuntimeException(e);
         }
+
+        for(Field field : Gamepad.class.getDeclaredFields()) {
+            if (field.getType().isAssignableFrom(Button.class)) {
+                try {
+                    buttons.add((Button) field.get(this));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public ButtonPair makePair(IButton pos, IButton neg) {
+        ButtonPair pair = new ButtonPair(pos, neg);
+        buttons.add(pair);
+        return pair;
     }
 
     /** Run all of the button event listeners. */
     public void update() {
-        bx.update();
-        ay.update();
-        bumpers.update();
-        left_trigger.update();
-        right_trigger.update();
-        left_stick_button.update();
-        right_stick_button.update();
-        left_stick.update();
-        right_stick.update();
-        dpad.update();
+        for(IButton button : buttons)
+            button.step();
+        for(IButton button : buttons)
+            button.update();
     }
 }

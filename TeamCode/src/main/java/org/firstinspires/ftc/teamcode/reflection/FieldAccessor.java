@@ -15,7 +15,6 @@ public class FieldAccessor<T> implements Supplier<T> {
         // If you forgot: static means we can do MyClass.myThing rather than myObject.myThing.
         if(object == null && Modifier.isStatic(field.getModifiers()))
             throw new IllegalArgumentException("Object was null when generating field accessor and " + field.getName() + " is not static.");
-        // Read as "can we write (T) object.field without a ClassCastException".
         // Can we actually access the value?
         if(!(field.isAccessible() || Modifier.isPublic(field.getModifiers())))
             throw new IllegalArgumentException("Field " + field.getName() + " is not accessible.");
@@ -40,6 +39,7 @@ public class FieldAccessor<T> implements Supplier<T> {
 
     public FieldAccessor(Class<? extends T> clazz, Field field, Object object) {
         this(field, object);
+        // Read as "can we write (T) object.field without a ClassCastException".
         if(!field.getType().isAssignableFrom(clazz))
             throw new IllegalArgumentException("Field is not correct type for trigger: " + field.getName() + " : " + field.getType());
     }

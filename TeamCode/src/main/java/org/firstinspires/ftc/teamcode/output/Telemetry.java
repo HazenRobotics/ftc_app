@@ -46,7 +46,7 @@ public class Telemetry {
 	 * @param message The content of the message
 	 * @return The message added to persistent telemetry
 	 */
-	public Message add(String key, Supplier<String> message) {
+	public Message add(String key, Supplier<Object> message) {
 		return add(new Message(key, message));
 	}
 	
