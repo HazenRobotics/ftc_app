@@ -109,11 +109,10 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         flicker.setDirection(Servo.Direction.REVERSE);
         flicker.setPosition(0);
 
-
-       /* gyro.calibrate();
+        gyro.calibrate();
         while(gyro.isCalibrating()){
             idle();
-        }*/
+        }
 
         sleep(500);
     }
@@ -134,11 +133,14 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //left stick controls movement
-    //right stick controls turning
-    //left stick x = strafe
-    //left stick y = drive, forwards/backwards
-    //right stick = turn
+    /**
+     * <strong>Drive</strong><br>
+     * left stick controls movement<br>
+     * right stick controls turning<br>
+     * left stick x = strafe<br>
+     * left stick y = drive, forwards/backwards<br>
+     * right stick = turn
+     */
     protected void drive() {
 
         double turn_x = gamepad1.right_stick_x; //stick that determines how far robot is turning
@@ -147,6 +149,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         double magnitude = Math.abs(y) + Math.abs(x) + Math.abs(turn_x); //Used to determine the greatest possible value of y +/- x to scale them
         double scale = Math.max(1, magnitude); //Used to prevent setting motor to power over 1
 
+        //Algorithum for calculating the power that is set to the wheels
         double leftFrontPower = (y + x + turn_x) / scale;
         double rightFrontPower = (y - x - turn_x) / scale;
         double leftBackPower = (y - x + turn_x) / scale;
@@ -195,9 +198,11 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         }
     }
 
-    //Smart turn: Controller 1
+    /**
+     *Smart turn: Controller 1
+     */
     protected void setupButtons() {
-        //Turns 90 degrees to the left when x is pressed on controller 1.
+        //Turns 90 degrees to the left (-90) when x is pressed on controller 1.
         buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
@@ -222,7 +227,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 });
             }
         });
-        //Turns 90 degrees to the right when b is pressed on controller 1.
+        //Turns 90 degrees to the right (90) when b is pressed on controller 1.
         buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
@@ -258,7 +263,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         long endTime = System.currentTimeMillis() + milliseconds;
         while(System.currentTimeMillis() < endTime && opModeIsActive()) {
             telemetry.update();
-            idle();
+            super.idle();
         }
     }
 
