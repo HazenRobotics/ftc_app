@@ -92,16 +92,16 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 		this.flicker = hardware.getServo("flicker");
 		this.localizer = new RelicRecoveryLocalizer(vuforiaKey, true, true);
 		localizer.activate();
-
+		/*
 		//claw
 		claw = getMotor("claw");
-		claw.setDirection(DcMotor.Direction.FORWARD);
+		claw.setDirection(DcMotor.Direction.FORWARD);*/
 
 		// Sets the servo to it default position during autonomous
 		flicker.setDirection(Servo.Direction.REVERSE);
 		flicker.setPosition(0);
 
-        //initialiazation and calibration of the gyro
+        //initialization and calibration of the gyro
 		gyro = (ModernRoboticsI2cGyro) get("gyro");
 		gyro.calibrate();
 		if(gyro.isCalibrating()) {
@@ -180,7 +180,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
         //(Step #4)
 		currentStep = "Opening flicker";
 		telemetry.update();
-		flicker.setPosition(0.5);
+		flicker.setPosition(0.6);
 		sleep(1000);
 
         //(Step #5)

@@ -22,7 +22,6 @@ public class MechanamMotors implements IWheels {
     protected DcMotor rightBack;
 
     //Declare Constants
-    //TODO: Currently arbitrary numbers, need to change for actual robot
     protected static final double COUNTS_PER_REV = 1680.0;
     protected static final double WHEEL_DIAMETER = 4.0;
     protected static final double WHEEL_SLIP_MULTIPLIER = 3.375f;
@@ -90,7 +89,6 @@ public class MechanamMotors implements IWheels {
         double leftBackPower = (y - x) / scale;
         double rightBackPower = (y + x) / scale;
 
-        //TODO: Might need to scale these values
         int leftFrontTarget = (int) (leftFrontPower * counts);
         int rightFrontTarget = (int) (rightFrontPower * counts);
         int leftBackTarget = (int) (leftBackPower * counts);

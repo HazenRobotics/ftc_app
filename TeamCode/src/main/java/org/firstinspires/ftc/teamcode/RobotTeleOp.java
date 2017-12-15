@@ -109,6 +109,8 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         flicker.setDirection(Servo.Direction.REVERSE);
         flicker.setPosition(0);
 
+        gyro = (ModernRoboticsI2cGyro) get("gyro");
+
         gyro.calibrate();
         while(gyro.isCalibrating()){
             idle();
@@ -203,7 +205,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
      */
     protected void setupButtons() {
         //Turns 90 degrees to the left (-90) when x is pressed on controller 1.
-        buttons.add(new Button() {
+        /*buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
                 return gamepad1.x;
@@ -226,9 +228,9 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                     }
                 });
             }
-        });
+        });*/
         //Turns 90 degrees to the right (90) when b is pressed on controller 1.
-        buttons.add(new Button() {
+        /*buttons.add(new Button() {
             @Override
             public boolean isInputPressed() {
                 return gamepad1.b;
@@ -251,7 +253,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                     }
                 });
             }
-        });
+        });*/
     }
 
     //IHardware functions used throughout class.
