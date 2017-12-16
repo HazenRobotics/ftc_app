@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 /**
  * Created by Robotics on 11/3/2017.
  */
-/*@Disabled*/
+@Disabled
 @TeleOp(name = "Drive Debugging", group = "Test")
 public class DriveDebugging extends LinearOpMode{
     @Override

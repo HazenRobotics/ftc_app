@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.models.Condition;
 /**
  * Created by Robotics on 12/10/2017.
  */
-
+@Disabled
 @Autonomous(name = "Turn Test", group = "Test")
 public class TurnTest extends LinearOpMode implements IHardware{
     protected MechanamMotors motion;

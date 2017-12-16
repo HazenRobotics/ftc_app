@@ -25,7 +25,7 @@ import java.io.StringWriter;
 
 import static org.firstinspires.ftc.teamcode.autonomous.AutonomousBaseOpMode.JEWEL_END_DISTANCE;
 
-public class 	SimpleAutonomous extends LinearOpMode implements IHardware {
+public class SimpleAutonomous extends LinearOpMode implements IHardware {
 
     //Constants
     protected static final float JEWEL_COLOR_READ_DISTANCE = 6.5f;
