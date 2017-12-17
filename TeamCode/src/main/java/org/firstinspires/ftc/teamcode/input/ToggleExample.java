@@ -25,8 +25,7 @@ public class ToggleExample extends LinearOpMode {
     protected void setupButtons() {
     	buttons.add(new Toggle() {
     		public boolean isInputPressed() { return gamepad1.a; }
-    		public boolean onActivate() { motor.setPower(MOTOR_POWER);
-                return false;
+    		public void onActivate() { motor.setPower(MOTOR_POWER);
             }
     		public void onDeactivate() { motor.setPower(0); }
     	});

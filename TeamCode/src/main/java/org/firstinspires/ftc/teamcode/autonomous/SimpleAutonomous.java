@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.autonomous.AutonomousBaseOpMode.JEW
 public class SimpleAutonomous extends LinearOpMode implements IHardware {
 
     //Constants
-    protected static final float JEWEL_COLOR_READ_DISTANCE = 6.5f;
+    protected static final float JEWEL_COLOR_READ_DISTANCE = 7.0f;
     protected static final float DRIVE_SPEED = 0.2f;
     protected static final float JEWEL_FORWARD_DISTANCE = 11.0f;
     protected static final float JEWEL_BACKUP_DISTANCE = 12.5f;

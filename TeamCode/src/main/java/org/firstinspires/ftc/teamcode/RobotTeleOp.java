@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
+import org.firstinspires.ftc.teamcode.input.Toggle;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
 import org.firstinspires.ftc.teamcode.models.Condition;
@@ -254,11 +255,30 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
                 });
             }
         });*/
+
+
+        buttons.add(new Toggle() {
+            @Override
+            public void onActivate() {
+                flicker.setPosition(0.6);
+            }
+
+            @Override
+            public void onDeactivate() {
+                flicker.setPosition(0);
+            }
+
+            @Override
+            public boolean isInputPressed() {
+                return gamepad1.a;
+            }
+        });
     }
 
-    //IHardware functions used throughout class.
 
-    @Override
+                //IHardware functions used throughout class.
+
+        @Override
     public void idle(long milliseconds) {
         // This is probably the wrong way to handle this-- spin loop.
         // However, it's better than Thread.idleFor()-- probably.
@@ -289,3 +309,4 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         return hardwareMap.get(name);
     }
 }
+
