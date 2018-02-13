@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.objects;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 
-/**
- * Created by Robotics on 2/23/2017.
- */
+
 public class I2cColorSensor extends I2cSensor {
     protected static final int DEFAULT_ADDRESS = 0x3c;
     protected static final int COLOR_REG_START = 0x04; //Register to start reading

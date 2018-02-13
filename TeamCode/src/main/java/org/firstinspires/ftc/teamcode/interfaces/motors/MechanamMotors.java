@@ -8,9 +8,6 @@ import org.firstinspires.ftc.teamcode.interfaces.IWheels;
 import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.models.Vector;
 
-/**
- * Created by Robotics on 10/10/2017.
- */
 
 public class MechanamMotors implements IWheels {
     protected IHardware hardware;

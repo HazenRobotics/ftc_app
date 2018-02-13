@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.opmodes;
 
-/**
- * Created by Robotics on 12/14/2017.
- */
+
 
 import org.firstinspires.ftc.teamcode.autonomous.SimpleAutonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

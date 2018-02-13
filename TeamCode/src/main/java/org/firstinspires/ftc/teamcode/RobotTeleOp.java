@@ -18,9 +18,7 @@ import org.firstinspires.ftc.teamcode.models.Condition;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
 
-/**
- * Created by Alex on 9/23/2017.
- */
+
 
 @TeleOp(name="CompTeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {
