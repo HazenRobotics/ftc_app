@@ -11,6 +11,13 @@ public class I2cColorSensor extends I2cSensor {
     protected static final int COLOR_REG_START = 0x04; //Register to start reading
     protected static final int COLOR_READ_LENGTH = 1; //Number of byte to read
 
+    protected static final int COLOR_RED = 0x05;
+    protected static final int COLOR_GREEN = 0x06;
+    protected static final int COLOR_BLUE = 0x07;
+    protected static final int COLOR_WHITE = 0x08;
+    protected static final int LIGHT_OFF = 0x01;
+    protected static final int LIGHT_ON = 0x00;
+
     /**
      * Creates a sensor with an address of {@link #DEFAULT_ADDRESS}
      * @param sensor The sensor object on the hardware map to be used
@@ -59,34 +66,35 @@ public class I2cColorSensor extends I2cSensor {
 
     public int red()
     {
-        cache = SENSORReader.read(0x05, COLOR_READ_LENGTH);
+        cache = SENSORReader.read(COLOR_RED, COLOR_READ_LENGTH);
         return cache[0]&0xFF;
     }
 
     public int green(){
-        cache = SENSORReader.read(0x06, COLOR_READ_LENGTH);
+        cache = SENSORReader.read(COLOR_GREEN, COLOR_READ_LENGTH);
         return cache[0]&0xFF;
+
     }
 
     public int blue()
     {
-        cache = SENSORReader.read(0x07, COLOR_READ_LENGTH);
+        cache = SENSORReader.read(COLOR_BLUE, COLOR_READ_LENGTH);
         return cache[0]&0xFF;
     }
 
     public int white()
     {
-        cache = SENSORReader.read(0x08, COLOR_READ_LENGTH);
+        cache = SENSORReader.read(COLOR_WHITE, COLOR_READ_LENGTH);
         return cache[0]&0xFF;
     }
 
     public void enableLed(boolean state) {
         if (state) {
             //0 == LED on
-            SENSORReader.write8(0x03, 0x00);
+            SENSORReader.write8(COMAND_REG_START, LIGHT_ON);
         } else {
             //1 == LED off
-            SENSORReader.write8(0x03, 0x01);
+            SENSORReader.write8(COMAND_REG_START, LIGHT_OFF);
         }
     }
 }

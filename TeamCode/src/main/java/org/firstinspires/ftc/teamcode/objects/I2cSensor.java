@@ -14,6 +14,9 @@ public abstract class I2cSensor {
     protected byte[] cache; //storage of information
     protected I2cDevice SENSOR; //legit sensor
     protected I2cDeviceSynch SENSORReader; //reader to read and write
+    protected int COMAND_REG_START = 0x03;
+
+
 
     I2cSensor(I2cDevice sensor, I2cAddr address) {
         SENSOR = sensor;
