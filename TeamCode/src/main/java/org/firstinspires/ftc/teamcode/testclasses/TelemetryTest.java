@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testclasses;
 
-/**
- * Created by Robotics on 12/7/2017.
- */
+
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Disabled
-@Autonomous(name = "TelemetryTest",group = "Test")
+@Deprecated
+@Autonomous(name = "TelemetryTest",group = "Test Classes")
 public class TelemetryTest extends LinearOpMode {
 
     @Override

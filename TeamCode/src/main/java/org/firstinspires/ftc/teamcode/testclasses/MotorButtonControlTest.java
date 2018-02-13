@@ -1,70 +1,55 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testclasses;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.input.Button;
-import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.input.Toggle;
-
-//Created by Alex on 9/23/2017.
 
 
 @Disabled
-@TeleOp(name="ClawTest", group="Test")
-public class ClawTest extends LinearOpMode implements IHardware {
+@TeleOp(name="Motor Button Control Test", group="Test Classes")
+/**
+ * Test Class to control a motor with the name 'motorTest' by using Gamepad 1's y and x buttons.
+ * <br></br> Y would set the motor to its positive MOTOR_POWER and X would set the motor to its negative MOTOR_POWER.
+ * If neither and pressed, the power will be set to 0.
+ */
+public class MotorButtonControlTest extends LinearOpMode implements IHardware {
 
-
-    protected DcMotor claw;
-
-    protected final double CLAW_POWER = 0.2;
+    protected DcMotor testMotor;
+    protected final double MOTOR_POWER = 0.2;
 
     @Override
     public void runOpMode() {
-
         setupHardware();
         waitForStart();
-
         while (opModeIsActive()) {
-            claw();
-            telemetry.update();
+            if(gamepad1.y)
+            {
+                testMotor.setPower(MOTOR_POWER);
+            }
+            else if(gamepad1.x)
+            {
+                testMotor.setPower(-MOTOR_POWER);
+            }
+            else
+            {
+                testMotor.setPower(0);
+            }
             idle();
         }
     }
 
-
-
     protected void setupHardware() {
-        claw = getMotor("claw");
-        claw.setDirection(DcMotor.Direction.FORWARD);
+        testMotor = getMotor("motorTest");
+        testMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
-
-    //when claw has reached the correct position or moved open long enough, the claw stops moving.
- protected void claw() {
-        if(gamepad2.y)
-        {
-            claw.setPower(CLAW_POWER);
-        }
-        else if(gamepad2.x)
-        {
-            claw.setPower(-CLAW_POWER);
-        }
-        else
-        {
-            claw.setPower(0);
-        }
-    }
-
-    @Override
+     @Override
     public void idle(long milliseconds) {
         // This is probably the wrong way to handle this-- spin loop.
         // However, it's better than Thread.idleFor()-- probably.
