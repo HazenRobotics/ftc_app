@@ -34,11 +34,12 @@ public class Timer extends Condition {
         this((long) (waitTime * 1000));
     }
 
-    @Override
+
     /**
      * Determines if enough time has elapsed since the creation of the timer, and {@link #endTime} has been reached
      * @return If the specified wait time has passed
      */
+    @Override
     public boolean isTrue() {
         return isDone();
     }
