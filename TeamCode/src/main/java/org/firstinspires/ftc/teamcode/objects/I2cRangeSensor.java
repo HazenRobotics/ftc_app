@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.objects;
 
-/**
- * Created by Robotics on 2/16/2017.
- */
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 
