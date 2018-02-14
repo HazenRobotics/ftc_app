@@ -7,9 +7,10 @@ public class Range extends Condition {
     protected final float distance;
     protected final I2cRangeSensor rangeSensor;
     protected final boolean moveGreater;
+    protected final DistanceUnit unit;
 
     /**
-     * A condition to move until distance reached.
+     * Creates a range condition that moves the specified distance in centimeters
      * @param distance target distance to move
      * @param rangeSensor range sensor for distance to be read from
      * @param moveGreater whether moving to greater distance
@@ -18,6 +19,38 @@ public class Range extends Condition {
         this.distance = distance;
         this.rangeSensor = rangeSensor;
         this.moveGreater = moveGreater;
+        this.unit = DistanceUnit.CM;
+    }
+
+
+    /**
+     * Creates a range condition that moves the specified distance in the specified units
+     * @param distance target distance to move
+     * @param rangeSensor range sensor for distance to be read from
+     * @param moveGreater whether moving to greater distance
+     * @param unit The unit type of the distance to be move
+     */
+    public Range(float distance, I2cRangeSensor rangeSensor, boolean moveGreater, DistanceUnit unit) {
+        this.distance = distance;
+        this.rangeSensor = rangeSensor;
+        this.moveGreater = moveGreater;
+        this.unit = unit;
+    }
+
+    /**
+     * Returns the target distance threshold for the condition to be true
+     * @return The target distance
+     */
+    public float getTargetDistance() {
+        return distance;
+    }
+
+    /**
+     * Rreturns the magnitude of the distance remaining to pass the target threshold
+     * @return The distance remaining
+     */
+    public float getDistanceRemaining() {
+        return Math.abs(distance - (float) rangeSensor.readUltrasonic(unit));
     }
 
     /**
@@ -26,7 +59,7 @@ public class Range extends Condition {
      */
     @Override
     public boolean isTrue() {
-        double currentDistance = rangeSensor.readUltrasonic(DistanceUnit.INCH);
+        double currentDistance = rangeSensor.readUltrasonic(unit);
         return moveGreater ? currentDistance > distance : currentDistance < distance;
     }
 }
