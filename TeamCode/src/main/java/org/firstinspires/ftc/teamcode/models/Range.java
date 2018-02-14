@@ -16,12 +16,8 @@ public class Range extends Condition {
      * @param moveGreater whether moving to greater distance
      */
     public Range(float distance, I2cRangeSensor rangeSensor, boolean moveGreater) {
-        this.distance = distance;
-        this.rangeSensor = rangeSensor;
-        this.moveGreater = moveGreater;
-        this.unit = DistanceUnit.CM;
+        this(distance, rangeSensor, moveGreater, DistanceUnit.CM);
     }
-
 
     /**
      * Creates a range condition that moves the specified distance in the specified units
@@ -46,11 +42,11 @@ public class Range extends Condition {
     }
 
     /**
-     * Rreturns the magnitude of the distance remaining to pass the target threshold
+     * Returns the distance remaining to pass the target threshold
      * @return The distance remaining
      */
     public float getDistanceRemaining() {
-        return Math.abs(distance - (float) rangeSensor.readUltrasonic(unit));
+        return distance - (float) rangeSensor.readUltrasonic(unit);
     }
 
     /**
@@ -60,6 +56,6 @@ public class Range extends Condition {
     @Override
     public boolean isTrue() {
         double currentDistance = rangeSensor.readUltrasonic(unit);
-        return moveGreater ? currentDistance > distance : currentDistance < distance;
+        return moveGreater ? currentDistance >= distance : currentDistance <= distance;
     }
 }
