@@ -34,16 +34,6 @@ public class Timer extends Condition {
         this((long) (waitTime * 1000));
     }
 
-
-    /**
-     * Determines if enough time has elapsed since the creation of the timer, and {@link #endTime} has been reached
-     * @return If the specified wait time has passed
-     */
-    @Override
-    protected boolean condition() {
-        return System.currentTimeMillis() >= endTime;
-    }
-
     /**
      * Calculates the amount of time that has elapsed since the creation of the time in milliseconds
      * @return Time elapsed in milliseconds
@@ -74,5 +64,14 @@ public class Timer extends Condition {
      */
     public float getDuration() {
         return getDurationMs() / 1000f;
+    }
+
+    /**
+     * Determines if enough time has elapsed since the creation of the timer, and {@link #endTime} has been reached
+     * @return If the specified wait time has passed
+     */
+    @Override
+    protected boolean condition() {
+        return System.currentTimeMillis() >= endTime;
     }
 }
