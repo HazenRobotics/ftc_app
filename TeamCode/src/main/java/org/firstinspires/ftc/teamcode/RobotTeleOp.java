@@ -9,18 +9,12 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.input.ButtonPair;
-import org.firstinspires.ftc.teamcode.input.EventListener;
-import org.firstinspires.ftc.teamcode.input.EventType;
 import org.firstinspires.ftc.teamcode.input.Gamepad;
-import org.firstinspires.ftc.teamcode.input.IButton;
 import org.firstinspires.ftc.teamcode.input.Joystick;
-import org.firstinspires.ftc.teamcode.input.Trigger;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
 import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
-import org.firstinspires.ftc.teamcode.reflection.FieldAccessor;
 
 @TeleOp(name="CompTeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {

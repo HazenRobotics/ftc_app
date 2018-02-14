@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.output;
 
-import org.firstinspires.ftc.teamcode.reflection.ConstantSupplier;
-
 /**
  * A message whose content doesn't change
  */

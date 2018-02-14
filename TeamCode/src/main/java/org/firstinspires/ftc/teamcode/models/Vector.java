@@ -1,9 +1,32 @@
 package org.firstinspires.ftc.teamcode.models;
 
+import org.firstinspires.ftc.teamcode.reflection.Mapping;
+
 /**
  * A location or displacement in two dimensions.
  */
 public class Vector {
+    public static final Mapping<Vector, Double> TO_MAGNITUDE = new Mapping<Vector, Double>() {
+        @Override
+        public Double map(Vector x) {
+            return x.getMagnitude();
+        }
+    };
+
+    public static final Mapping<Vector, Double> TO_ANGLE = new Mapping<Vector, Double>() {
+        @Override
+        public Double map(Vector x) {
+            return x.getAngle();
+        }
+    };
+
+    public static final Mapping<Vector, Vector> MAP_NEGATE = new Mapping<Vector, Vector>() {
+        @Override
+        public Vector map(Vector x) {
+            return x.negate();
+        }
+    };
+
     /**
      * This vector is internally implemented with x/y, but it could also be implemented with polar coordinates and make no difference.
      */
@@ -58,6 +81,14 @@ public class Vector {
         return new Vector(this.x + displacement.x, this.y + displacement.y);
     }
 
+    public Vector sub(Vector displacement) {
+        return this.add(displacement.negate());
+    }
+
+    public Vector negate() {
+        return this.scale(-1);
+    }
+
     public Vector scale(double scalar) {
         return new Vector(this.x * scalar, this.y * scalar);
     }
@@ -85,5 +116,9 @@ public class Vector {
                 magnitude * Math.cos(Math.toRadians(angle)),
                 magnitude * Math.sin(Math.toRadians(angle))
         );
+    }
+
+    public Vector adjustMagnitude() {
+        return this.scale(1 / this.getMagnitude());
     }
 }
