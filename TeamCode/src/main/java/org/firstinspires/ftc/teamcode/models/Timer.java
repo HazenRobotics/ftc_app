@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.models;
 
 /**
- * Timer is a condition type which is true when a certain wait time has passed and {@link #endTime} has been reached
+ * Timer is a condition type which {@link #isTrue()} when a certain wait time has passed and {@link #endTime} has been reached
  */
 public class Timer extends Condition {
 
@@ -11,7 +11,7 @@ public class Timer extends Condition {
 
     /**
      * Creates a Timer Condition with the given wait length in milliseconds
-     * @param waitTimeMs The amount of time to pass in millisecond before the timer {@link #isDone()}/{@link #isTrue()}
+     * @param waitTimeMs The amount of time to pass in millisecond before the timer {@link #isTrue()}
      */
     public Timer(long waitTimeMs) {
         startTime = System.currentTimeMillis();
@@ -20,15 +20,15 @@ public class Timer extends Condition {
 
     /**
      * Creates a Timer Condition with the given wait length in milliseconds
-     * @param waitTimeMs The amount of time to pass in millisecond before the timer {@link #isDone()}/{@link #isTrue()}
+     * @param waitTimeMs The amount of time to pass in millisecond before the timer {@link #isTrue()}
      */
     public Timer(int waitTimeMs) {
         this((long) waitTimeMs);
     }
 
     /**
-     * Creates a Timer Condition with the given wait length in second
-     * @param waitTime The amount of time to pass in seconds before the timer {@link #isDone()}/{@link #isTrue()}
+     * Creates a Timer Condition with the given wait length in seconds
+     * @param waitTime The amount of time to pass in seconds before the timer {@link #isTrue()}
      */
     public Timer(float waitTime) {
         this((long) (waitTime * 1000));
@@ -40,16 +40,8 @@ public class Timer extends Condition {
      * @return If the specified wait time has passed
      */
     @Override
-    public boolean isTrue() {
-        return isDone();
-    }
-
-    /**
-     * Determines if enough time has elapsed since the creation of the timer, and {@link #endTime} has been reached
-     * @return If the specified wait time has passed
-     */
-    public boolean isDone() {
-        return System.currentTimeMillis() > endTime;
+    protected boolean condition() {
+        return System.currentTimeMillis() >= endTime;
     }
 
     /**
