@@ -13,7 +13,7 @@ public class GyroTurn extends Condition {
     protected final AngleUnit unit;
 
     /**
-     * Creatures a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
+     * Creates a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
      * @param angle The angle to turn by
      * @param gyroSensor The gyro sensor which will be used to check the condition
      * @param positiveTurn If the condition is meant for a positive direction turn, and will be true when it is greater than a certain angle, or less than
@@ -23,7 +23,7 @@ public class GyroTurn extends Condition {
     }
 
     /**
-     * Creatures a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
+     * Creates a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
      * @param angle The angle to turn by
      * @param gyroSensor The gyro sensor which will be used to check the condition
      * @param positiveTurn If the condition is meant for a positive direction turn, and will be true when it is greater than a certain angle, or less than
@@ -34,7 +34,7 @@ public class GyroTurn extends Condition {
     }
 
     /**
-     * Creatures a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
+     * Creates a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
      * @param angle The angle to turn by or move to
      * @param gyroSensor The gyro sensor which will be used to check the condition
      * @param positiveTurn If the condition is meant for a positive direction turn, and will be true when it is greater than a certain angle, or less than
@@ -45,7 +45,7 @@ public class GyroTurn extends Condition {
     }
 
     /**
-     * Creatures a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
+     * Creates a GyroTurn condition that turns the specified angle in degrees in either the positive or negative direction
      * @param angle The angle to turn by or move to
      * @param gyroSensor The gyro sensor which will be used to check the condition
      * @param positiveTurn If the condition is meant for a positive direction turn, and will be true when it is greater than a certain angle, or less than
