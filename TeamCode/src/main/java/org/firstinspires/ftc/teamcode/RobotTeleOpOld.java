@@ -3,25 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
-import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
-import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
+import org.firstinspires.ftc.teamcode.controllers.IHardware;
+import org.firstinspires.ftc.teamcode.sensors.I2cColorSensor;
+import org.firstinspires.ftc.teamcode.sensors.I2cRangeSensor;
 
-/**
- * Created by Alex on 9/23/2017.
- */
 @Disabled
 @TeleOp(name="TeleOpOld", group="TeleOp")
 public class RobotTeleOpOld extends LinearOpMode implements IHardware {

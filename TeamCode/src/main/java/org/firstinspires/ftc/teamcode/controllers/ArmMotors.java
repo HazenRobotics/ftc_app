@@ -1,14 +1,8 @@
-package org.firstinspires.ftc.teamcode.interfaces.motors;
+package org.firstinspires.ftc.teamcode.controllers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.interfaces.IArm;
-import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-
-import java.util.Dictionary;
 
 public class ArmMotors implements IArm {
     //Vars

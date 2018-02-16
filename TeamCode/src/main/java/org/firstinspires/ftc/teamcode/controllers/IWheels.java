@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.controllers;
 
 import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.models.Vector;
 
 /**
- * A means to control the robot's wheels.
+ * A means to control a robot's wheels and movement
  */
 public interface IWheels {
 	/**

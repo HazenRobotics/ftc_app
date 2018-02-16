@@ -10,15 +10,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.input.Toggle;
-import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MecanumWheels;
+import org.firstinspires.ftc.teamcode.controllers.IHardware;
+import org.firstinspires.ftc.teamcode.controllers.MecanumWheels;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
-
-/**
- * Created by Alex on 9/23/2017.
- */
 
 @TeleOp(name="CompTeleOp", group="TeleOp")
 public class RobotTeleOp extends LinearOpMode implements IHardware {

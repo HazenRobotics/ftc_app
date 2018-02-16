@@ -1,10 +1,6 @@
-package org.firstinspires.ftc.teamcode.interfaces.motors;
+package org.firstinspires.ftc.teamcode.controllers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.interfaces.ILift;
 
 public class LiftMotors implements ILift {
 	protected final IHardware hardware;

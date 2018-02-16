@@ -206,15 +206,4 @@ public class RelicRecoveryLocalizer {
     private OpenGLMatrix createMatrix (float x, float y, float z, float u, float v, float w) {
         return OpenGLMatrix.translation(x, y, z).rotated(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, u, v, w);
     }
-}/*
-
-Examples for better optimizing vuforia to be more univeral
-
-tracables t = localize.load trackablesa
-
-t.get(1).getpos
-
-
-localzie.laodtracables()
-
-localise.trackarray[""].get(1).getPos*/
+}
