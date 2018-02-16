@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.input;
 
 public final class Joystick {
-    public final VectorInput position;
-    public final BinaryInput button;
+    public final Button position;
+    public final Button button;
 
-    public Joystick(VectorInput position, BinaryInput button) {
+    public Joystick(Button position, Button button) {
         this.position = position;
         this.button = button;
     }

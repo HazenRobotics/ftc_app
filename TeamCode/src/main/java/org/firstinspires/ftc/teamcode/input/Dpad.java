@@ -3,15 +3,15 @@ package org.firstinspires.ftc.teamcode.input;
 import org.firstinspires.ftc.teamcode.reflection.Supplier;
 
 public final class Dpad {
-    public final VectorInput sum;
+    public final Button sum;
 
-    public final SignInput x;
-    public final SignInput y;
+    public final Button x;
+    public final Button y;
 
-    public final BinaryInput up;
-    public final BinaryInput right;
-    public final BinaryInput down;
-    public final BinaryInput left;
+    public final Button up;
+    public final Button right;
+    public final Button down;
+    public final Button left;
 
     public Dpad(final SignInput x, final SignInput y) {
         this.x = x;

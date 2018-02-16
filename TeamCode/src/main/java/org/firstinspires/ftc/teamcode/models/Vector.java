@@ -1,11 +1,28 @@
 package org.firstinspires.ftc.teamcode.models;
 
+import org.firstinspires.ftc.teamcode.reflection.BiMapping;
 import org.firstinspires.ftc.teamcode.reflection.Mapping;
 
 /**
  * A location or displacement in two dimensions.
  */
 public class Vector {
+    public static final Vector ZERO = new Vector(0, 0);
+
+    public static final Mapping<Vector, Double> TO_X = new Mapping<Vector, Double>() {
+        @Override
+        public Double map(Vector x) {
+            return x.getX();
+        }
+    };
+
+    public static final Mapping<Vector, Double> TO_Y = new Mapping<Vector, Double>() {
+        @Override
+        public Double map(Vector x) {
+            return x.getY();
+        }
+    };
+
     public static final Mapping<Vector, Double> TO_MAGNITUDE = new Mapping<Vector, Double>() {
         @Override
         public Double map(Vector x) {
@@ -20,12 +37,11 @@ public class Vector {
         }
     };
 
-    public static final Mapping<Vector, Vector> MAP_NEGATE = new Mapping<Vector, Vector>() {
-        @Override
-        public Vector map(Vector x) {
-            return x.negate();
-        }
-    };
+    public static final Mapping<Vector, Vector> MAP_NEGATE = liftMap(Mapping.DOUBLE_NEGATE, Mapping.DOUBLE_NEGATE);
+
+    public static final Mapping<Vector, Vector> MAP_NEGATE_X = liftMapX(Mapping.DOUBLE_NEGATE);
+
+    public static final Mapping<Vector, Vector> MAP_NEGATE_Y = liftMapY(Mapping.DOUBLE_NEGATE);
 
     /**
      * This vector is internally implemented with x/y, but it could also be implemented with polar coordinates and make no difference.
@@ -42,6 +58,57 @@ public class Vector {
     public Vector(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * An alternative constructor, making a vector from polar coordinates rather than Cartesian ones.
+     * See {@link #Vector(double, double)} for the normal constructor.
+     *
+     * This is a static function rather than a constructor because the types would conflict.
+     * @param magnitude The vector's magnitude.
+     * @param angle The vector's angle.
+     * @return A new vector constructed from polar coordinates.
+     */
+    public static Vector fromPolar(double magnitude, double angle) {
+        return new Vector(
+                magnitude * Math.cos(Math.toRadians(angle)),
+                magnitude * Math.sin(Math.toRadians(angle))
+        );
+    }
+
+    public static Mapping<Vector, Vector> liftMap(final Mapping<Double, Double> fx, final Mapping<Double, Double> fy) {
+        return new Mapping<Vector, Vector>() {
+            @Override
+            public Vector map(Vector x) {
+                return x.map(fx, fy);
+            }
+        };
+    }
+
+    public static Mapping<Vector, Vector> liftMap(final Mapping<Double, Double> f) {
+        return new Mapping<Vector, Vector>() {
+            @Override
+            public Vector map(Vector x) {
+                return x.map(f);
+            }
+        };
+    }
+
+    public static Mapping<Vector, Vector> liftMapMagnitude(final Mapping<Double, Double> f) {
+        return new Mapping<Vector, Vector>() {
+            @Override
+            public Vector map(Vector x) {
+                return x.mapMagnitude(f);
+            }
+        };
+    }
+
+    public static Mapping<Vector, Vector> liftMapX(Mapping<Double, Double> f) {
+        return liftMap(f, Mapping.IDENTITY);
+    }
+
+    public static Mapping<Vector, Vector> liftMapY(Mapping<Double, Double> f) {
+        return liftMap(Mapping.IDENTITY, f);
     }
 
     /**
@@ -102,23 +169,31 @@ public class Vector {
         return new Vector(x - other.x, y - other.y);
     }
 
-    /**
-     * An alternative constructor, making a vector from polar coordinates rather than Cartesian ones.
-     * See {@link #Vector(double, double)} for the normal constructor.
-     * 
-     * This is a static function rather than a constructor because the types would conflict.
-     * @param magnitude The vector's magnitude.
-     * @param angle The vector's angle.
-     * @return A new vector constructed from polar coordinates.
-     */
-    public static Vector fromPolar(double magnitude, double angle) {
-        return new Vector(
-                magnitude * Math.cos(Math.toRadians(angle)),
-                magnitude * Math.sin(Math.toRadians(angle))
-        );
-    }
-
     public Vector adjustMagnitude() {
         return this.scale(1 / this.getMagnitude());
+    }
+
+    public Vector bind(BiMapping<Double, Double, Vector> f) {
+        return f.map(getX(), getY());
+    }
+
+    public Vector map(Mapping<Double, Double> fx, Mapping<Double, Double> fy) {
+        return new Vector(fx.map(getX()), fy.map(getY()));
+    }
+
+    public Vector map(Mapping<Double, Double> f) {
+        return map(f, f);
+    }
+
+    public Vector mapX(Mapping<Double, Double> f) {
+        return map(f, Mapping.IDENTITY);
+    }
+
+    public Vector mapY(Mapping<Double, Double> f) {
+        return map(Mapping.IDENTITY, f);
+    }
+
+    public Vector mapMagnitude(Mapping<Double, Double> f) {
+        return Vector.fromPolar(f.map(getMagnitude()), getAngle());
     }
 }
