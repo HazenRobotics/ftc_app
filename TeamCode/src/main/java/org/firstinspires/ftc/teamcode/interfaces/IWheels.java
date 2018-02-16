@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.interfaces;
 
+import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.models.Vector;
 
 /**
@@ -7,14 +8,14 @@ import org.firstinspires.ftc.teamcode.models.Vector;
  */
 public interface IWheels {
 	/**
-     * Moves directly by a given displacement without any turning via mechanam wheels.
-     * @param displacement The amount to move.
+     * Moves directly forward until a given condition is true without any turning
+     * @param condition The amount to move.
      */
-	public void move(Vector displacement);
+	void move(Condition condition, boolean positiveDir);
 	
 	/**
-	 * Turns the robot by a given angle.
-	 * @param angle The angle to turn in degrees.
+	 * Turns the robot in a given direction until a condition is true
+	 * @param condition The angle to turn in degrees.
 	 */
-	public void turn(double angle);
+	void turn(Condition condition, boolean positiveDir);
 }

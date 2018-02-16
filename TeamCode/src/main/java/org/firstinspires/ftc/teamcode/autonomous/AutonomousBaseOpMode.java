@@ -13,11 +13,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
 import org.firstinspires.ftc.teamcode.interfaces.motors.LiftMotors;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
+import org.firstinspires.ftc.teamcode.interfaces.motors.MecanumWheels;
 import org.firstinspires.ftc.teamcode.models.Color;
 import org.firstinspires.ftc.teamcode.models.Condition;
 import org.firstinspires.ftc.teamcode.RelicRecoveryLocalizer;
 
+import org.firstinspires.ftc.teamcode.models.Range;
 import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
 import org.firstinspires.ftc.teamcode.output.Message;
@@ -47,7 +48,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 	protected IHardware hardware;
 	protected Telemetry telemetry;
 	protected StartingPosition startingPosition;
-	protected MechanamMotors motion;
+	protected MecanumWheels motion;
 	protected DcMotor claw;
 	protected LiftMotors lift;
 	protected Servo flicker;
@@ -85,7 +86,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		//init hardware
 		this.hardware = this;
-		this.motion = new MechanamMotors(hardware);
+		this.motion = new MecanumWheels(hardware);
 		this.lift = new LiftMotors(hardware);
 		this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
 		this.rangeSensor = new I2cRangeSensor((I2cDevice) hardware.get("rangeSensor"));
@@ -147,14 +148,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
         //(Step #1)
 		currentStep = "Moving Closer";
 		telemetry.update();
-		motion.move(0, new Condition() {
-			@Override
-			public boolean isTrue() {
-				currentStep = "Moving Forward:" + rangeSensor.readUltrasonic(DistanceUnit.INCH);
-				telemetry.update();
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_COLOR_READ_DISTANCE;
-			}
-		}, DRIVE_SPEED);
+		motion.move(new Range(JEWEL_COLOR_READ_DISTANCE, rangeSensor, true), true);
         sleep(1000);
 
         //(Step #2)
@@ -169,13 +163,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
         //(Step #3)
 		currentStep = "Jewel Color: " + String.valueOf(color);
-		motion.move(180, new Condition() {
-			@Override
-			public boolean isTrue() {
-				currentStep = "Moving Back";
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_BACKUP_DISTANCE;
-			}
-		}, DRIVE_SPEED);
+		motion.move(new Range(JEWEL_BACKUP_DISTANCE, rangeSensor, true), false);
 
         //(Step #4)
 		currentStep = "Opening flicker";
@@ -186,12 +174,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
         //(Step #5)
 		currentStep = "Moving towards jewel";
 		telemetry.update();
-		motion.move(0, new Condition() {
-			@Override
-			public boolean isTrue() {
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) < JEWEL_FORWARD_DISTANCE;
-			}
-		}, DRIVE_SPEED);
+		motion.move(new Range(JEWEL_FORWARD_DISTANCE, rangeSensor, false), true);
 
 		sleep(500);
 
@@ -208,13 +191,7 @@ public class AutonomousBaseOpMode extends LinearOpMode implements IHardware {
 
 		currentStep = "Moving Back";
 		telemetry.update();
-		motion.move(180, new Condition() {
-			@Override
-			public boolean isTrue() {
-				return rangeSensor.readUltrasonic(DistanceUnit.INCH) > JEWEL_END_DISTANCE;
-			}
-		}, DRIVE_SPEED);
-
+		motion.move(new Range(JEWEL_END_DISTANCE, rangeSensor, true), false);
 
 		currentStep = "Closing Flicker";
 		telemetry.update();

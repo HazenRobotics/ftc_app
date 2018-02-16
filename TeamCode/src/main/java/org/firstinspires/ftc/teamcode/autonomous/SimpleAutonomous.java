@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -11,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
+import org.firstinspires.ftc.teamcode.interfaces.motors.MecanumWheels;
 
 import org.firstinspires.ftc.teamcode.models.Color;
 import org.firstinspires.ftc.teamcode.models.Condition;
@@ -19,11 +18,6 @@ import org.firstinspires.ftc.teamcode.objects.I2cColorSensor;
 import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
 import org.firstinspires.ftc.teamcode.output.Message;
 import org.firstinspires.ftc.teamcode.output.Telemetry;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import static org.firstinspires.ftc.teamcode.autonomous.AutonomousBaseOpMode.JEWEL_END_DISTANCE;
 
 public class SimpleAutonomous extends LinearOpMode implements IHardware {
 
@@ -39,7 +33,7 @@ public class SimpleAutonomous extends LinearOpMode implements IHardware {
     protected IHardware hardware;
     protected Telemetry telemetry;
     protected SimpleStartingPosition simpleStartingPosition;
-    protected MechanamMotors motion;
+    protected MecanumWheels motion;
     protected Servo flicker;
     protected I2cColorSensor colorSensor;
     protected I2cRangeSensor rangeSensor;
@@ -64,7 +58,7 @@ public class SimpleAutonomous extends LinearOpMode implements IHardware {
         });
         telemetry.update();
         this.hardware = this;
-        this.motion = new MechanamMotors(hardware);
+        this.motion = new MecanumWheels(hardware);
 
         this.colorSensor = new I2cColorSensor((I2cDevice) hardware.get("jewelSensor"));
         this.rangeSensor = new I2cRangeSensor((I2cDevice) hardware.get("rangeSensor"));

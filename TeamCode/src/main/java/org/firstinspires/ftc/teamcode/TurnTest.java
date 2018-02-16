@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
+import org.firstinspires.ftc.teamcode.interfaces.motors.MecanumWheels;
 import org.firstinspires.ftc.teamcode.models.Condition;
 
 /**
@@ -19,11 +19,11 @@ import org.firstinspires.ftc.teamcode.models.Condition;
 @Disabled
 @Autonomous(name = "Turn Test", group = "Test")
 public class TurnTest extends LinearOpMode implements IHardware{
-    protected MechanamMotors motion;
+    protected MecanumWheels motion;
     protected ModernRoboticsI2cGyro gyro;
     @Override
     public void runOpMode() throws InterruptedException {
-        this.motion = new MechanamMotors(this);
+        this.motion = new MecanumWheels(this);
         gyro = (ModernRoboticsI2cGyro) get("gyro");
 
         sleep(500);
