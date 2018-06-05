@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+
 public class LiftMotors implements ILift {
 	protected final IHardware hardware;
     protected final DcMotor liftMotor;
@@ -19,7 +20,6 @@ public class LiftMotors implements ILift {
     	this.hardware = hardware;
     	//liftMotor = hardware.getMotor("lift");
         liftMotor = null;
-
     }
 
     @Override

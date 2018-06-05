@@ -7,6 +7,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.BuildConfig;
 import org.firstinspires.ftc.teamcode.models.Condition;
 
+/**
+ * Controller for Mecanum Wheels, which allow a bot to move in all directions and strafe
+ */
 public class MecanumWheels implements IWheels {
     protected IHardware hardware;
 
@@ -20,6 +23,10 @@ public class MecanumWheels implements IWheels {
     protected static final AngleUnit DEFAULT_ANGLE_UNIT = AngleUnit.DEGREES;
     protected static final Coefficients ZEROED_COEFFICIENTS = new Coefficients(0.0, 0.0, 0.0, 0.0);
 
+    /**
+     * Initializes the class to use the four wheels
+     * @param hardware
+     */
     public MecanumWheels(IHardware hardware) {
         this.hardware = hardware;
         
