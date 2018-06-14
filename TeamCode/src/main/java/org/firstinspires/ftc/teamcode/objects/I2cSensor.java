@@ -5,9 +5,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 
-/**
- * Created by Alex on 10/30/2017.
- */
+
 
 public abstract class I2cSensor {
     protected I2cAddr address; //address in 7 bits
