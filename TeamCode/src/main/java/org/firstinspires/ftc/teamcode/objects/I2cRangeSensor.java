@@ -30,13 +30,20 @@ public class I2cRangeSensor extends I2cSensor {
     }
 
     //returns ultrasonic reading in desired unit
-    public double readUltrasonic(DistanceUnit unit) {
-        cache = SENSORReader.read(RANGE_REG_START, RANGE_READ_LENGTH);
-        return unit.fromUnit(DistanceUnit.CM, cache[0] & 0xFF);
+    public int readUltrasonic() {
+        return SENSORReader.read(RANGE_REG_START, RANGE_READ_LENGTH)[0] & 0xFF;
     }
+
+    public double readUltrasonic(DistanceUnit unit) {
+        return unit.fromCm(readUltrasonic());
+    }
+
     //returns optical reading for
+    public double readOptical() {
+        return SENSORReader.read(RANGE_REG_START, RANGE_READ_LENGTH)[1] & 0xFF;
+    }
+
     public double readOptical(DistanceUnit unit) {
-        cache = SENSORReader.read(RANGE_REG_START, RANGE_READ_LENGTH);
-        return unit.fromUnit(DistanceUnit.CM, cache[1] & 0xFF);
+        return unit.fromCm(readOptical());
     }
 }
