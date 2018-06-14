@@ -137,13 +137,13 @@ public class MecanumWheels implements IWheels {
 
         /**
          * Creates a Coefficients object which holds coefficient values for the four different wheels
-         * @param leftFrontCounts The coefficient for the front left wheel
+         * @param leftFront The coefficient for the front left wheel
          * @param leftBackCounts The coefficient for the front left wheel
          * @param rightFrontCounts The coefficient for the front left wheel
          * @param rightBackCounts The coefficient for the front left wheel
          */
-        public Coefficients(double leftFrontCounts, double leftBackCounts, double rightFrontCounts, double rightBackCounts) {
-            this.leftFront = leftFrontCounts;
+        public Coefficients(double leftFront, double leftBackCounts, double rightFrontCounts, double rightBackCounts) {
+            this.leftFront = leftFront;
             this.leftBack = leftBackCounts;
             this.rightFront = rightFrontCounts;
             this.rightBack = rightBackCounts;
