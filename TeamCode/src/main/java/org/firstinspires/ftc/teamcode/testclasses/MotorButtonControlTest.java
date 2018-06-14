@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.interfaces.IHardware;
+import org.firstinspires.ftc.teamcode.controllers.IHardware;
 
 
 @Disabled
@@ -49,7 +50,7 @@ public class MotorButtonControlTest extends LinearOpMode implements IHardware {
         testMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
-     @Override
+    @Override
     public void idle(long milliseconds) {
         // This is probably the wrong way to handle this-- spin loop.
         // However, it's better than Thread.idleFor()-- probably.

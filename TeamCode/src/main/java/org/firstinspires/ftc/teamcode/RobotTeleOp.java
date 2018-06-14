@@ -8,12 +8,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.input.Button;
 import org.firstinspires.ftc.teamcode.input.ButtonManager;
 import org.firstinspires.ftc.teamcode.input.Toggle;
-import org.firstinspires.ftc.teamcode.interfaces.IHardware;
-import org.firstinspires.ftc.teamcode.interfaces.motors.MechanamMotors;
-import org.firstinspires.ftc.teamcode.models.Condition;
+import org.firstinspires.ftc.teamcode.controllers.IHardware;
+import org.firstinspires.ftc.teamcode.controllers.MecanumWheels;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
@@ -56,7 +54,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
 
 
     protected IHardware hardware;
-    protected MechanamMotors motion;
+    protected MecanumWheels motion;
 
     @Override
     public void runOpMode() {
@@ -102,7 +100,7 @@ public class RobotTeleOp extends LinearOpMode implements IHardware {
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
         this.hardware = this;
-        this.motion = new MechanamMotors(hardware);
+        this.motion = new MecanumWheels(hardware);
 
         flicker = getServo("flicker");
         flicker.setDirection(Servo.Direction.REVERSE);

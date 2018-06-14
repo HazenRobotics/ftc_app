@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.interfaces;
+package org.firstinspires.ftc.teamcode.controllers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -13,15 +13,15 @@ import org.firstinspires.ftc.teamcode.RobotTeleOp;
  */
 public interface IHardware {
     /** {@link RobotTeleOp#idle()} */
-    public void idle();
+    void idle();
 
-    public void idle(long milliseconds);
+    void idle(long milliseconds);
     /** Gets the motor with the given name */
-    public DcMotor getMotor(String name);
+    DcMotor getMotor(String name);
     /** Gets the Servo with the given name*/
-    public Servo getServo(String name);
+    Servo getServo(String name);
     /** Gets the touch sensor with the given name */
-    public DigitalChannel getDigitalChannel(String name);
+    DigitalChannel getDigitalChannel(String name);
 
-    public HardwareDevice get(String name);
+    HardwareDevice get(String name);
 }

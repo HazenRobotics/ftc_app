@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.objects;
+package org.firstinspires.ftc.teamcode.sensors;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
@@ -35,9 +35,9 @@ public class I2cGyroSensor extends I2cSensor {
 
     /**
      * Gets the current integrated Z value held by the sensor, which counts up or down as you rotate
-     * @returns The Integrated Z value in degrees with the same range as a short
+     * @return The Integrated Z value in degrees with the same range as a short
      */
-    public short getIntegratedZ() {
+    public short getIntegratedZValue() {
         cache = SENSORReader.read(GYRO_INTEGRATED_START, GYRO_READ_LENGTH);
         return TypeConversion.byteArrayToShort(cache, ByteOrder.LITTLE_ENDIAN);
     }
@@ -45,15 +45,15 @@ public class I2cGyroSensor extends I2cSensor {
     /**
      * Gets the current integrated Z value held by the sensor, which counts up or down as you rotate
      * @param unit The unit type in which the angle will be returned
-     * @returns The Integrated Z value in the specified units
+     * @return The Integrated Z value in the specified units
      */
-    public float getIntegratedZ(AngleUnit unit) {
-        return unit.fromDegrees(getIntegratedZ());
+    public float getIntegratedZValue(AngleUnit unit) {
+        return unit.fromDegrees(getIntegratedZValue());
     }
 
     /**
      * Gets the current heading value held by the sensor which loops back to 0 after you pass 360 degrees
-     * @returns The heading value of the gyro in degrees, between 0 and 359
+     * @return The heading value of the gyro in degrees, between 0 and 359
      */
     public short getHeading() {
         cache = SENSORReader.read(GYRO_HEADING_START, GYRO_READ_LENGTH);
@@ -63,7 +63,7 @@ public class I2cGyroSensor extends I2cSensor {
     /**
      * Gets the current heading value held by the sensor which loops back to 0 after you make one full rotation
      * @param unit The unit type in which the angle will be returned
-     * @returns The heading value of the gyro in the specified angle unit
+     * @return The heading value of the gyro in the specified angle unit
      */
     public float getHeading(AngleUnit unit) {
         return unit.fromDegrees(getHeading());
@@ -85,7 +85,7 @@ public class I2cGyroSensor extends I2cSensor {
 
     /**
      * Checks if the gyro is still calibrating, either by a full calibration or heading reset
-     * @returns If the Gyro is currently calibrating
+     * @return If the Gyro is currently calibrating
      */
     public boolean isCalibrating() {
         return SENSORReader.read(COMAND_REG_START, 1)[0] != 0x00;

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.models;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.objects.I2cRangeSensor;
+import org.firstinspires.ftc.teamcode.sensors.I2cRangeSensor;
 
 /**
  * Range is a condition type which {@link #isTrue()} when the {@link #rangeSensor} associated with the condition either detects is is greater than or less than a certain {@link #distance}
@@ -75,7 +75,7 @@ public class Range extends Condition {
      * @return If reached target distance
      */
     @Override
-    public boolean condition() {
+    protected boolean condition() {
         double currentDistance = rangeSensor.readUltrasonic(unit);
         return moveGreater ? currentDistance >= distance : currentDistance <= distance;
     }

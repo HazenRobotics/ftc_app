@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.models;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.objects.I2cGyroSensor;
+import org.firstinspires.ftc.teamcode.sensors.I2cGyroSensor;
 
 /**
  * GyroTurn is a condition type which {@link #isTrue()} when the {@link #gyroSensor} associated with the condition either detects is is greater than or less than a certain {@link #targetAngle}
@@ -62,9 +62,9 @@ public class GyroTurn extends Condition {
                     ? unit.fromDegrees(360) : 0)                                                    //Then add 360 to do one circle around,
                     - (heading - angle);                                                            //and subtract the difference in angle to hit the spot behind the current position if ahead of it,
             //or move forward the difference if it is in front of the current position
-            this.targetAngle = gyroSensor.getIntegratedZ() + (positiveTurn ? deltaAngle : -deltaAngle);
+            this.targetAngle = gyroSensor.getIntegratedZValue() + (positiveTurn ? deltaAngle : -deltaAngle);
         } else {
-            this.targetAngle = gyroSensor.getIntegratedZ(unit) + (positiveTurn ? angle : -angle);
+            this.targetAngle = gyroSensor.getIntegratedZValue(unit) + (positiveTurn ? angle : -angle);
         }
     }
 
@@ -107,7 +107,7 @@ public class GyroTurn extends Condition {
      * @return The change in angle left in the condition's {@link #unit} type
      */
     public float getAngleRemaining() {
-        return targetAngle - gyroSensor.getIntegratedZ(unit);
+        return targetAngle - gyroSensor.getIntegratedZValue(unit);
     }
 
     /**
@@ -116,7 +116,7 @@ public class GyroTurn extends Condition {
      * @return The change in angle left in the specified unit type
      */
     public float getAngleRemaining(AngleUnit unit) {
-        return targetAngle - gyroSensor.getIntegratedZ(unit);
+        return targetAngle - gyroSensor.getIntegratedZValue(unit);
     }
 
     /**
@@ -125,7 +125,7 @@ public class GyroTurn extends Condition {
      */
     @Override
     protected boolean condition() {
-        float currentAngle = gyroSensor.getIntegratedZ(unit);
+        float currentAngle = gyroSensor.getIntegratedZValue(unit);
         return positiveTurn ? currentAngle >= targetAngle : currentAngle <= targetAngle;
     }
 }
